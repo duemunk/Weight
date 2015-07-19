@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="8152.3" systemVersion="14E46" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="BYZ-38-t0r">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="8124.4"/>
+    </dependencies>
+    <scenes>
+        <!--View Controller-->
+        <scene sceneID="tne-QT-ifu">
+            <objects>
+                <viewController id="BYZ-38-t0r" customClass="ViewController" customModule="Weight" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="y3c-jy-aDJ"/>
+                        <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="hbs-kx-55M">
+                                <rect key="frame" x="0.0" y="20" width="600" height="580"/>
+                                <subviews>
+                                    <stackView opaque="NO" contentMode="scaleToFill" ambiguous="YES" axis="vertical" distribution="equalSpacing" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="mad-6m-qfR">
+                                        <rect key="frame" x="0.0" y="0.0" width="600" height="306"/>
+                                        <subviews>
+                                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="7mI-Y2-mC3">
+                                                <rect key="frame" x="180" y="0.0" width="240" height="128"/>
+                                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                            </view>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" fixedFrame="YES" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="KN1-Zx-pNM">
+                                                <rect key="frame" x="252" y="128" width="96.5" height="30.5"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="40"/>
+                                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" fixedFrame="YES" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="P2H-ak-ItY">
+                                                <rect key="frame" x="280.5" y="158.5" width="39.5" height="19.5"/>
+                                                <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
+                                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ObP-Ec-zOD">
+                                                <rect key="frame" x="180" y="178" width="240" height="128"/>
+                                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                            </view>
+                                        </subviews>
+                                    </stackView>
+                                    <pickerView contentMode="scaleToFill" verticalHuggingPriority="251" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AuZ-HD-KAC">
+                                        <rect key="frame" x="0.0" y="306" width="600" height="216"/>
+                                        <connections>
+                                            <outlet property="dataSource" destination="BYZ-38-t0r" id="jZz-xX-Tpc"/>
+                                            <outlet property="delegate" destination="BYZ-38-t0r" id="u55-G9-pVg"/>
+                                        </connections>
+                                    </pickerView>
+                                    <button opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="251" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ras-EN-q8K">
+                                        <rect key="frame" x="0.0" y="522" width="600" height="58"/>
+                                        <inset key="contentEdgeInsets" minX="20" minY="20" maxX="20" maxY="20"/>
+                                        <state key="normal" title="Save"/>
+                                        <connections>
+                                            <action selector="didTapSaveButton:" destination="BYZ-38-t0r" eventType="touchUpInside" id="zw5-9a-C2J"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstItem="AuZ-HD-KAC" firstAttribute="leading" secondItem="hbs-kx-55M" secondAttribute="leading" id="5Wq-xi-EGx"/>
+                                    <constraint firstItem="AuZ-HD-KAC" firstAttribute="top" secondItem="mad-6m-qfR" secondAttribute="bottom" id="7xN-wp-SG5"/>
+                                    <constraint firstItem="AuZ-HD-KAC" firstAttribute="centerY" secondItem="hbs-kx-55M" secondAttribute="centerY" id="9d2-mB-BPQ"/>
+                                    <constraint firstAttribute="trailing" secondItem="AuZ-HD-KAC" secondAttribute="trailing" id="B87-bu-pUx"/>
+                                    <constraint firstItem="ras-EN-q8K" firstAttribute="top" secondItem="AuZ-HD-KAC" secondAttribute="bottom" id="R68-bB-ALP"/>
+                                </constraints>
+                                <variation key="default">
+                                    <mask key="constraints">
+                                        <exclude reference="9d2-mB-BPQ"/>
+                                    </mask>
+                                </variation>
+                            </stackView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="hbs-kx-55M" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" id="Lh9-Y8-K8c"/>
+                            <constraint firstAttribute="trailing" secondItem="hbs-kx-55M" secondAttribute="trailing" id="P81-9v-Y0Q"/>
+                            <constraint firstItem="hbs-kx-55M" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="Whc-kt-nNE"/>
+                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="hbs-kx-55M" secondAttribute="bottom" id="qrn-bQ-pEL"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="weightDetailLabel" destination="P2H-ak-ItY" id="hVt-zU-NEB"/>
+                        <outlet property="weightLabel" destination="KN1-Zx-pNM" id="n0w-hV-RZU"/>
+                        <outlet property="weightPickerView" destination="AuZ-HD-KAC" id="bdq-nN-re3"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="470" y="263"/>
+        </scene>
+    </scenes>
+</document>
