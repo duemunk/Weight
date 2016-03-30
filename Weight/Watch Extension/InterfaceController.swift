@@ -9,38 +9,49 @@
 import WatchKit
 import Foundation
 import ClockKit
-
+import HealthKit
 
 class InterfaceController: WKInterfaceController {
 
     @IBOutlet var picker: WKInterfacePicker!
     @IBOutlet var dateLabel: WKInterfaceLabel!
+    @IBOutlet var loaderImage: WKInterfaceImage!
+    @IBOutlet var saveButton: WKInterfaceButton!
     
-    let weightFormatter = NSMassFormatter()
-    let dateFormatter: NSDateFormatter = {
-        let formatter = NSDateFormatter()
-        formatter.dateStyle = .MediumStyle
-        formatter.timeStyle = .ShortStyle
-        return formatter
-    }()
+//    var loader: Loader?
+
+    let weightFormatter = NSMassFormatter.weightMediumFormatter()
+    let dateFormatter = NSDateFormatter.build(dateStyle: .MediumStyle, timeStyle: .ShortStyle)
     
-    let healthManager = HealthManager()
-    
-    var selectedWeight: Double?
-    var pickerWeights: [Double] {
-        return healthManager.humanWeightOptions()
+    var selectedWeight: HKQuantity?
+    var pickerWeights: [HKQuantity] {
+        return HealthManager.instance.humanWeightOptions()
     }
     
     override func awakeWithContext(context: AnyObject?) {
         print("awakeWithContext \(context)")
         super.awakeWithContext(context)
         
+//        loader = Loader(controller: self, interfaceImages: [loaderImage])
+        
         // Configure interface objects here.
-        NotificationCenter.observe(HealthDataOrPreferencesDidChangeNotification) { [weak self] notification in
-            dispatch_async(dispatch_get_main_queue()) {
+        updatePicker()
+        
+//        setTitle("Weight")
+        
+        NotificationCenter.observe(HealthDataDidChangeNotification) { [weak self] notification in
+            Async.main {
+                self?.updateWeight {
+                    self?.updateComplications()
+                }
+            }
+        }
+        NotificationCenter.observe(HealthPreferencesDidChangeNotification) { [weak self] notification in
+            Async.main {
                 self?.updatePicker()
-                self?.updateWeight()
-                self?.updateComplications()
+                self?.updateWeight {
+                    self?.updateComplications()
+                }
             }
         }
     }
@@ -50,9 +61,31 @@ class InterfaceController: WKInterfaceController {
         // This method is called when watch view controller is about to be visible to user
         super.willActivate()
         
-        updatePicker()
-        updateWeight()
-        updateComplications()
+        self.updateWeight {
+            self.updateComplications()
+        }
+//        loader?.startAnimating()
+        
+//        picker.setHidden(true)
+//        dateLabel.setHidden(true)
+//        saveButton.setHidden(true)
+        
+//        Async.background {
+//            tic()
+//            self.updatePicker()
+//            self.updateWeight {
+//                self.updateComplications()
+//            }
+//            toc()
+//            Async.main() {
+//                self.loader?.stopAnimating()
+//                self.picker.setHidden(false)
+//                self.dateLabel.setHidden(false)
+//                self.saveButton.setHidden(false)
+//                self.loader?.stopAnimating()
+//                self.loaderImage.setHidden(true)
+//            }
+//        }
     }
 
     override func didDeactivate() {
@@ -62,73 +95,114 @@ class InterfaceController: WKInterfaceController {
     }
     
     @IBAction func pickerDidChange(index: Int) {
-        let weight = pickerWeights[index]
+        let weight = pickerWeights[safe: index]
         selectedWeight = weight
         print("Selected weight: \(weight)")
+        // Click
+//        WKInterfaceDevice.currentDevice().playHaptic(.Click)
+        // User activity
+        guard let tempWeight = weight else { return }
+        
+        let activityType = "dk.developmunk.Weight.updatingWeight"
+        let unit = HKUnit.gramUnitWithMetricPrefix(.Kilo)
+        let value = tempWeight.doubleValueForUnit(unit)
+        let activityDictionary: [NSObject: AnyObject] = [
+            "TemporaryWeightKg" : value,
+            "TemporaryWeightDescription": "\(tempWeight)"]
+        updateUserActivity(activityType, userInfo: activityDictionary, webpageURL: nil)
     }
     
     @IBAction func didTapSaveButton() {
         guard let selectedWeight = selectedWeight else {
             print("No selected weight. Couldn't save.")
+            WKInterfaceDevice.currentDevice().playHaptic(.Failure)
             return
         }
-        healthManager.saveWeight(selectedWeight) { result in
-            optionalResult(result)
-            self.updateWeight()
-            self.updateComplications()
-        }
+//        NSProcessInfo.processInfo().performExpiringActivityWithReason("Make sure weight is stored, even though user went away from app") { expired in
+//          guard expired == false else { return }
+            HealthManager.instance.saveWeight(selectedWeight) { result in
+                do {
+                    let sample = try result()
+                    WKInterfaceDevice.currentDevice().playHaptic(.Success)
+                    self.updatePicker(referenceWeight: sample) // Update to
+                    self.updateWeight {
+                        self.updateComplications()
+                    }
+                } catch {
+                    print("Couldn't save weight: \(error)")
+                    WKInterfaceDevice.currentDevice().playHaptic(.Failure)
+                }
+            }
+//        }
     }
 
-    private func updateWeight() {
+    private func updateWeight(forceWeight forceWeight: HKQuantitySample? = nil, completion: (() -> ())? = nil) { //  = WeightsLocalStore.instance.lastWeight
+        
+        let quantitySampleBlock: (HKQuantitySample, (() -> ())?) -> () = { quantitySample, completion in
+            // Date
+            self.dateLabel.setText(self.dateFormatter.stringFromDate(quantitySample.startDate))
+            // Weight
+            let quantity = quantitySample.quantity
+            let massUnit = HealthManager.instance.massUnit
+            let doubleValue = quantity.doubleValueForUnit(massUnit)
+            guard let (_, index) = self.pickerWeights.map({ $0.doubleValueForUnit(massUnit) }).closestToElement(doubleValue) else {
+                completion?()
+                return
+            }
+            self.picker.setSelectedItemIndex(index)
+            completion?()
+        }
+        
+        if let forceWeight = forceWeight {
+            quantitySampleBlock(forceWeight, completion)
+            return
+        }
         // Get latest weight
-        healthManager.getWeight { result in
-            dispatch_async(dispatch_get_main_queue()) {
+        HealthManager.instance.getWeight { result in
+            Async.main {
                 // Setup picker
                 guard let quantitySample = optionalResult(result) else {
                     self.dateLabel.setText("Add your weight")
+                    completion?()
                     return
                 }
-                let quantity = quantitySample.quantity
-                let doubleValue = quantity.doubleValueForUnit(self.healthManager.massUnit)
-                guard let (_, index) = self.closest(self.pickerWeights, toValue: doubleValue) else {
-                    return
-                }
-                self.updatePicker()
-                self.picker.setSelectedItemIndex(index)
-                self.dateLabel.setText(self.dateFormatter.stringFromDate(quantitySample.startDate))
+                quantitySampleBlock(quantitySample, completion)
             }
         }
     }
     
-    private func updatePicker() {
+    private func updatePicker(referenceWeight referenceWeightQuantitySample: HKQuantitySample? = WeightsLocalStore.instance.lastWeight) {
+        
         var pickerItems = [WKPickerItem]()
-        for weight in pickerWeights {
+        let massUnit = HealthManager.instance.massUnit
+        let massFormatterUnit = HealthManager.instance.massFormatterUnit
+        for weightQuantity in pickerWeights {
             let item = WKPickerItem()
-            item.title = weightFormatter.stringFromValue(weight, unit: healthManager.massFormatterUnit)
+            let weight = weightQuantity.doubleValueForUnit(massUnit)
+            item.title = weightFormatter.stringFromValue(weight, unit: massFormatterUnit)
+            if let referenceWeightQuantity = referenceWeightQuantitySample?.quantity {
+                let referenceWeight = referenceWeightQuantity.doubleValueForUnit(massUnit)
+                let diffWeight = weight - referenceWeight
+                let diffString = weightFormatter.stringFromValue(abs(diffWeight), unit: massFormatterUnit)
+                switch diffWeight {
+                    case 0: item.caption = "="
+                    case let d where d > 0: item.caption = "+" + diffString
+                    case let d where d < 0: item.caption = "-" + diffString
+                    default: item.caption = diffString
+                }
+            }
             pickerItems.append(item)
         }
         picker.setItems(pickerItems)
     }
     
-    func closest(values: [Double], toValue value: Double) -> (closestValue: Double, index: Int)? {
-        let diffs = values.map { abs($0 - value) }
-        guard let someDiffValue = diffs.first else {
-            return nil
-        }
-        let minimumDiff = diffs.reduce(someDiffValue) { min($0, $1) }
-        guard let index = diffs.indexOf(minimumDiff) else {
-            return nil
-        }
-        return (values[index], index)
-    }
-    
-    
     func updateComplications() {
         // Ping complications
-        guard let complicationServer = CLKComplicationServer.sharedInstance() else {
+        let complicationServer = CLKComplicationServer.sharedInstance()
+        guard let activeComplications = complicationServer.activeComplications else {
             return
         }
-        for complication in complicationServer.activeComplications {
+        for complication in activeComplications {
             complicationServer.reloadTimelineForComplication(complication)
         }
     }
@@ -155,3 +229,31 @@ class InterfaceController: WKInterfaceController {
 //    }
 //    
 //}
+
+
+extension Array where Element: FloatingPointType {
+    
+    func closestToElement(element: Element) -> (Element, Array.Index)? {
+        let diffs = map { abs($0 - element) }
+        guard let someDiffValue = diffs.first else {
+            return nil
+        }
+        let minimumDiff = diffs.reduce(someDiffValue) { min($0, $1) }
+        guard let index = diffs.indexOf(minimumDiff) else {
+            return nil
+        }
+        return (self[index], index)
+    }
+}
+
+
+
+
+var date = NSDate()
+func tic() {
+    date = NSDate()
+    print("Tic: ", date)
+}
+func toc() {
+    print("Toc:", -date.timeIntervalSinceNow)
+}

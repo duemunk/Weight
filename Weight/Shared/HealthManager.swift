@@ -9,11 +9,14 @@
 import Foundation
 import HealthKit
 
-let HealthDataOrPreferencesDidChangeNotification = "HealthDataOrPreferencesDidChangeNotification"
+let HealthPreferencesDidChangeNotification = "HealthPreferencesDidChangeNotification"
+let HealthDataDidChangeNotification = "HealthDataDidChangeNotification"
 
 typealias AsyncQuantitySampleResult = (() throws -> HKQuantitySample) -> ()
+typealias AsyncQuantitySamplesResult = (() throws -> [HKQuantitySample]) -> ()
 
 class HealthManager {
+    static let instance = HealthManager()
     
     enum Error: ErrorType {
         case NoResults
@@ -37,7 +40,6 @@ class HealthManager {
         // Observe and propagate user changes from other apps
         NotificationCenter.observe(HKUserPreferencesDidChangeNotification) { [weak self] notification in
             self?.updatePreferredUnits()
-            NotificationCenter.post(HealthDataOrPreferencesDidChangeNotification)
         }
         
         // Setup access
@@ -49,7 +51,7 @@ class HealthManager {
                 print(error)
             }
             defer {
-                NotificationCenter.post(HealthDataOrPreferencesDidChangeNotification)
+                NotificationCenter.post(HealthDataDidChangeNotification)
             }
         }
         
@@ -67,13 +69,18 @@ class HealthManager {
                 self.massUnit = unit
                 self.massFormatterUnit = HKUnit.massFormatterUnitFromUnit(unit)
                 
-                NotificationCenter.post(HealthDataOrPreferencesDidChangeNotification)
+                NotificationCenter.post(HealthPreferencesDidChangeNotification)
             }
         }
     }
-    
-    func saveWeight(doubleValue: Double, date: NSDate = NSDate(), result: AsyncEmptyResult) {
-        saveQuantity(doubleValue, type: weightType, unit: massUnit, date: date, result: result)
+
+    func saveWeight(doubleValue: Double, result: AsyncQuantitySampleResult) {
+        let quantity = HKQuantity(unit: massUnit, doubleValue: doubleValue)
+        saveQuantity(quantity, type: weightType, result: result)
+    }
+
+    func saveWeight(quantity: HKQuantity, date: NSDate = NSDate(), result: AsyncQuantitySampleResult) {
+        saveQuantity(quantity, type: weightType, date: date, result: result)
     }
     
     func getWeight(result: AsyncQuantitySampleResult) {
@@ -85,20 +92,27 @@ class HealthManager {
                     result { throw Error.NoSuccessDespiteNoError }
                     return
                 }
+                WeightsLocalStore.instance.lastWeight = quantitySample
                 result { quantitySample }
             } catch {
                 result { throw error}
             }
         }
     }
-    
-    private func saveQuantity(doubleValue: Double, type: HKQuantityType, unit: HKUnit, date: NSDate = NSDate(), result: AsyncEmptyResult) {
-        guard type.isCompatibleWithUnit(unit) else {
-            print("\(type) is not compatible with unit \(unit)")
-            result { Error.WrongInput }
-            return
+
+    func getWeights(result: AsyncQuantitySamplesResult) {
+        healthStore.samples(ofType: weightType) { _result in
+            do {
+                let samples = try _result()
+                let quantitySamples = samples.flatMap { return $0 as? HKQuantitySample }
+                result { quantitySamples }
+            } catch {
+                result { throw error}
+            }
         }
-        let quantity = HKQuantity(unit: unit, doubleValue: doubleValue)
+    }
+    
+    private func saveQuantity(quantity: HKQuantity, type: HKQuantityType, date: NSDate = NSDate(), result: AsyncQuantitySampleResult) {
         let sample = HKQuantitySample(type: type, quantity: quantity, startDate: date, endDate: date)
         healthStore.saveObject(sample) { success, error in
             if let error = error {
@@ -111,7 +125,7 @@ class HealthManager {
                 result { throw Error.NoSuccessDespiteNoError }
                 return
             }
-            result {}
+            result { sample }
             print("Yay, stored \(sample) to HealthKit!")
         }
     }
@@ -133,20 +147,30 @@ class HealthManager {
             result { try _result() }
         }
     }
-    
-    func humanWeightOptions() -> [Double] {
-        let (min, max, division): (Int, Int, Int) = {
+
+    func humanWeightUnitDivision() -> Int {
+        switch massUnit {
+        case HKUnit.stoneUnit(): return 28
+        case HKUnit.poundUnit(): return 2
+        case HKUnit.gramUnitWithMetricPrefix(.Kilo): return 10
+        default: return 10
+        }
+    }
+
+    func humanWeightOptions() -> [HKQuantity] {
+        let division = humanWeightUnitDivision()
+        let (min, max): (Int, Int) = {
             switch massUnit {
-                case HKUnit.stoneUnit(): return (0, 100, 28)
-                case HKUnit.poundUnit(): return (0, 1400, 2)
-                case HKUnit.gramUnitWithMetricPrefix(.Kilo): return (0, 635, 10)
-                default: return (0, 1000, 10)
+                case HKUnit.stoneUnit(): return (0, 100)
+                case HKUnit.poundUnit(): return (0, 1400)
+                case HKUnit.gramUnitWithMetricPrefix(.Kilo): return (50, 150)
+                default: return (0, 1000)
             }
         }()
         var options = [Double]()
-        for option in min...max*division {
+        for option in min*division...max*division {
             options.append(Double(option) / Double(division))
         }
-        return options
+        return options.map { HKQuantity(unit: massUnit, doubleValue: $0) }
     }
 }
