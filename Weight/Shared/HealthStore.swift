@@ -39,8 +39,7 @@ extension HKHealthStore {
     }
 
     func samples(ofType sampleType: HKSampleType, predicate: NSPredicate? = nil, result: AsyncSamplesResult) {
-        // Since we are interested in retrieving the user's latest sample, we sort the samples in descending order, and set the limit to 1. We are not filtering the data, and so the predicate is set to nil.
-        let timeSortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: false)
+        let timeSortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: true)
         let query = HKSampleQuery(sampleType: sampleType, predicate: predicate, limit: HKObjectQueryNoLimit, sortDescriptors: [timeSortDescriptor]) { query, results, error in
             if let error = error {
                 result { throw error }
@@ -57,7 +56,7 @@ extension HKHealthStore {
 
     func mostRecentSample(ofType sampleType: HKSampleType, predicate: NSPredicate? = nil, result: AsyncSampleResult) {
         // Since we are interested in retrieving the user's latest sample, we sort the samples in descending order, and set the limit to 1. We are not filtering the data, and so the predicate is set to nil.
-        let timeSortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierEndDate, ascending: false)
+        let timeSortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: false)
         let query = HKSampleQuery(sampleType: sampleType, predicate: predicate, limit: 1, sortDescriptors: [timeSortDescriptor]) { query, results, error in
             if let error = error {
                 result { throw error }

@@ -8,6 +8,8 @@
 
 import UIKit
 import HealthKit
+import Cartography
+
 
 
 enum QuickActionType: String {
@@ -20,10 +22,12 @@ class ViewController: UIViewController {
     @IBOutlet weak var weightLabel: UILabel!
     @IBOutlet weak var weightDetailLabel: UILabel!
     @IBOutlet weak var weightPickerView: UIPickerView!
+    @IBOutlet weak var chartView: Chart!
     
     let weightFormatter = NSMassFormatter.weightMediumFormatter()
     let dateFormatter = NSDateFormatter.build(dateStyle: .MediumStyle, timeStyle: .ShortStyle)
     let dateShortFormatter = NSDateFormatter.build(dateStyle: .ShortStyle, timeStyle: .ShortStyle)
+    let dateOnlyFormatter = NSDateFormatter.build(dateStyle: .MediumStyle, timeStyle: .NoStyle)
     var pickerWeights: [HKQuantity] {
         return HealthManager.instance.humanWeightOptions()
     }
@@ -97,8 +101,10 @@ class ViewController: UIViewController {
     func updateUI() {
         updateToWeight()
         updateQuickActions()
+        updateChart()
     }
-    
+
+    // MARK: - Weight
     func updateToWeight(forceWeight forceWeight: HKQuantitySample? = nil) {
         
         let quantitySampleBlock: (HKQuantitySample, (() -> ())?) -> () = { quantitySample, completion in
@@ -143,6 +149,7 @@ class ViewController: UIViewController {
         return quantity
     }
 
+    // MARK: - Quick Actions
     func updateQuickActions() {
         HealthManager.instance.getWeights { result in
             guard let quantitySamples = optionalResult(result) else {
@@ -172,7 +179,7 @@ class ViewController: UIViewController {
                 var shortcuts = [UIApplicationShortcutItem]()
                 // Take 3 most usual changes to weight
                 let bestValues = sortedValues[0..<min(3, sortedValues.count)]
-                if let latestSample = quantitySamples.first {
+                if let latestSample = quantitySamples.last {
                     for value in bestValues {
                         let doubleValue = Double(value) * increment + latestSample.quantity.doubleValueForUnit(massUnit)
                         let shortcut: UIApplicationShortcutItem = {
@@ -201,48 +208,6 @@ class ViewController: UIViewController {
                 }
             }
         }
-//        HealthManager.instance.getWeight { result in
-//            guard let quantitySample = optionalResult(result) else {
-//                return
-//            }
-//            Async.main {
-//                let quantity = quantitySample.quantity
-//                let massUnit = HealthManager.instance.massUnit
-//                let currentDoubleValue = quantity.doubleValueForUnit(massUnit)
-//
-//                let massFormatterUnit = HealthManager.instance.massFormatterUnit
-//
-//                let increment = 1 / Double(HealthManager.instance.humanWeightUnitDivision())
-//                let upDoubleValue = currentDoubleValue + increment
-//                let downDoubleValue = currentDoubleValue - increment
-//
-//                let shortcutUp = UIApplicationShortcutItem(
-//                    type: QuickActionType.UpWeight.rawValue,
-//                    localizedTitle: self.weightFormatter.stringFromValue(upDoubleValue, unit: massFormatterUnit),
-//                    localizedSubtitle: nil,
-//                    icon: UIApplicationShortcutIcon(templateImageName: "Up"),
-//                    userInfo: [directWeightKey : upDoubleValue])
-//                let shortcutSame = UIApplicationShortcutItem(
-//                    type: QuickActionType.SameWeightAsLast.rawValue,
-//                    localizedTitle: self.weightFormatter.stringFromValue(currentDoubleValue, unit: massFormatterUnit),
-//                    localizedSubtitle: "Last: " + self.dateShortFormatter.stringFromDate(quantitySample.startDate),
-//                    icon: UIApplicationShortcutIcon(templateImageName: "Same"),
-//                    userInfo: [directWeightKey : currentDoubleValue])
-//                let shortcutDown = UIApplicationShortcutItem(
-//                    type: QuickActionType.DownWeight.rawValue,
-//                    localizedTitle: self.weightFormatter.stringFromValue(downDoubleValue, unit: massFormatterUnit),
-//                    localizedSubtitle: nil,
-//                    icon: UIApplicationShortcutIcon(templateImageName: "Down"),
-//                    userInfo: [directWeightKey : downDoubleValue])
-//                let shortcutCustom = UIApplicationShortcutItem(
-//                    type: QuickActionType.CustomWeight.rawValue,
-//                    localizedTitle: "Other weight",
-//                    localizedSubtitle: nil,
-//                    icon: UIApplicationShortcutIcon(templateImageName: "New"),
-//                    userInfo: nil)
-//                UIApplication.sharedApplication().shortcutItems = [shortcutCustom, shortcutDown, shortcutSame, shortcutUp]
-//            }
-//        }
     }
 
     func sameWeightShortcut(for previousSample: HKQuantitySample) -> UIApplicationShortcutItem {
@@ -292,6 +257,77 @@ class ViewController: UIViewController {
             localizedSubtitle: subtitle,
             icon: UIApplicationShortcutIcon(templateImageName: imageName),
             userInfo: [directWeightKey : value])
+    }
+
+
+    // MARK: - Chart
+    func updateChart(average: CalendarUnit = .Week, range: (unit: CalendarUnit, count: Int) = (.Month, 6)) {
+        chartView.userInteractionEnabled = false
+        chartView.gridColor = UIColor.whiteColor().colorWithAlphaComponent(0.3)
+        chartView.labelColor = UIColor.whiteColor() //.colorWithAlphaComponent(0.5)
+        chartView.lineWidth = 1.5
+        chartView.dotSize = 1.5
+        chartView.xLabelsFormatter = {
+            self.dateOnlyFormatter.stringFromDate(NSDate(timeIntervalSince1970: Double($1)))
+        }
+
+        HealthManager.instance.getWeights { result in
+            guard let quantitySamples = optionalResult(result) else {
+                return
+            }
+            Async.userInitiated {
+                let massUnit = HealthManager.instance.massUnit
+
+                guard let rangeStart = quantitySamples.last?.startDate.add(range.unit, count: -range.count) else { return }
+                let rangedSamples = quantitySamples.filter { $0.startDate.isAfter(rangeStart) }
+
+                let values: Array<(x: Double, y: Double)> = rangedSamples.map { ($0.startDate.timeIntervalSince1970, $0.quantity.doubleValueForUnit(massUnit)) }
+
+                let individualSeries = ChartSeries(data: values)
+                individualSeries.color = UIColor.whiteColor()//.colorWithAlphaComponent(0.5)
+                individualSeries.line = false
+                individualSeries.dots = true
+
+                let valuesWeekly: Array<(x: Double, y: Double)>? = rangedSamples
+                    .averages(average)?
+                    .map { ($0.endDate.timeIntervalSince1970, $0.quantity.doubleValueForUnit(massUnit)) }
+                let runningAverageSeries: ChartSeries? = valuesWeekly != nil ? ChartSeries(data: valuesWeekly!) : nil
+                runningAverageSeries?.color = UIColor.whiteColor().colorWithAlphaComponent(0.6)
+                runningAverageSeries?.line = true
+
+                Async.main {
+                    self.chartView.removeSeries()
+                    self.chartView.addSeries(individualSeries)
+                    if let runningAverageSeries = runningAverageSeries {
+                        self.chartView.addSeries(runningAverageSeries)
+                    }
+
+                    self.chartView.xLabels = rangeStart.timeIntervalSince1970
+                        .stride(through: NSDate().timeIntervalSince1970, by: range.unit.timeInterval)
+                        .map { Float($0) }
+                }
+
+                // i-schuetz/SwiftCharts
+
+                // ios-charts
+//                var index = 0
+//                let yValues = values.map { ChartDataEntry(value: $0, xIndex: index++) }
+//                let set = LineChartDataSet(yVals: yValues, label: "Weight")
+//
+//                let lineChartData = LineChartData(xVals: xValues, dataSets: [set])
+//
+////                set.colors = [UIColor.whiteColor()]
+//                set.colors = ChartColorTemplates.joyful()
+//                set.lineWidth = 4
+////                set.drawCubicEnabled = true
+//
+//                Async.main {
+//                    self.lineChartView.data = lineChartData
+//                }
+            }
+        }
+
+
     }
 }
 

@@ -19,6 +19,11 @@
 		4E44D5C21B5BEE7D0014B9C8 /* WeightUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E44D5C11B5BEE7D0014B9C8 /* WeightUITests.swift */; };
 		4E44D5D71B5C354A0014B9C8 /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4E44D5D61B5C354A0014B9C8 /* HealthKit.framework */; };
 		4E55CA121C76535200EB5D88 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4E55CA111C76535200EB5D88 /* Assets.xcassets */; };
+		4E595D931CAC82B800D42B09 /* SwiftCharts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4E595D921CAC82B800D42B09 /* SwiftCharts.framework */; };
+		4E595D951CAC82C600D42B09 /* Cartography.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4E595D941CAC82C600D42B09 /* Cartography.framework */; };
+		4E595D9A1CAC877D00D42B09 /* Chart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E595D971CAC877D00D42B09 /* Chart.swift */; };
+		4E595D9B1CAC877D00D42B09 /* ChartColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E595D981CAC877D00D42B09 /* ChartColors.swift */; };
+		4E595D9C1CAC877D00D42B09 /* ChartSeries.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E595D991CAC877D00D42B09 /* ChartSeries.swift */; };
 		4E7769471B5E57340081017D /* Interface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4E7769451B5E57340081017D /* Interface.storyboard */; };
 		4E7769491B5E57340081017D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4E7769481B5E57340081017D /* Assets.xcassets */; };
 		4E7769501B5E57340081017D /* Watch Extension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 4E77694F1B5E57340081017D /* Watch Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -122,6 +127,11 @@
 		4E44D5D61B5C354A0014B9C8 /* HealthKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKit.framework; path = System/Library/Frameworks/HealthKit.framework; sourceTree = SDKROOT; };
 		4E44D5D81B5C354A0014B9C8 /* Weight.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Weight.entitlements; sourceTree = "<group>"; };
 		4E55CA111C76535200EB5D88 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		4E595D921CAC82B800D42B09 /* SwiftCharts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftCharts.framework; path = ../Carthage/Build/iOS/SwiftCharts.framework; sourceTree = "<group>"; };
+		4E595D941CAC82C600D42B09 /* Cartography.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cartography.framework; path = ../Carthage/Build/iOS/Cartography.framework; sourceTree = "<group>"; };
+		4E595D971CAC877D00D42B09 /* Chart.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Chart.swift; sourceTree = "<group>"; };
+		4E595D981CAC877D00D42B09 /* ChartColors.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChartColors.swift; sourceTree = "<group>"; };
+		4E595D991CAC877D00D42B09 /* ChartSeries.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChartSeries.swift; sourceTree = "<group>"; };
 		4E7769431B5E57340081017D /* Watch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Watch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4E7769461B5E57340081017D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Interface.storyboard; sourceTree = "<group>"; };
 		4E7769481B5E57340081017D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -155,6 +165,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				4E44D5D71B5C354A0014B9C8 /* HealthKit.framework in Frameworks */,
+				4E595D931CAC82B800D42B09 /* SwiftCharts.framework in Frameworks */,
+				4E595D951CAC82C600D42B09 /* Cartography.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -215,6 +227,7 @@
 				4E44D5D81B5C354A0014B9C8 /* Weight.entitlements */,
 				4E44D5A11B5BEE7C0014B9C8 /* AppDelegate.swift */,
 				4E44D5A31B5BEE7C0014B9C8 /* ViewController.swift */,
+				4E595D961CAC877D00D42B09 /* SwiftChart */,
 				4E44D5D31B5BFD5D0014B9C8 /* Library */,
 				4E44D5A51B5BEE7C0014B9C8 /* Main.storyboard */,
 				4E55CA111C76535200EB5D88 /* Assets.xcassets */,
@@ -248,6 +261,17 @@
 				4E7769701B5E61250081017D /* HealthStore_iOS.swift */,
 			);
 			name = Library;
+			sourceTree = "<group>";
+		};
+		4E595D961CAC877D00D42B09 /* SwiftChart */ = {
+			isa = PBXGroup;
+			children = (
+				4E595D971CAC877D00D42B09 /* Chart.swift */,
+				4E595D981CAC877D00D42B09 /* ChartColors.swift */,
+				4E595D991CAC877D00D42B09 /* ChartSeries.swift */,
+			);
+			name = SwiftChart;
+			path = Source;
 			sourceTree = "<group>";
 		};
 		4E7769441B5E57340081017D /* Watch */ = {
@@ -306,6 +330,8 @@
 			children = (
 				4EE529C31B681DFC0045C1C3 /* Realm.framework */,
 				4E44D5D61B5C354A0014B9C8 /* HealthKit.framework */,
+				4E595D921CAC82B800D42B09 /* SwiftCharts.framework */,
+				4E595D941CAC82C600D42B09 /* Cartography.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -330,6 +356,7 @@
 				4E44D59B1B5BEE7C0014B9C8 /* Frameworks */,
 				4E44D59C1B5BEE7C0014B9C8 /* Resources */,
 				4E7769671B5E57340081017D /* Embed Watch Content */,
+				4E595D911CAC6BBC00D42B09 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -533,6 +560,24 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		4E595D911CAC6BBC00D42B09 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/Carthage/Build/iOS/SwiftCharts.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/Cartography.framework",
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "/usr/local/bin/carthage copy-frameworks";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		4E44D59A1B5BEE7C0014B9C8 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -546,11 +591,14 @@
 				4E7769731B5E6E070081017D /* ErrorHandling.swift in Sources */,
 				4E44D5A41B5BEE7C0014B9C8 /* ViewController.swift in Sources */,
 				4E44D5A21B5BEE7C0014B9C8 /* AppDelegate.swift in Sources */,
+				4E595D9A1CAC877D00D42B09 /* Chart.swift in Sources */,
+				4E595D9C1CAC877D00D42B09 /* ChartSeries.swift in Sources */,
 				4EE529D01B682CE50045C1C3 /* Array.swift in Sources */,
 				4E7769791B5E70400081017D /* NotificationCenter.swift in Sources */,
 				4E7769771B5E70400081017D /* HealthStore.swift in Sources */,
 				4EE529CD1B681F5B0045C1C3 /* Async.swift in Sources */,
 				4EA8A20E1B678F3E00E1EF05 /* WeightsLocalStore.swift in Sources */,
+				4E595D9B1CAC877D00D42B09 /* ChartColors.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -736,6 +784,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)",
 					"$(PROJECT_DIR)/Frameworks",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
 				);
 				INFOPLIST_FILE = Weight/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -756,6 +805,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)",
 					"$(PROJECT_DIR)/Frameworks",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
 				);
 				INFOPLIST_FILE = Weight/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
