@@ -19,7 +19,6 @@
 		4E44D5C21B5BEE7D0014B9C8 /* WeightUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E44D5C11B5BEE7D0014B9C8 /* WeightUITests.swift */; };
 		4E44D5D71B5C354A0014B9C8 /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4E44D5D61B5C354A0014B9C8 /* HealthKit.framework */; };
 		4E55CA121C76535200EB5D88 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4E55CA111C76535200EB5D88 /* Assets.xcassets */; };
-		4E595D931CAC82B800D42B09 /* SwiftCharts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4E595D921CAC82B800D42B09 /* SwiftCharts.framework */; };
 		4E595D951CAC82C600D42B09 /* Cartography.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4E595D941CAC82C600D42B09 /* Cartography.framework */; };
 		4E595D9A1CAC877D00D42B09 /* Chart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E595D971CAC877D00D42B09 /* Chart.swift */; };
 		4E595D9B1CAC877D00D42B09 /* ChartColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E595D981CAC877D00D42B09 /* ChartColors.swift */; };
@@ -48,6 +47,8 @@
 		4EE529CE1B681F630045C1C3 /* Async.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EE529CC1B681F5B0045C1C3 /* Async.swift */; };
 		4EE529D01B682CE50045C1C3 /* Array.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EE529CF1B682CE50045C1C3 /* Array.swift */; };
 		4EE529D11B682CE50045C1C3 /* Array.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EE529CF1B682CE50045C1C3 /* Array.swift */; };
+		4EE634301CCE8B41007A602B /* Interstellar.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4EE6342F1CCE8B41007A602B /* Interstellar.framework */; };
+		4EE634341CCE8C64007A602B /* UIButton+Signal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EE634331CCE8C64007A602B /* UIButton+Signal.swift */; };
 		4EEE52E11B602B21009B1D15 /* GlobalHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EEE52E01B602B21009B1D15 /* GlobalHelpers.swift */; };
 		4EEE52E21B602B21009B1D15 /* GlobalHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EEE52E01B602B21009B1D15 /* GlobalHelpers.swift */; };
 		4EF597041B9EE8E9003C4DAF /* Loader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EF597031B9EE8E9003C4DAF /* Loader.swift */; };
@@ -155,6 +156,8 @@
 		4EE529C61B681E080045C1C3 /* Realm.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Realm.framework; path = ../Frameworks/Realm.framework; sourceTree = "<group>"; };
 		4EE529CC1B681F5B0045C1C3 /* Async.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Async.swift; path = Shared/Async.swift; sourceTree = "<group>"; };
 		4EE529CF1B682CE50045C1C3 /* Array.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Array.swift; path = Shared/Array.swift; sourceTree = "<group>"; };
+		4EE6342F1CCE8B41007A602B /* Interstellar.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Interstellar.framework; path = Carthage/Build/iOS/Interstellar.framework; sourceTree = "<group>"; };
+		4EE634331CCE8C64007A602B /* UIButton+Signal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIButton+Signal.swift"; sourceTree = "<group>"; };
 		4EEE52E01B602B21009B1D15 /* GlobalHelpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = GlobalHelpers.swift; path = Shared/GlobalHelpers.swift; sourceTree = "<group>"; };
 		4EF597031B9EE8E9003C4DAF /* Loader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Loader.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -165,8 +168,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				4E44D5D71B5C354A0014B9C8 /* HealthKit.framework in Frameworks */,
-				4E595D931CAC82B800D42B09 /* SwiftCharts.framework in Frameworks */,
 				4E595D951CAC82C600D42B09 /* Cartography.framework in Frameworks */,
+				4EE634301CCE8B41007A602B /* Interstellar.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -198,6 +201,7 @@
 		4E44D5951B5BEE7C0014B9C8 = {
 			isa = PBXGroup;
 			children = (
+				4EE6342F1CCE8B41007A602B /* Interstellar.framework */,
 				4E77696C1B5E5FC70081017D /* Shared */,
 				4E44D5A01B5BEE7C0014B9C8 /* Weight */,
 				4E44D5B51B5BEE7D0014B9C8 /* WeightTests */,
@@ -259,6 +263,7 @@
 			isa = PBXGroup;
 			children = (
 				4E7769701B5E61250081017D /* HealthStore_iOS.swift */,
+				4EE634331CCE8C64007A602B /* UIButton+Signal.swift */,
 			);
 			name = Library;
 			sourceTree = "<group>";
@@ -567,7 +572,7 @@
 			files = (
 			);
 			inputPaths = (
-				"$(SRCROOT)/Carthage/Build/iOS/SwiftCharts.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/Interstellar.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/Cartography.framework",
 			);
 			outputPaths = (
@@ -598,6 +603,7 @@
 				4E7769771B5E70400081017D /* HealthStore.swift in Sources */,
 				4EE529CD1B681F5B0045C1C3 /* Async.swift in Sources */,
 				4EA8A20E1B678F3E00E1EF05 /* WeightsLocalStore.swift in Sources */,
+				4EE634341CCE8C64007A602B /* UIButton+Signal.swift in Sources */,
 				4E595D9B1CAC877D00D42B09 /* ChartColors.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

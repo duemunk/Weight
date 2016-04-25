@@ -20,7 +20,7 @@
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="hbs-kx-55M">
                                 <rect key="frame" x="0.0" y="20" width="600" height="580"/>
                                 <subviews>
-                                    <view contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="nnw-Gw-QCt" customClass="Chart" customModule="Weight" customModuleProvider="target">
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="nnw-Gw-QCt" customClass="Chart" customModule="Weight" customModuleProvider="target">
                                         <rect key="frame" x="10" y="10" width="580" height="150"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="120" id="Lt7-LY-XYF"/>
@@ -34,7 +34,7 @@
                                             </mask>
                                         </variation>
                                     </view>
-                                    <stackView opaque="NO" contentMode="scaleToFill" misplaced="YES" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="tdK-R1-Z8b">
+                                    <stackView opaque="NO" contentMode="scaleToFill" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="tdK-R1-Z8b">
                                         <rect key="frame" x="10" y="160" width="580" height="140"/>
                                         <subviews>
                                             <stackView opaque="NO" contentMode="scaleToFill" misplaced="YES" axis="vertical" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="mad-6m-qfR">
@@ -56,10 +56,10 @@
                                             </stackView>
                                         </subviews>
                                     </stackView>
-                                    <stackView opaque="NO" contentMode="scaleToFill" misplaced="YES" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="3If-gl-JJR">
+                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="3If-gl-JJR">
                                         <rect key="frame" x="10" y="300" width="580" height="280"/>
                                         <subviews>
-                                            <pickerView contentMode="scaleToFill" verticalHuggingPriority="251" verticalCompressionResistancePriority="1000" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AuZ-HD-KAC">
+                                            <pickerView contentMode="scaleToFill" verticalHuggingPriority="251" verticalCompressionResistancePriority="1000" translatesAutoresizingMaskIntoConstraints="NO" id="AuZ-HD-KAC">
                                                 <rect key="frame" x="0.0" y="0.0" width="580" height="216"/>
                                                 <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                 <connections>
@@ -67,16 +67,13 @@
                                                     <outlet property="delegate" destination="BYZ-38-t0r" id="u55-G9-pVg"/>
                                                 </connections>
                                             </pickerView>
-                                            <button opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="251" verticalCompressionResistancePriority="1000" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ras-EN-q8K">
+                                            <button opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="251" verticalCompressionResistancePriority="1000" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ras-EN-q8K">
                                                 <rect key="frame" x="0.0" y="216" width="580" height="64"/>
                                                 <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="20"/>
                                                 <inset key="contentEdgeInsets" minX="20" minY="20" maxX="20" maxY="20"/>
                                                 <state key="normal" title="Save">
                                                     <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                 </state>
-                                                <connections>
-                                                    <action selector="didTapSaveButton:" destination="BYZ-38-t0r" eventType="touchUpInside" id="zw5-9a-C2J"/>
-                                                </connections>
                                             </button>
                                         </subviews>
                                     </stackView>
@@ -95,6 +92,7 @@
                     <simulatedStatusBarMetrics key="simulatedStatusBarMetrics" statusBarStyle="lightContent"/>
                     <connections>
                         <outlet property="chartView" destination="nnw-Gw-QCt" id="aoT-Xp-03Q"/>
+                        <outlet property="saveButton" destination="ras-EN-q8K" id="lGP-ln-PbJ"/>
                         <outlet property="weightDetailLabel" destination="P2H-ak-ItY" id="hVt-zU-NEB"/>
                         <outlet property="weightLabel" destination="KN1-Zx-pNM" id="n0w-hV-RZU"/>
                         <outlet property="weightPickerView" destination="AuZ-HD-KAC" id="bdq-nN-re3"/>

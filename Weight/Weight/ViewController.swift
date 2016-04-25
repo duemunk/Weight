@@ -9,7 +9,7 @@
 import UIKit
 import HealthKit
 import Cartography
-
+import Interstellar
 
 
 enum QuickActionType: String {
@@ -23,6 +23,7 @@ class ViewController: UIViewController {
     @IBOutlet weak var weightDetailLabel: UILabel!
     @IBOutlet weak var weightPickerView: UIPickerView!
     @IBOutlet weak var chartView: Chart!
+    @IBOutlet weak var saveButton: UIButton!
     
     let weightFormatter = NSMassFormatter.weightMediumFormatter()
     let dateFormatter = NSDateFormatter.build(dateStyle: .MediumStyle, timeStyle: .ShortStyle)
@@ -30,21 +31,6 @@ class ViewController: UIViewController {
     let dateOnlyFormatter = NSDateFormatter.build(dateStyle: .MediumStyle, timeStyle: .NoStyle)
     var pickerWeights: [HKQuantity] {
         return HealthManager.instance.humanWeightOptions()
-    }
-    
-    @IBAction func didTapSaveButton(sender: AnyObject) {
-        let index = weightPickerView.selectedRowInComponent(0)
-        guard let quantity = weightForPickerRow(index) else {
-            return
-        }
-        HealthManager.instance.saveWeight(quantity) { result in
-            do {
-                try result()
-                self.updateQuickActions()
-            } catch {
-                print(error)
-            }
-        }
     }
     
     override func viewDidLoad() {
@@ -76,6 +62,21 @@ class ViewController: UIViewController {
         }
         
         setupWeightObserver()
+
+        saveButton.tapSignal.next { _ in
+            let index = self.weightPickerView.selectedRowInComponent(0)
+            guard let quantity = self.weightForPickerRow(index) else {
+                return
+            }
+            HealthManager.instance.saveWeight(quantity) { result in
+                do {
+                    try result()
+                    self.updateQuickActions()
+                } catch {
+                    print(error)
+                }
+            }
+        }
     }
     
     override func preferredStatusBarStyle() -> UIStatusBarStyle {
