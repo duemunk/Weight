@@ -9,6 +9,7 @@
 import Foundation
 import HealthKit
 
+
 let HealthPreferencesDidChangeNotification = "HealthPreferencesDidChangeNotification"
 let HealthDataDidChangeNotification = "HealthDataDidChangeNotification"
 
@@ -25,10 +26,10 @@ class HealthManager {
     }
     
     let healthStore = HKHealthStore()
-    
+
     let weightType = HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMass)!
-    var massUnit: HKUnit = .gramUnitWithMetricPrefix(.Kilo)  // Default to [kg]
-    var massFormatterUnit = HKUnit.massFormatterUnitFromUnit(.gramUnitWithMetricPrefix(.Kilo))
+    private(set) var massUnit: HKUnit = .gramUnitWithMetricPrefix(.Kilo)  // Default to [kg]
+    private(set) var massFormatterUnit = HKUnit.massFormatterUnitFromUnit(.gramUnitWithMetricPrefix(.Kilo))
     
     init() {
         
