@@ -47,8 +47,8 @@
 		4EE529CE1B681F630045C1C3 /* Async.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EE529CC1B681F5B0045C1C3 /* Async.swift */; };
 		4EE529D01B682CE50045C1C3 /* Array.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EE529CF1B682CE50045C1C3 /* Array.swift */; };
 		4EE529D11B682CE50045C1C3 /* Array.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EE529CF1B682CE50045C1C3 /* Array.swift */; };
-		4EE634301CCE8B41007A602B /* Interstellar.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4EE6342F1CCE8B41007A602B /* Interstellar.framework */; };
 		4EE634341CCE8C64007A602B /* UIButton+Signal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EE634331CCE8C64007A602B /* UIButton+Signal.swift */; };
+		4EE634831CD0CD80007A602B /* Interstellar.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4EE634821CD0CD80007A602B /* Interstellar.framework */; };
 		4EEE52E11B602B21009B1D15 /* GlobalHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EEE52E01B602B21009B1D15 /* GlobalHelpers.swift */; };
 		4EEE52E21B602B21009B1D15 /* GlobalHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EEE52E01B602B21009B1D15 /* GlobalHelpers.swift */; };
 		4EF597041B9EE8E9003C4DAF /* Loader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EF597031B9EE8E9003C4DAF /* Loader.swift */; };
@@ -128,7 +128,6 @@
 		4E44D5D61B5C354A0014B9C8 /* HealthKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKit.framework; path = System/Library/Frameworks/HealthKit.framework; sourceTree = SDKROOT; };
 		4E44D5D81B5C354A0014B9C8 /* Weight.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Weight.entitlements; sourceTree = "<group>"; };
 		4E55CA111C76535200EB5D88 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		4E595D921CAC82B800D42B09 /* SwiftCharts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftCharts.framework; path = ../Carthage/Build/iOS/SwiftCharts.framework; sourceTree = "<group>"; };
 		4E595D941CAC82C600D42B09 /* Cartography.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cartography.framework; path = ../Carthage/Build/iOS/Cartography.framework; sourceTree = "<group>"; };
 		4E595D971CAC877D00D42B09 /* Chart.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Chart.swift; sourceTree = "<group>"; };
 		4E595D981CAC877D00D42B09 /* ChartColors.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChartColors.swift; sourceTree = "<group>"; };
@@ -156,8 +155,8 @@
 		4EE529C61B681E080045C1C3 /* Realm.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Realm.framework; path = ../Frameworks/Realm.framework; sourceTree = "<group>"; };
 		4EE529CC1B681F5B0045C1C3 /* Async.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Async.swift; path = Shared/Async.swift; sourceTree = "<group>"; };
 		4EE529CF1B682CE50045C1C3 /* Array.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Array.swift; path = Shared/Array.swift; sourceTree = "<group>"; };
-		4EE6342F1CCE8B41007A602B /* Interstellar.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Interstellar.framework; path = Carthage/Build/iOS/Interstellar.framework; sourceTree = "<group>"; };
 		4EE634331CCE8C64007A602B /* UIButton+Signal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIButton+Signal.swift"; sourceTree = "<group>"; };
+		4EE634821CD0CD80007A602B /* Interstellar.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Interstellar.framework; path = Carthage/Build/iOS/Interstellar.framework; sourceTree = "<group>"; };
 		4EEE52E01B602B21009B1D15 /* GlobalHelpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = GlobalHelpers.swift; path = Shared/GlobalHelpers.swift; sourceTree = "<group>"; };
 		4EF597031B9EE8E9003C4DAF /* Loader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Loader.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -169,7 +168,7 @@
 			files = (
 				4E44D5D71B5C354A0014B9C8 /* HealthKit.framework in Frameworks */,
 				4E595D951CAC82C600D42B09 /* Cartography.framework in Frameworks */,
-				4EE634301CCE8B41007A602B /* Interstellar.framework in Frameworks */,
+				4EE634831CD0CD80007A602B /* Interstellar.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -201,7 +200,7 @@
 		4E44D5951B5BEE7C0014B9C8 = {
 			isa = PBXGroup;
 			children = (
-				4EE6342F1CCE8B41007A602B /* Interstellar.framework */,
+				4EE634821CD0CD80007A602B /* Interstellar.framework */,
 				4E77696C1B5E5FC70081017D /* Shared */,
 				4E44D5A01B5BEE7C0014B9C8 /* Weight */,
 				4E44D5B51B5BEE7D0014B9C8 /* WeightTests */,
@@ -335,7 +334,6 @@
 			children = (
 				4EE529C31B681DFC0045C1C3 /* Realm.framework */,
 				4E44D5D61B5C354A0014B9C8 /* HealthKit.framework */,
-				4E595D921CAC82B800D42B09 /* SwiftCharts.framework */,
 				4E595D941CAC82C600D42B09 /* Cartography.framework */,
 			);
 			name = Frameworks;
@@ -513,10 +511,10 @@
 			projectRoot = "";
 			targets = (
 				4E44D59D1B5BEE7C0014B9C8 /* Weight */,
-				4E44D5B11B5BEE7D0014B9C8 /* WeightTests */,
-				4E44D5BC1B5BEE7D0014B9C8 /* WeightUITests */,
 				4E7769421B5E57340081017D /* Watch */,
 				4E77694E1B5E57340081017D /* Watch Extension */,
+				4E44D5B11B5BEE7D0014B9C8 /* WeightTests */,
+				4E44D5BC1B5BEE7D0014B9C8 /* WeightUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -572,8 +570,8 @@
 			files = (
 			);
 			inputPaths = (
-				"$(SRCROOT)/Carthage/Build/iOS/Interstellar.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/Cartography.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/Interstellar.framework",
 			);
 			outputPaths = (
 			);

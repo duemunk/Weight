@@ -1,2 +1,5 @@
 github "robb/Cartography"
-github "jensravens/Interstellar"
+#github "JensRavens/Interstellar" "feature/v2"
+#github "duemunk/Interstellar" "feature/v2"
+#github "duemunk/Interstellar" "d671148e7ba6c3e4f4ae165e48604761b542d6c7"
+git "file:///Gits/Interstellar" "d671148e7ba6c3e4f4ae165e48604761b542d6c7"

@@ -63,7 +63,7 @@ class ViewController: UIViewController {
         
         setupWeightObserver()
 
-        saveButton.tapSignal.next { _ in
+        saveButton.tap.subscribe { _ in
             let index = self.weightPickerView.selectedRowInComponent(0)
             guard let quantity = self.weightForPickerRow(index) else {
                 return

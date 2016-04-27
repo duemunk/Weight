@@ -12,19 +12,19 @@ import Interstellar
 
 var ButtonSignalHandle: UInt8 = 0
 extension UIButton {
-    public var tapSignal: Signal<Int> {
-        let signal: Signal<Int>
-        if let handle = objc_getAssociatedObject(self, &ButtonSignalHandle) as? Signal<Int> {
-            signal = handle
+    var tap: Observable<Int> {
+        let observer: Observable<Int>
+        if let handle = objc_getAssociatedObject(self, &ButtonSignalHandle) as? Observable<Int> {
+            observer = handle
         } else {
-            signal = Signal()
+            observer = Observable()
             addTarget(self, action: #selector(UIButton.didTapButton(_:)), forControlEvents: .TouchUpInside)
-            objc_setAssociatedObject(self, &ButtonSignalHandle, signal, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+            objc_setAssociatedObject(self, &ButtonSignalHandle, observer, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
-        return signal
+        return observer
     }
 
     public func didTapButton(sender: AnyObject) {
-        tapSignal.update(0)
+        tap.update(0)
     }
 }

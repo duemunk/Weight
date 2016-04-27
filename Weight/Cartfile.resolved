@@ -1,2 +1,2 @@
 github "robb/Cartography" "0.6.0"
-github "jensravens/Interstellar" "1.4.0"
+git "file:///Gits/Interstellar" "d671148e7ba6c3e4f4ae165e48604761b542d6c7"
