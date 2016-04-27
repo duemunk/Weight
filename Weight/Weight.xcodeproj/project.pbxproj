@@ -156,7 +156,7 @@
 		4EE529CC1B681F5B0045C1C3 /* Async.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Async.swift; path = Shared/Async.swift; sourceTree = "<group>"; };
 		4EE529CF1B682CE50045C1C3 /* Array.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Array.swift; path = Shared/Array.swift; sourceTree = "<group>"; };
 		4EE634331CCE8C64007A602B /* UIButton+Signal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIButton+Signal.swift"; sourceTree = "<group>"; };
-		4EE634821CD0CD80007A602B /* Interstellar.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Interstellar.framework; path = Carthage/Build/iOS/Interstellar.framework; sourceTree = "<group>"; };
+		4EE634821CD0CD80007A602B /* Interstellar.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Interstellar.framework; path = ../Carthage/Build/iOS/Interstellar.framework; sourceTree = "<group>"; };
 		4EEE52E01B602B21009B1D15 /* GlobalHelpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = GlobalHelpers.swift; path = Shared/GlobalHelpers.swift; sourceTree = "<group>"; };
 		4EF597031B9EE8E9003C4DAF /* Loader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Loader.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -200,7 +200,6 @@
 		4E44D5951B5BEE7C0014B9C8 = {
 			isa = PBXGroup;
 			children = (
-				4EE634821CD0CD80007A602B /* Interstellar.framework */,
 				4E77696C1B5E5FC70081017D /* Shared */,
 				4E44D5A01B5BEE7C0014B9C8 /* Weight */,
 				4E44D5B51B5BEE7D0014B9C8 /* WeightTests */,
@@ -332,6 +331,7 @@
 		4EE529CA1B681E220045C1C3 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				4EE634821CD0CD80007A602B /* Interstellar.framework */,
 				4EE529C31B681DFC0045C1C3 /* Realm.framework */,
 				4E44D5D61B5C354A0014B9C8 /* HealthKit.framework */,
 				4E595D941CAC82C600D42B09 /* Cartography.framework */,
