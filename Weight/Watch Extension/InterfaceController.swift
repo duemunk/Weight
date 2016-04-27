@@ -10,6 +10,8 @@ import WatchKit
 import Foundation
 import ClockKit
 import HealthKit
+import Interstellar
+
 
 class InterfaceController: WKInterfaceController {
 
@@ -41,7 +43,7 @@ class InterfaceController: WKInterfaceController {
         
         NotificationCenter.observe(HealthDataDidChangeNotification) { [weak self] notification in
             Async.main {
-                self?.updateWeight {
+                self?.updateWeight().subscribe { _ in
                     self?.updateComplications()
                 }
             }
@@ -49,7 +51,7 @@ class InterfaceController: WKInterfaceController {
         NotificationCenter.observe(HealthPreferencesDidChangeNotification) { [weak self] notification in
             Async.main {
                 self?.updatePicker()
-                self?.updateWeight {
+                self?.updateWeight().subscribe { _ in
                     self?.updateComplications()
                 }
             }
@@ -61,7 +63,7 @@ class InterfaceController: WKInterfaceController {
         // This method is called when watch view controller is about to be visible to user
         super.willActivate()
         
-        self.updateWeight {
+        self.updateWeight().subscribe { _ in
             self.updateComplications()
         }
 //        loader?.startAnimating()
@@ -125,7 +127,7 @@ class InterfaceController: WKInterfaceController {
                     let sample = try result()
                     WKInterfaceDevice.currentDevice().playHaptic(.Success)
                     self.updatePicker(referenceWeight: sample) // Update to
-                    self.updateWeight {
+                    self.updateWeight().subscribe { _ in
                         self.updateComplications()
                     }
                 } catch {
@@ -136,9 +138,10 @@ class InterfaceController: WKInterfaceController {
 //        }
     }
 
-    private func updateWeight(forceWeight forceWeight: HKQuantitySample? = nil, completion: (() -> ())? = nil) { //  = WeightsLocalStore.instance.lastWeight
-        
-        let quantitySampleBlock: (HKQuantitySample, (() -> ())?) -> () = { quantitySample, completion in
+    private func updateWeight(forceWeight forceWeight: HKQuantitySample? = nil) -> Observable<Int> { //  = WeightsLocalStore.instance.lastWeight
+        let observable = Observable<Int>()
+
+        let quantitySampleBlock: (HKQuantitySample) -> () = { quantitySample in
             // Date
             self.dateLabel.setText(self.dateFormatter.stringFromDate(quantitySample.startDate))
             // Weight
@@ -146,16 +149,16 @@ class InterfaceController: WKInterfaceController {
             let massUnit = HealthManager.instance.massUnit
             let doubleValue = quantity.doubleValueForUnit(massUnit)
             guard let (_, index) = self.pickerWeights.map({ $0.doubleValueForUnit(massUnit) }).closestToElement(doubleValue) else {
-                completion?()
+                observable.update(0)
                 return
             }
             self.picker.setSelectedItemIndex(index)
-            completion?()
+            observable.update(0)
         }
         
         if let forceWeight = forceWeight {
-            quantitySampleBlock(forceWeight, completion)
-            return
+            quantitySampleBlock(forceWeight)
+            return observable
         }
         // Get latest weight
         HealthManager.instance.getWeight { result in
@@ -163,12 +166,13 @@ class InterfaceController: WKInterfaceController {
                 // Setup picker
                 guard let quantitySample = optionalResult(result) else {
                     self.dateLabel.setText("Add your weight")
-                    completion?()
+                    observable.update(0)
                     return
                 }
-                quantitySampleBlock(quantitySample, completion)
+                quantitySampleBlock(quantitySample)
             }
         }
+        return observable
     }
     
     private func updatePicker(referenceWeight referenceWeightQuantitySample: HKQuantitySample? = WeightsLocalStore.instance.lastWeight) {

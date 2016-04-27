@@ -7,9 +7,53 @@
 //
 
 import UIKit
+import Interstellar
 
-class NotificationCenter {
-    
+
+//extension Observable where T : NSNotification {
+//
+//    convenience init(name: String) {
+//        self.init()
+//
+//        NSNotificationCenter
+//            .defaultCenter()
+//            .addObserverForName(name, object: nil, queue: nil) { [weak self] (notification: NSNotification) in
+////                self?.update(notification)
+//                if let _self = self,
+//                    __self = _self as? Observable<NSNotification> {
+//                    __self.update(notification)
+//                }
+//        }
+//        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(Observable.update(notification:)), name: NSUserDefaultsDidChangeNotification, object: nil)
+//        return
+//    }
+//
+//    func update(notification notification: NSNotification) {
+//        if let _self = self as? Observable<NSNotification> {
+//            _self.update(notification)
+//        }
+//    }
+//}
+
+class NotificationCenter: NSObject {
+    var observer: Observable<NSNotification>? = Observable<NSNotification>(options: .NoInitialValue) {
+        didSet {
+            if observer == nil,
+                let notificationObserver = notificationObserver {
+                NotificationCenter.unobserve(notificationObserver)
+                self.notificationObserver = nil
+            }
+        }
+    }
+    private var notificationObserver: NSObjectProtocol?
+
+    init(name: String) {
+        super.init()
+        notificationObserver = NSNotificationCenter.defaultCenter().addObserverForName(name, object: nil, queue: nil) { [weak self] notification in
+            self?.observer?.update(notification)
+        }
+    }
+
     class func post(name: String, object: AnyObject? = nil, userInfo: [NSObject : AnyObject]? = nil) {
         NSNotificationCenter.defaultCenter().postNotificationName(name, object: object, userInfo: userInfo)
     }
@@ -22,3 +66,5 @@ class NotificationCenter {
         NSNotificationCenter.defaultCenter().removeObserver(observer, name: name, object: object)
     }
 }
+
+

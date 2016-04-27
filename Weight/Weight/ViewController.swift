@@ -32,25 +32,31 @@ class ViewController: UIViewController {
     var pickerWeights: [HKQuantity] {
         return HealthManager.instance.humanWeightOptions()
     }
-    
+    private let healthDataChange = NotificationCenter(name: HealthDataDidChangeNotification)
+    private let healthPreferencesChange = NotificationCenter(name: HealthPreferencesDidChangeNotification)
+    private let userActivityChange = NotificationCenter(name: UserActivityNotification)
+    private let updateUIObservable = Observable<Int>()
+
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
-        
-        NotificationCenter.observe(HealthDataDidChangeNotification) { [weak self] notification in
-            self?.updateUI()
+
+        updateUIObservable.subscribe { _ in
+            // TODO: Throttle/debounce
+            self.updateUI()
         }
-        NotificationCenter.observe(HealthPreferencesDidChangeNotification) { [weak self] notification in
-            self?.updateUI()
+        healthDataChange.observer?.subscribe { notification in
+            self.updateUIObservable.update(0)
         }
-        NotificationCenter.observe(UserActivityNotification) { [weak self] notification in
-            guard let userActivity = notification.object as? NSUserActivity else {
-                return
-            }
-            guard let userInfo = userActivity.userInfo as? [String: AnyObject] else {
-                return
-            }
-            guard let temporaryWeightInKg = userInfo["TemporaryWeightKg"] as? Double else {
+        healthPreferencesChange.observer?.subscribe { _ in
+            self.updateUIObservable.update(0)
+        }
+
+        userActivityChange.observer?.subscribe { notification in
+            guard let
+                userActivity = notification.object as? NSUserActivity,
+                userInfo = userActivity.userInfo as? [String: AnyObject],
+                temporaryWeightInKg = userInfo["TemporaryWeightKg"] as? Double else {
                 return
             }
             let weightType = HealthManager.instance.weightType
@@ -58,7 +64,7 @@ class ViewController: UIViewController {
             let quantity = HKQuantity(unit: massUnit, doubleValue: temporaryWeightInKg)
             let date = NSDate()
             let sample = HKQuantitySample(type: weightType, quantity: quantity, startDate: date, endDate: date)
-            self?.updateToWeight(forceWeight: sample)
+            self.updateToWeight(forceWeight: sample)
         }
         
         setupWeightObserver()
@@ -91,7 +97,7 @@ class ViewController: UIViewController {
         HealthManager.instance.healthStore.observe(ofType: HealthManager.instance.weightType) { result in
             do {
                 let systemCompletionHandler = try result()
-                self.updateUI()
+                self.updateUIObservable.update(0)
                 systemCompletionHandler()
             } catch {
                 print(error)

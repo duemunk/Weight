@@ -49,6 +49,7 @@
 		4EE529D11B682CE50045C1C3 /* Array.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EE529CF1B682CE50045C1C3 /* Array.swift */; };
 		4EE634341CCE8C64007A602B /* UIButton+Signal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EE634331CCE8C64007A602B /* UIButton+Signal.swift */; };
 		4EE634831CD0CD80007A602B /* Interstellar.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4EE634821CD0CD80007A602B /* Interstellar.framework */; };
+		4EE634851CD0CE5A007A602B /* Interstellar.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4EE634841CD0CE5A007A602B /* Interstellar.framework */; };
 		4EEE52E11B602B21009B1D15 /* GlobalHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EEE52E01B602B21009B1D15 /* GlobalHelpers.swift */; };
 		4EEE52E21B602B21009B1D15 /* GlobalHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EEE52E01B602B21009B1D15 /* GlobalHelpers.swift */; };
 		4EF597041B9EE8E9003C4DAF /* Loader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EF597031B9EE8E9003C4DAF /* Loader.swift */; };
@@ -157,6 +158,7 @@
 		4EE529CF1B682CE50045C1C3 /* Array.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Array.swift; path = Shared/Array.swift; sourceTree = "<group>"; };
 		4EE634331CCE8C64007A602B /* UIButton+Signal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIButton+Signal.swift"; sourceTree = "<group>"; };
 		4EE634821CD0CD80007A602B /* Interstellar.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Interstellar.framework; path = ../Carthage/Build/iOS/Interstellar.framework; sourceTree = "<group>"; };
+		4EE634841CD0CE5A007A602B /* Interstellar.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Interstellar.framework; path = ../Carthage/Build/watchOS/Interstellar.framework; sourceTree = "<group>"; };
 		4EEE52E01B602B21009B1D15 /* GlobalHelpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = GlobalHelpers.swift; path = Shared/GlobalHelpers.swift; sourceTree = "<group>"; };
 		4EF597031B9EE8E9003C4DAF /* Loader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Loader.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -191,6 +193,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4E77696A1B5E5F8C0081017D /* HealthKit.framework in Frameworks */,
+				4EE634851CD0CE5A007A602B /* Interstellar.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -342,6 +345,7 @@
 		4EE529CB1B681E2C0045C1C3 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				4EE634841CD0CE5A007A602B /* Interstellar.framework */,
 				4EE529C61B681E080045C1C3 /* Realm.framework */,
 				4E7769691B5E5F8C0081017D /* HealthKit.framework */,
 			);
@@ -431,6 +435,7 @@
 				4E77694B1B5E57340081017D /* Sources */,
 				4E77694C1B5E57340081017D /* Frameworks */,
 				4E77694D1B5E57340081017D /* Resources */,
+				4EE634861CD0CE7B007A602B /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -572,6 +577,20 @@
 			inputPaths = (
 				"$(SRCROOT)/Carthage/Build/iOS/Cartography.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/Interstellar.framework",
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "/usr/local/bin/carthage copy-frameworks";
+		};
+		4EE634861CD0CE7B007A602B /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/Carthage/Build/watchOS/Interstellar.framework",
 			);
 			outputPaths = (
 			);
@@ -919,6 +938,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Frameworks",
+					"$(PROJECT_DIR)/Carthage/Build/watchOS",
 				);
 				INFOPLIST_FILE = "Watch Extension/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
@@ -928,7 +948,7 @@
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = 4;
-				WATCHOS_DEPLOYMENT_TARGET = 2.0;
+				WATCHOS_DEPLOYMENT_TARGET = 2.2;
 			};
 			name = Debug;
 		};
@@ -942,6 +962,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Frameworks",
+					"$(PROJECT_DIR)/Carthage/Build/watchOS",
 				);
 				INFOPLIST_FILE = "Watch Extension/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
@@ -951,7 +972,7 @@
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = 4;
-				WATCHOS_DEPLOYMENT_TARGET = 2.0;
+				WATCHOS_DEPLOYMENT_TARGET = 2.2;
 			};
 			name = Release;
 		};
