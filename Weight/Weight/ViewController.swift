@@ -26,9 +26,10 @@ class ViewController: UIViewController {
     @IBOutlet weak var saveButton: UIButton!
     
     let weightFormatter = NSMassFormatter.weightMediumFormatter()
-    let dateFormatter = NSDateFormatter.build(dateStyle: .MediumStyle, timeStyle: .ShortStyle)
-    let dateShortFormatter = NSDateFormatter.build(dateStyle: .ShortStyle, timeStyle: .ShortStyle)
-    let dateOnlyFormatter = NSDateFormatter.build(dateStyle: .MediumStyle, timeStyle: .NoStyle)
+    let dateFormatter = NSDateFormatter(dateStyle: .MediumStyle, timeStyle: .ShortStyle)
+    let dateShortFormatter = NSDateFormatter(dateStyle: .ShortStyle, timeStyle: .ShortStyle)
+    let dateOnlyFormatter = NSDateFormatter(dateStyle: .MediumStyle, timeStyle: .NoStyle)
+    let dateWithOutYearFormatter = NSDateFormatter(template: "MMMd")
     var pickerWeights: [HKQuantity] {
         return HealthManager.instance.humanWeightOptions()
     }
@@ -275,7 +276,8 @@ class ViewController: UIViewController {
         chartView.lineWidth = 1.5
         chartView.dotSize = 1.5
         chartView.xLabelsFormatter = {
-            self.dateOnlyFormatter.stringFromDate(NSDate(timeIntervalSince1970: Double($1)))
+            (self.dateWithOutYearFormatter ?? self.dateOnlyFormatter)
+                .stringFromDate(NSDate(timeIntervalSince1970: Double($1)))
         }
 
         HealthManager.instance.getWeights { result in

@@ -11,8 +11,8 @@ import HealthKit
 
 class ComplicationController: NSObject {
     
-    let dateFormatter = NSDateFormatter.build(dateStyle: .MediumStyle)
-    let timeFormatter = NSDateFormatter.build(timeStyle: .ShortStyle)
+    let dateFormatter = NSDateFormatter(dateStyle: .MediumStyle)
+    let timeFormatter = NSDateFormatter(dateStyle: .NoStyle, timeStyle: .ShortStyle)
     let weightShortFormatter = NSMassFormatter.weightShortFormatter()
     let weightMediumFormatter = NSMassFormatter.weightMediumFormatter()
     let weightLongFormatter = NSMassFormatter.weightLongFormatter()

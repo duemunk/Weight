@@ -23,7 +23,7 @@ class InterfaceController: WKInterfaceController {
 //    var loader: Loader?
 
     let weightFormatter = NSMassFormatter.weightMediumFormatter()
-    let dateFormatter = NSDateFormatter.build(dateStyle: .MediumStyle, timeStyle: .ShortStyle)
+    let dateFormatter = NSDateFormatter(dateStyle: .MediumStyle, timeStyle: .ShortStyle)
     
     var selectedWeight: HKQuantity?
     var pickerWeights: [HKQuantity] {
