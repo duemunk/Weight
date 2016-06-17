@@ -9,10 +9,10 @@ let text = Signal<String>()
 
 func greetMaybe(subject: String, completion: Result<String>->Void) {
     if subject.characters.count % 2 == 0 {
-        completion(.Success("Hello \(subject)"))
+        completion(.success("Hello \(subject)"))
     } else {
         let error = NSError(domain: "Don't feel like greeting you.", code: 401, userInfo: nil)
-        completion(.Error(error))
+        completion(.error(error))
     }
 }
 

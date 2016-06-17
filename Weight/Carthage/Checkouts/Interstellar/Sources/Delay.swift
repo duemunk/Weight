@@ -28,10 +28,10 @@ public extension Signal {
     /**
         Creates a new signal that mirrors the original signal but is delayed by x seconds. If no queue is specified, the new signal will call it's observers and transforms on the main queue.
     */
-    public func delay(seconds: NSTimeInterval, queue: dispatch_queue_t = dispatch_get_main_queue()) -> Signal<T> {
+    public func delay(_ seconds: TimeInterval, queue: DispatchQueue = .main) -> Signal<T> {
         let signal = Signal<T>()
         subscribe { result in
-            dispatch_after(seconds.dispatchTime, queue) {
+            queue.after(when: seconds.dispatchTime) {
                 signal.update(result)
             }
         }

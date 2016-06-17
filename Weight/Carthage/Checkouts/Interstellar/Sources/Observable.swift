@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct ObservingOptions: OptionSetType {
+public struct ObservingOptions: OptionSet {
     public let rawValue: Int
     public init(rawValue: Int) { self.rawValue = rawValue }
     
@@ -17,7 +17,7 @@ public struct ObservingOptions: OptionSetType {
 }
 
 public final class Observable<T> {
-    private typealias Observer = T->Void
+    private typealias Observer = (T)->Void
     private var observers = [Int:Observer]()
     private var lastValue: T?
     public let options: ObservingOptions
@@ -32,8 +32,9 @@ public final class Observable<T> {
             lastValue = value
         }
     }
-    
-    public func subscribe(observer: T -> Void) -> ObserverToken {
+
+    @discardableResult
+    public func subscribe(_ observer: (T) -> Void) -> ObserverToken {
         var token: ObserverToken!
         sync {
             token = nextToken()
@@ -47,13 +48,13 @@ public final class Observable<T> {
         return token
     }
     
-    public func unsubscribe(token: ObserverToken) {
+    public func unsubscribe(_ token: ObserverToken) {
         sync {
             observers[token.hash()] = nil
         }
     }
     
-    public func update(value: T) {
+    public func update(_ value: T) {
         sync {
             if !options.contains(.NoInitialValue) {
                 lastValue = value
@@ -72,7 +73,7 @@ public final class Observable<T> {
     }
     
     private func nextToken() -> ObserverToken {
-        return (observers.keys.maxElement() ?? -1) + 1
+        return (observers.keys.max() ?? -1) + 1
     }
 }
 
@@ -87,7 +88,7 @@ extension Int: ObserverToken {
 }
 
 private extension Observable {
-    private func sync(@noescape block: Void->Void) {
+    private func sync(_ block: @noescape(Void)->Void) {
         objc_sync_enter(self)
         defer { objc_sync_exit(self) }
         block()
@@ -95,13 +96,15 @@ private extension Observable {
 }
 
 extension Observable {
-    public func map<U>(transform: T->U) -> Observable<U> {
+    @discardableResult
+    public func map<U>(_ transform: (T)->U) -> Observable<U> {
         let observable = Observable<U>(options: options)
         subscribe { observable.update(transform($0)) }
         return observable
     }
     
-    public func flatMap<U>(transform: T->Observable<U>) -> Observable<U> {
+    @discardableResult
+    public func flatMap<U>(_ transform: (T)->Observable<U>) -> Observable<U> {
         let observable = Observable<U>(options: options)
         subscribe { transform($0).subscribe(observable.update) }
         return observable

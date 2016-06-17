@@ -8,14 +8,14 @@
 
 import Foundation
 
-enum AsyncError: ErrorType {
-    case NoResults
-    case NoSuccessDespiteNoError
+enum AsyncError: ErrorProtocol {
+    case noResults
+    case noSuccessDespiteNoError
 }
 
 typealias AsyncEmptyResult = (() throws -> ()) -> ()
 
-func optionalResult(asyncResult: () throws -> ()) {
+func optionalResult(_ asyncResult: () throws -> ()) {
     do {
         try asyncResult()
     } catch {
@@ -23,7 +23,7 @@ func optionalResult(asyncResult: () throws -> ()) {
     }
 }
 
-func optionalResult<T>(asyncResult: () throws -> T) -> T? {
+func optionalResult<T>(_ asyncResult: () throws -> T) -> T? {
     do {
         let someAsyncResult = try asyncResult()
         return someAsyncResult

@@ -8,94 +8,76 @@
 
 import Foundation
 import HealthKit
-
-typealias AsyncSampleResult = (() throws -> HKSample) -> ()
-typealias AsyncSamplesResult = (() throws -> [HKSample]) -> ()
-typealias AsyncQuantityTypesUnitResult = (() throws -> [HKQuantityType : HKUnit]) -> ()
-typealias AsyncUnitResult = (() throws -> HKUnit) -> ()
-typealias AsyncObserverResult = (() throws -> HKObserverQueryCompletionHandler) -> ()
+import Interstellar
 
 extension HKHealthStore {
     
     /// Convenience to request both share and read authorization for a set of types
-    func requestAuthorizationTo(types types: Set<HKSampleType>, result: AsyncEmptyResult) {
-        requestAuthorizationTo(shareTypes: types, readTypes: types, result: result)
+    func requestAuthorizationTo(types: Set<HKSampleType>) -> Observable<Result<Void>> {
+        return requestAuthorizationTo(shareTypes: types, readTypes: types)
     }
     
-    func requestAuthorizationTo(shareTypes shareTypes: Set<HKSampleType>, readTypes: Set<HKSampleType>, result: AsyncEmptyResult) {
-        requestAuthorizationToShareTypes(shareTypes, readTypes: readTypes) { success, error in
-            if let error = error {
-                print(error)
-                result { throw error }
-                return
-            }
-            guard success else {
-                print("Couldn't get authorization request")
-                result { throw AsyncError.NoSuccessDespiteNoError }
-                return
-            }
-            result { }
-        }
-    }
-
-    func samples(ofType sampleType: HKSampleType, predicate: NSPredicate? = nil, result: AsyncSamplesResult) {
-        let timeSortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: true)
-        let query = HKSampleQuery(sampleType: sampleType, predicate: predicate, limit: HKObjectQueryNoLimit, sortDescriptors: [timeSortDescriptor]) { query, results, error in
-            if let error = error {
-                result { throw error }
-                return
-            }
-            guard let samples = results else {
-                result { throw AsyncError.NoResults }
-                return
-            }
-            result { samples }
-        }
-        executeQuery(query)
-    }
-
-    func mostRecentSample(ofType sampleType: HKSampleType, predicate: NSPredicate? = nil, result: AsyncSampleResult) {
-        // Since we are interested in retrieving the user's latest sample, we sort the samples in descending order, and set the limit to 1. We are not filtering the data, and so the predicate is set to nil.
-        let timeSortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: false)
-        let query = HKSampleQuery(sampleType: sampleType, predicate: predicate, limit: 1, sortDescriptors: [timeSortDescriptor]) { query, results, error in
-            if let error = error {
-                result { throw error }
-                return
-            }
-            guard let sample = results?.first else {
-                result { throw AsyncError.NoResults }
-                return
-            }
-            result { sample }
-        }
-        executeQuery(query)
-    }
-    
-    func preferredUnits(forQuantityTypes quantityTypes: Set<HKQuantityType>, result: AsyncQuantityTypesUnitResult) {
-        preferredUnitsForQuantityTypes(quantityTypes) { types, error in
-            if let error = error {
-                result { throw error }
-                return
-            }
-            result { types }
-        }
-    }
-    
-    
-    func preferredUnit(forQuantityType type: HKQuantityType, result: AsyncUnitResult){
-        let types: Set<HKQuantityType> = [type]
-        preferredUnits(forQuantityTypes: types) { _result in
-            do {
-                let units = try _result()
-                guard let unit = units[type] else {
-                    print("Couldn't parse preferred units")
-                    result { throw AsyncError.NoResults }
-                    return
+    func requestAuthorizationTo(shareTypes: Set<HKSampleType>, readTypes: Set<HKSampleType>) -> Observable<Result<Void>> {
+        let observer = Observable<Result<Bool>>()
+        requestAuthorization(toShare: shareTypes, read: readTypes, completion: completionToObservable(observer: observer))
+        return observer
+            .then {
+                guard $0 else {
+                    print("Couldn't get authorization request")
+                    return .error(AsyncError.noSuccessDespiteNoError)
                 }
-                result { unit }
-            } catch {
-                print("Couldn't get preferred units")
+                return .success()
             }
-        }
+    }
+
+    func samples(ofType sampleType: HKSampleType, predicate: Predicate? = nil) -> Observable<Result<[HKSample]>> {
+        let timeSortDescriptor = SortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: true)
+        let observer = Observable<Result<(HKSampleQuery, [HKSample]?)>>()
+        let query = HKSampleQuery(sampleType: sampleType, predicate: predicate, limit: HKObjectQueryNoLimit, sortDescriptors: [timeSortDescriptor], resultsHandler: completionToObservable(observer: observer))
+        execute(query)
+        return observer
+            .then {
+                guard let samples = $0.1 else {
+                    return .error(AsyncError.noResults)
+                }
+                return .success(samples)
+            }
+    }
+
+    func mostRecentSample(ofType sampleType: HKSampleType, predicate: Predicate? = nil) -> Observable<Result<HKSample>> {
+        // Since we are interested in retrieving the user's latest sample, we sort the samples in descending order, and set the limit to 1. We are not filtering the data, and so the predicate is set to nil.
+        let timeSortDescriptor = SortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: false)
+        let observer = Observable<Result<(HKSampleQuery, [HKSample]?)>>()
+        let query = HKSampleQuery(sampleType: sampleType, predicate: predicate, limit: 1, sortDescriptors: [timeSortDescriptor], resultsHandler: completionToObservable(observer: observer))
+        execute(query)
+        return observer
+            .then {
+                guard let sample = $0.1?.first else {
+                    return .error(AsyncError.noResults)
+                }
+                return .success(sample)
+            }
+    }
+    
+    func preferredUnits(forQuantityTypes quantityTypes: Set<HKQuantityType>) -> Observable<Result<[HKQuantityType : HKUnit]>> {
+        let observer = Observable<Result<[HKQuantityType : HKUnit]>>()
+        preferredUnits(for: quantityTypes, completion: completionToObservable(observer: observer))
+        return observer
+    }
+    
+    
+    func preferredUnit(forQuantityType type: HKQuantityType) -> Observable<Result<HKUnit>> {
+        let types: Set<HKQuantityType> = [type]
+        return preferredUnits(forQuantityTypes: types)
+            .then {
+                guard let unit = $0[type] else {
+                    print("Couldn't parse preferred units")
+                    return .error(AsyncError.noResults)
+                }
+                return .success(unit)
+            }
     }
 }
+
+
+

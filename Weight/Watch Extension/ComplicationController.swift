@@ -11,42 +11,42 @@ import HealthKit
 
 class ComplicationController: NSObject {
     
-    let dateFormatter = NSDateFormatter(dateStyle: .MediumStyle)
-    let timeFormatter = NSDateFormatter(dateStyle: .NoStyle, timeStyle: .ShortStyle)
-    let weightShortFormatter = NSMassFormatter.weightShortFormatter()
-    let weightMediumFormatter = NSMassFormatter.weightMediumFormatter()
-    let weightLongFormatter = NSMassFormatter.weightLongFormatter()
-    let weightNoUnitFormatter = NSNumberFormatter.weightNoUnitFormatter()
-    let weightNoUnitShortFormatter = NSNumberFormatter.weightNoUnitShortFormatter()
+    let dateFormatter = DateFormatter(dateStyle: .mediumStyle)
+    let timeFormatter = DateFormatter(dateStyle: .noStyle, timeStyle: .shortStyle)
+    let weightShortFormatter = MassFormatter.weightShortFormatter()
+    let weightMediumFormatter = MassFormatter.weightMediumFormatter()
+    let weightLongFormatter = MassFormatter.weightLongFormatter()
+    let weightNoUnitFormatter = NumberFormatter.weightNoUnitFormatter()
+    let weightNoUnitShortFormatter = NumberFormatter.weightNoUnitShortFormatter()
 }
 
 extension ComplicationController: CLKComplicationDataSource {
     
     // MARK: - Timeline Configuration
     
-    func getSupportedTimeTravelDirectionsForComplication(complication: CLKComplication, withHandler handler: (CLKComplicationTimeTravelDirections) -> Void) {
-        handler([.None])
+    func getSupportedTimeTravelDirections(for complication: CLKComplication, withHandler handler: (CLKComplicationTimeTravelDirections) -> Void) {
+        handler(CLKComplicationTimeTravelDirections())
     }
     
 //    func getTimelineStartDateForComplication(complication: CLKComplication, withHandler handler: (NSDate?) -> Void) {
 //        handler(nil)
 //    }
 //    
-    func getTimelineEndDateForComplication(complication: CLKComplication, withHandler handler: (NSDate?) -> Void) {
-        let date = NSDate(timeIntervalSinceNow: 60*60*24) // A day from now
+    private func getTimelineEndDate(for complication: CLKComplication, withHandler handler: (Date) -> Void) {
+        let date = Date(timeIntervalSinceNow: 60*60*24) // A day from now
         handler(date)
     }
     
-    func getPrivacyBehaviorForComplication(complication: CLKComplication, withHandler handler: (CLKComplicationPrivacyBehavior) -> Void) {
-        handler(.HideOnLockScreen)
+    func getPrivacyBehavior(for complication: CLKComplication, withHandler handler: (CLKComplicationPrivacyBehavior) -> Void) {
+        handler(.hideOnLockScreen)
     }
     
     // MARK: - Timeline Population
     
-    func getCurrentTimelineEntryForComplication(complication: CLKComplication, withHandler handler: ((CLKComplicationTimelineEntry?) -> Void)) {
+    func getCurrentTimelineEntry(for complication: CLKComplication, withHandler handler: ((CLKComplicationTimelineEntry?) -> Void)) {
         // Call the handler with the current timeline entry
-        let now = NSDate()
-        let weight = WeightsLocalStore.instance.lastWeight?.quantity.doubleValueForUnit(HKUnit.gramUnitWithMetricPrefix(.Kilo))
+        let now = Date()
+        let weight = WeightsLocalStore.instance.lastWeight?.quantity.doubleValue(for: HKUnit.gramUnit(with: .kilo))
         
         guard let template = templateForComplication(complication, weight: weight) else {
             return
@@ -80,15 +80,15 @@ extension ComplicationController: CLKComplicationDataSource {
 
     // MARK: - Update Scheduling
     
-    func getNextRequestedUpdateDateWithHandler(handler: (NSDate?) -> Void) {
+    private func getNextRequestedUpdateDate(handler: (Date) -> Void) {
         // Call the handler with the date when you would next like to be given the opportunity to update your complication content
-        let date = NSDate(timeIntervalSinceNow: 60*60) // Every hour
+        let date = Date(timeIntervalSinceNow: 60*60) // Every hour
         handler(date);
     }
     
     // MARK: - Placeholder Templates
     
-    func getPlaceholderTemplateForComplication(complication: CLKComplication, withHandler handler: (CLKComplicationTemplate?) -> Void) {
+    func getPlaceholderTemplate(for complication: CLKComplication, withHandler handler: (CLKComplicationTemplate?) -> Void) {
         // This method will be called once per supported complication, and the results will be cached
         let template = templateForComplication(complication, weight: nil)
         handler(template)
@@ -98,52 +98,63 @@ extension ComplicationController: CLKComplicationDataSource {
 
 extension ComplicationController {
     
-    func templateForComplication(complication: CLKComplication, weight weightInKiloGrams: Double?, emptyWeight: String = "##", date: NSDate = NSDate()) -> CLKComplicationTemplate? {
+    func templateForComplication(_ complication: CLKComplication, weight weightInKiloGrams: Double?, emptyWeight: String = "##", date: Date = Date()) -> CLKComplicationTemplate? {
         let userMassUnit = HealthManager.instance.massUnit
         let userMassFormatterUnit = HealthManager.instance.massFormatterUnit
         let userWeight: Double? = {
             guard let weight = weightInKiloGrams else {
                 return nil
             }
-            return HKQuantity(unit: HKUnit.gramUnitWithMetricPrefix(.Kilo), doubleValue: weight).doubleValueForUnit(userMassUnit)
+            return HKQuantity(unit: HKUnit.gramUnit(with: .kilo), doubleValue: weight).doubleValue(for: userMassUnit)
         }()
         
-        let weightText = userWeight == nil ? "No weight" : weightMediumFormatter.stringFromValue(userWeight ?? 0, unit: userMassFormatterUnit)
-        let shortWeightText = userWeight == nil ? emptyWeight : weightShortFormatter.stringFromValue(userWeight ?? 0, unit: userMassFormatterUnit)
-        let weightNoUnitText = userWeight == nil ? emptyWeight : weightNoUnitFormatter.stringFromNumber(userWeight ?? 0) ?? emptyWeight
-        let weightNoUnitShortText = userWeight == nil ? emptyWeight : weightNoUnitShortFormatter.stringFromNumber(userWeight ?? 0) ?? emptyWeight
-        let weightUnitText = weightMediumFormatter.unitStringFromValue(userWeight ?? 0, unit: userMassFormatterUnit)
+        let weightText = userWeight == nil ? "No weight" : weightMediumFormatter.string(fromValue: userWeight ?? 0, unit: userMassFormatterUnit)
+        let shortWeightText = userWeight == nil ? emptyWeight : weightShortFormatter.string(fromValue: userWeight ?? 0, unit: userMassFormatterUnit)
+        let weightNoUnitText = userWeight == nil ? emptyWeight : weightNoUnitFormatter.string(from: userWeight ?? 0) ?? emptyWeight
+        let weightNoUnitShortText = userWeight == nil ? emptyWeight : weightNoUnitShortFormatter.string(from: userWeight ?? 0) ?? emptyWeight
+        let weightUnitText = weightMediumFormatter.unitString(fromValue: userWeight ?? 0, unit: userMassFormatterUnit)
         let tintColor = UIColor(red: 200/255, green: 109/255, blue: 215/255, alpha: 0.8)
 //        let tintColor = UIColor(red: 222/255, green: 127/255, blue: 255/255, alpha: 1)
 //        let tintColor = UIColor(red: 237/255, green: 185/255, blue: 255/255, alpha: 1)
         let template: CLKComplicationTemplate = {
             switch complication.family {
-            case .ModularSmall:
+            case .modularSmall:
                 let template = CLKComplicationTemplate.Modular.Small.stackText()
                 template.line1TextProvider = CLKSimpleTextProvider(text: weightNoUnitText, shortText: weightNoUnitShortText)
                 template.line2TextProvider = CLKSimpleTextProvider(text: weightUnitText)
                 template.highlightLine2 = true
                 template.tintColor = tintColor
                 return template
-            case .ModularLarge:
+            case .modularLarge:
                 let template = CLKComplicationTemplate.Modular.Large.standardBody()
                 template.headerTextProvider = CLKSimpleTextProvider(text: weightText)
                 template.body1TextProvider = CLKTimeTextProvider(date: date) // Time
-                template.body2TextProvider = CLKDateTextProvider(date: date, units: [.Month, .Day, .Year]) // Date
+                template.body2TextProvider = CLKDateTextProvider(date: date, units: [.month, .day, .year]) // Date
 //                template.tintColor = .whiteColor()
 //                template.body1TextProvider.tintColor = tintColor.colorWithAlphaComponent(0.5)
 //                template.body2TextProvider?.tintColor = tintColor.colorWithAlphaComponent(0.8)
                 return template
-            case .UtilitarianSmall:
-                let template = CLKComplicationTemplate.Utilitarian.Small.flat()
+            case .utilitarianSmall:
+                let template = CLKComplicationTemplate.Utilitarian.Small.ringText()
+                template.textProvider = CLKSimpleTextProvider(text: weightText, shortText: shortWeightText)
+                template.ringStyle = .open
+                template.fillFraction = 0.5 // TODO: Inverse proximity to goal?
+                return template
+            case .utilitarianSmallFlat:
+                let template = CLKComplicationTemplate.Utilitarian.SmallFlat.flat()
                 template.textProvider = CLKSimpleTextProvider(text: weightText, shortText: shortWeightText)
                 return template
-            case .UtilitarianLarge:
+            case .utilitarianLarge:
                 let template = CLKComplicationTemplate.Utilitarian.Large.flat()
                 template.textProvider = CLKSimpleTextProvider(text: weightText, shortText: shortWeightText)
                 return template
-            case .CircularSmall:
+            case .circularSmall:
                 let template = CLKComplicationTemplate.Circular.Small.stackText()
+                template.line1TextProvider = CLKSimpleTextProvider(text: weightNoUnitText, shortText: weightNoUnitShortText)
+                template.line2TextProvider = CLKSimpleTextProvider(text: weightUnitText)
+                return template
+            case .extraLarge:
+                let template = CLKComplicationTemplate.ExtraLarge.SubType.stackText()
                 template.line1TextProvider = CLKSimpleTextProvider(text: weightNoUnitText, shortText: weightNoUnitShortText)
                 template.line2TextProvider = CLKSimpleTextProvider(text: weightUnitText)
                 return template
@@ -253,16 +264,10 @@ extension CLKComplicationTemplate {
     
     struct Utilitarian: ComplicationTemplateType {
         /**
-            Either a single line of text spanning half the width of the watch face _or_ square image/ring.
+            Square image/ring.
             Watch faces: Utility, Simple, Chronograph
         */
         struct Small: ComplicationTemplateTypeSubType {
-            /**
-                An optional image followed by a single line of text spanning half the width of the watch face.
-            */
-            static func flat() -> CLKComplicationTemplateUtilitarianSmallFlat {
-                return CLKComplicationTemplateUtilitarianSmallFlat()
-            }
             /**
                 An tiny image inside a progress ring
             */
@@ -282,7 +287,20 @@ extension CLKComplicationTemplate {
                 return CLKComplicationTemplateUtilitarianSmallSquare()
             }
         }
-        
+
+        /**
+         A single line of text spanning half the width of the watch face.
+         Watch faces: Utility, Simple, Chronograph
+         */
+        struct SmallFlat: ComplicationTemplateTypeSubType {
+            /**
+             An optional image followed by a single line of text spanning half the width of the watch face.
+             */
+            static func flat() -> CLKComplicationTemplateUtilitarianSmallFlat {
+                return CLKComplicationTemplateUtilitarianSmallFlat()
+            }
+        }
+
         /**
             A single line-height tall of text spanning entire width of the watch face
         */
@@ -340,15 +358,68 @@ extension CLKComplicationTemplate {
                 return CLKComplicationTemplateCircularSmallStackImage()
             }
         }
+
+
+    }
+
+    struct ExtraLarge {
+
+        struct SubType: ComplicationTemplateTypeSubType {
+            /**
+             A single line of text inside a circle with non-opaque background
+             */
+            static func simpleText() -> CLKComplicationTemplateExtraLargeSimpleText {
+                return CLKComplicationTemplateExtraLargeSimpleText()
+            }
+            /**
+             An image inside a circle with non-opaque background
+             */
+            static func simpleImage() -> CLKComplicationTemplateExtraLargeSimpleImage {
+                return CLKComplicationTemplateExtraLargeSimpleImage()
+            }
+            /**
+             A very short single line text inside a progress ring
+             */
+            static func ringText() -> CLKComplicationTemplateExtraLargeRingText {
+                return CLKComplicationTemplateExtraLargeRingText()
+            }
+            /**
+             An tiny image inside a progress ring
+             */
+            static func ringImage() -> CLKComplicationTemplateExtraLargeRingImage {
+                return CLKComplicationTemplateExtraLargeRingImage()
+            }
+            /**
+             Two separate lines of text
+             */
+            static func stackText() -> CLKComplicationTemplateExtraLargeStackText {
+                return CLKComplicationTemplateExtraLargeStackText()
+            }
+            /**
+             Image on top of a single line of text
+             */
+            static func stackImage() -> CLKComplicationTemplateExtraLargeStackImage {
+                return CLKComplicationTemplateExtraLargeStackImage()
+            }
+
+            /**
+             A table of 2x2, with each cell containing a very short line of text.
+             */
+            static func columnsText() -> CLKComplicationTemplateExtraLargeColumnsText {
+                return CLKComplicationTemplateExtraLargeColumnsText()
+            }
+        }
     }
     
     class func subType(forFamily family: CLKComplicationFamily) -> ComplicationTemplateTypeSubType.Type {
         switch family {
-        case .ModularSmall: return CLKComplicationTemplate.Modular.Small.self
-        case .ModularLarge: return CLKComplicationTemplate.Modular.Large.self
-        case .UtilitarianSmall: return CLKComplicationTemplate.Utilitarian.Small.self
-        case .UtilitarianLarge: return CLKComplicationTemplate.Utilitarian.Small.self
-        case .CircularSmall: return CLKComplicationTemplate.Circular.Small.self
+        case .modularSmall: return CLKComplicationTemplate.Modular.Small.self
+        case .modularLarge: return CLKComplicationTemplate.Modular.Large.self
+        case .utilitarianSmall: return CLKComplicationTemplate.Utilitarian.Small.self
+        case .utilitarianSmallFlat: return CLKComplicationTemplate.Utilitarian.SmallFlat.self
+        case .utilitarianLarge: return CLKComplicationTemplate.Utilitarian.Small.self
+        case .circularSmall: return CLKComplicationTemplate.Circular.Small.self
+        case .extraLarge: return CLKComplicationTemplate.ExtraLarge.SubType.self
         }
     }
 }

@@ -11,24 +11,24 @@ import Interstellar
 
 class ResultTests: XCTestCase {
     
-    func greeter(subject: String) -> Result<String> {
+    func greeter(_ subject: String) -> Result<String> {
         if subject.characters.count > 0 {
-            return .Success("Hello \(subject)")
+            return .success("Hello \(subject)")
         } else {
             let error: NSError = NSError(domain: "No one to greet!", code: 404, userInfo: nil)
-            return .Error(error)
+            return .error(error)
         }
     }
     
-    func throwingGreeter(subject: String) throws -> String {
+    func throwingGreeter(_ subject: String) throws -> String {
         return try greeter(subject).get()
     }
     
-    func identity(a: String) -> String {
+    func identity(_ a: String) -> String {
         return a
     }
     
-    struct NastyError: ErrorType {}
+    struct NastyError: ErrorProtocol {}
     
     func testAccessingAValue() {
         let result = Result(success: "hello")

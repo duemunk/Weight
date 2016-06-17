@@ -8,7 +8,7 @@
 
 import Foundation
 
-extension NSDateFormatter {
+extension DateFormatter {
     
 //    class func build(dateStyle dateStyle: NSDateFormatterStyle = .NoStyle, timeStyle: NSDateFormatterStyle = .NoStyle) -> NSDateFormatter {
 //        let formatter = NSDateFormatter()
@@ -17,15 +17,15 @@ extension NSDateFormatter {
 //        return formatter
 //    }
 
-    convenience init(dateStyle: NSDateFormatterStyle, timeStyle: NSDateFormatterStyle = .NoStyle){
+    convenience init(dateStyle: DateFormatter.Style, timeStyle: DateFormatter.Style = .noStyle){
         self.init()
         self.dateStyle = dateStyle
         self.timeStyle = timeStyle
     }
 
 
-    convenience init?(template: String, options: Int = 0, locale: NSLocale? = nil) {
-        guard let templateString = NSDateFormatter.dateFormatFromTemplate(template, options: options, locale: locale) else {
+    convenience init?(template: String, options: Int = 0, locale: Locale? = nil) {
+        guard let templateString = DateFormatter.dateFormat(fromTemplate: template, options: options, locale: locale) else {
             return nil
         }
         self.init()

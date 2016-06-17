@@ -19,7 +19,7 @@ public protocol ChartDelegate {
     - parameter left: The distance from the left side of the chart.
 
     */
-    func didTouchChart(chart: Chart, indexes: Array<Int?>, x: Float, left: CGFloat)
+    func didTouchChart(_ chart: Chart, indexes: Array<Int?>, x: Float, left: CGFloat)
 
     /**
     Tells the delegate that the user finished touching the chart. The user will "finish" touching the
@@ -28,7 +28,7 @@ public protocol ChartDelegate {
     - parameter chart: The chart that has been touched.
 
     */
-    func didFinishTouchingChart(chart: Chart)
+    func didFinishTouchingChart(_ chart: Chart)
 }
 
 /**
@@ -69,7 +69,7 @@ public class Chart: UIControl {
     /**
     Text alignment for the x-labels
     */
-    public var xLabelsTextAlignment: NSTextAlignment = .Left
+    public var xLabelsTextAlignment: NSTextAlignment = .left
 
     /**
     Values to display as labels of the y-axis. If not specified, will display the
@@ -92,25 +92,25 @@ public class Chart: UIControl {
     /**
     Font used for the labels.
     */
-    public var labelFont: UIFont? = UIFont.systemFontOfSize(12)
+    public var labelFont: UIFont? = UIFont.systemFont(ofSize: 12)
 
     /**
     Font used for the labels.
     */
     @IBInspectable
-    public var labelColor: UIColor = UIColor.blackColor()
+    public var labelColor: UIColor = UIColor.black()
 
     /**
     Color for the axes.
     */
     @IBInspectable
-    public var axesColor: UIColor = UIColor.grayColor().colorWithAlphaComponent(0.3)
+    public var axesColor: UIColor = UIColor.gray().withAlphaComponent(0.3)
 
     /**
     Color for the grid.
     */
     @IBInspectable
-    public var gridColor: UIColor = UIColor.grayColor().colorWithAlphaComponent(0.3)
+    public var gridColor: UIColor = UIColor.gray().withAlphaComponent(0.3)
 
     /**
     Inset of the area at the bottom of the chart, containing the labels for the x-axis.
@@ -157,7 +157,7 @@ public class Chart: UIControl {
     /**
     Color for the highlight line.
     */
-    public var highlightLineColor = UIColor.grayColor()
+    public var highlightLineColor = UIColor.gray()
 
     /**
     Width for the highlight line.
@@ -203,11 +203,11 @@ public class Chart: UIControl {
     }
 
     private func commonInit() {
-        backgroundColor = .clearColor()
-        contentMode = .Redraw
+        backgroundColor = .clear()
+        contentMode = .redraw
     }
 
-    override public func drawRect(rect: CGRect) {
+    override public func draw(_ rect: CGRect) {
         #if TARGET_INTERFACE_BUILDER
             drawIBPlaceholder()
             #else
@@ -218,14 +218,14 @@ public class Chart: UIControl {
     /**
     Adds a chart series.
     */
-    public func addSeries(series: ChartSeries) {
+    public func addSeries(_ series: ChartSeries) {
         self.series.append(series)
     }
 
     /**
     Adds multiple series.
     */
-    public func addSeries(series: Array<ChartSeries>) {
+    public func addSeries(_ series: Array<ChartSeries>) {
         for s in series {
             addSeries(s)
         }
@@ -234,8 +234,8 @@ public class Chart: UIControl {
     /**
     Remove the series at the specified index.
     */
-    public func removeSeriesAtIndex(index: Int) {
-        series.removeAtIndex(index)
+    public func removeSeriesAtIndex(_ index: Int) {
+        series.remove(at: index)
     }
 
     /**
@@ -248,7 +248,7 @@ public class Chart: UIControl {
     /**
     Returns the value for the specified series at the given index
     */
-    public func valueForSeries(seriesIndex: Int, atIndex dataIndex: Int?) -> Float? {
+    public func valueForSeries(_ seriesIndex: Int, atIndex dataIndex: Int?) -> Float? {
         if dataIndex == nil { return nil }
         let series = self.series[seriesIndex] as ChartSeries
         return series.data[dataIndex!].y
@@ -260,7 +260,7 @@ public class Chart: UIControl {
         placeholder.backgroundColor = UIColor(red: 0.93, green: 0.93, blue: 0.93, alpha: 1)
         let label = UILabel()
         label.text = "Chart"
-        label.font = UIFont.systemFontOfSize(28)
+        label.font = UIFont.systemFont(ofSize: 28)
         label.textColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.2)
         label.sizeToFit()
         label.frame.origin.x += frame.width/2 - (label.frame.width / 2)
@@ -294,7 +294,7 @@ public class Chart: UIControl {
 
         // Draw content
 
-        for (index, series) in self.series.enumerate() {
+        for (index, series) in self.series.enumerated() {
 
             // Separate each line in multiple segments over and below the x axis
             let segments = Chart.segmentLine(series.data as ChartLineSegment)
@@ -343,10 +343,10 @@ public class Chart: UIControl {
             let yValues =  series.data.map({ (point: ChartPoint) -> Float in
                 return point.y })
 
-            let newMinX = xValues.minElement()!
-            let newMinY = yValues.minElement()!
-            let newMaxX = xValues.maxElement()!
-            let newMaxY = yValues.maxElement()!
+            let newMinX = xValues.min()!
+            let newMinY = yValues.min()!
+            let newMaxX = xValues.max()!
+            let newMaxY = yValues.max()!
 
             if min.x == nil || newMinX < min.x! { min.x = newMinX }
             if min.y == nil || newMinY < min.y! { min.y = newMinY }
@@ -357,15 +357,15 @@ public class Chart: UIControl {
         // Check in labels
 
         if xLabels != nil {
-            let newMinX = (xLabels!).minElement()!
-            let newMaxX = (xLabels!).maxElement()!
+            let newMinX = (xLabels!).min()!
+            let newMaxX = (xLabels!).max()!
             if min.x == nil || newMinX < min.x { min.x = newMinX }
             if max.x == nil || newMaxX > max.x { max.x = newMaxX }
         }
 
         if yLabels != nil {
-            let newMinY = (yLabels!).minElement()!
-            let newMaxY = (yLabels!).maxElement()!
+            let newMinY = (yLabels!).min()!
+            let newMaxY = (yLabels!).max()!
             if min.y == nil || newMinY < min.y { min.y = newMinY }
             if max.y == nil || newMaxY > max.y { max.y = newMaxY }
         }
@@ -377,8 +377,8 @@ public class Chart: UIControl {
         let yRange = _max.y - _min.y
         let yIncrement = axesIncrementIn(range: yRange, axesRange: Float(frame.height))
         if let yIncrement = yIncrement {
-            _min.y -= _min.y % yIncrement
-            _max.y += yIncrement - _max.y % yIncrement
+            _min.y -= (_min.y).truncatingRemainder(dividingBy: yIncrement)
+            _max.y += yIncrement - (_max.y).truncatingRemainder(dividingBy: yIncrement)
         }
 
         return (min: _min, max: _max, yIncrement: yIncrement)
@@ -392,11 +392,11 @@ public class Chart: UIControl {
         return roundedIncrement
     }
 
-    private func nearestPowerOf10(value: Float) -> Float {
+    private func nearestPowerOf10(_ value: Float) -> Float {
         return pow(10, round(log10(value) - log10(5.5) + 0.5))
     }
 
-    private func scaleValueOnXAxis(value: Float) -> Float {
+    private func scaleValueOnXAxis(_ value: Float) -> Float {
         let width = Float(drawingWidth)
 
         var factor: Float
@@ -410,7 +410,7 @@ public class Chart: UIControl {
         return scaled
     }
 
-    private func scaleValueOnYAxis(value: Float) -> Float {
+    private func scaleValueOnYAxis(_ value: Float) -> Float {
 
         let height = Float(drawingHeight)
         var factor: Float
@@ -435,26 +435,27 @@ public class Chart: UIControl {
 
     // MARK: - Drawings
 
-    private func isVerticalSegmentAboveXAxis(yValues: Array<Float>) -> Bool {
+    private func isVerticalSegmentAboveXAxis(_ yValues: Array<Float>) -> Bool {
 
         // YValues are "reverted" from top to bottom, so min is actually the maxz
-        let min = yValues.maxElement()!
+        let min = yValues.max()!
         let zero = getZeroValueOnYAxis()
 
         return min <= zero
 
     }
 
-    private func drawLine(xValues xValues: Array<Float>, yValues: Array<Float>, seriesIndex: Int) -> CAShapeLayer {
+    @discardableResult
+    private func drawLine(xValues: Array<Float>, yValues: Array<Float>, seriesIndex: Int) -> CAShapeLayer {
 
         let isAboveXAxis = isVerticalSegmentAboveXAxis(yValues)
-        let path = CGPathCreateMutable()
+        let path = CGMutablePath()
 
-        CGPathMoveToPoint(path, nil, CGFloat(xValues.first!), CGFloat(yValues.first!))
+        path.moveTo(nil, x: CGFloat(xValues.first!), y: CGFloat(yValues.first!))
 
         for i in 1..<yValues.count {
             let y = yValues[i]
-            CGPathAddLineToPoint(path, nil, CGFloat(xValues[i]), CGFloat(y))
+            path.addLineTo(nil, x: CGFloat(xValues[i]), y: CGFloat(y))
         }
 
         let lineLayer = CAShapeLayer()
@@ -462,9 +463,9 @@ public class Chart: UIControl {
         lineLayer.path = path
 
         if isAboveXAxis {
-            lineLayer.strokeColor = series[seriesIndex].colors.above.CGColor
+            lineLayer.strokeColor = series[seriesIndex].colors.above.cgColor
         } else {
-            lineLayer.strokeColor = series[seriesIndex].colors.below.CGColor
+            lineLayer.strokeColor = series[seriesIndex].colors.below.cgColor
         }
         lineLayer.fillColor = nil
         lineLayer.lineWidth = lineWidth
@@ -477,27 +478,27 @@ public class Chart: UIControl {
         return lineLayer
     }
 
-    private func drawArea(xValues xValues: Array<Float>, yValues: Array<Float>, seriesIndex: Int) {
+    private func drawArea(xValues: Array<Float>, yValues: Array<Float>, seriesIndex: Int) {
         let isAboveXAxis = isVerticalSegmentAboveXAxis(yValues)
-        let area = CGPathCreateMutable()
+        let area = CGMutablePath()
         let zero = CGFloat(getZeroValueOnYAxis())
 
-        CGPathMoveToPoint(area, nil, CGFloat(xValues[0]), zero)
+        area.moveTo(nil, x: CGFloat(xValues[0]), y: zero)
 
         for i in 0..<xValues.count {
-            CGPathAddLineToPoint(area, nil, CGFloat(xValues[i]), CGFloat(yValues[i]))
+            area.addLineTo(nil, x: CGFloat(xValues[i]), y: CGFloat(yValues[i]))
         }
 
-        CGPathAddLineToPoint(area, nil, CGFloat(xValues.last!), zero)
+        area.addLineTo(nil, x: CGFloat(xValues.last!), y: zero)
 
         let areaLayer = CAShapeLayer()
         areaLayer.frame = self.bounds
         areaLayer.path = area
         areaLayer.strokeColor = nil
         if isAboveXAxis {
-            areaLayer.fillColor = series[seriesIndex].colors.above.colorWithAlphaComponent(areaAlphaComponent).CGColor
+            areaLayer.fillColor = series[seriesIndex].colors.above.withAlphaComponent(areaAlphaComponent).cgColor
         } else {
-            areaLayer.fillColor = series[seriesIndex].colors.below.colorWithAlphaComponent(areaAlphaComponent).CGColor
+            areaLayer.fillColor = series[seriesIndex].colors.below.withAlphaComponent(areaAlphaComponent).cgColor
         }
         areaLayer.lineWidth = 0
 
@@ -506,17 +507,18 @@ public class Chart: UIControl {
         layerStore.append(areaLayer)
     }
 
-    private func drawDots(xValues xValues: Array<Float>, yValues: Array<Float>, seriesIndex: Int) -> CAShapeLayer {
+    @discardableResult
+    private func drawDots(xValues: Array<Float>, yValues: Array<Float>, seriesIndex: Int) -> CAShapeLayer {
 
         let isAboveXAxis = isVerticalSegmentAboveXAxis(yValues)
 
-        let path = CGPathCreateMutable()
+        let path = CGMutablePath()
         for (xValue, yValue) in zip(xValues, yValues) {
             let size = dotSize
             let x = CGFloat(xValue) - size / 2
             let y = CGFloat(yValue) - size / 2
             let circleRect = CGRect(x: x, y: y, width: size, height: size)
-            CGPathAddRoundedRect(path, nil, circleRect, size/2, size/2)
+            path.addRoundedRect(nil, rect: circleRect, cornerWidth: size/2, cornerHeight: size/2)
         }
 
         let dotsLayer = CAShapeLayer()
@@ -524,7 +526,7 @@ public class Chart: UIControl {
         dotsLayer.path = path
 
         let colors = series[seriesIndex].colors
-        dotsLayer.fillColor = isAboveXAxis ? colors.above.CGColor : colors.below.CGColor
+        dotsLayer.fillColor = isAboveXAxis ? colors.above.cgColor : colors.below.cgColor
         dotsLayer.strokeColor = nil
 
         self.layer.addSublayer(dotsLayer)
@@ -537,45 +539,45 @@ public class Chart: UIControl {
     private func drawAxes() {
 
         let context = UIGraphicsGetCurrentContext()
-        CGContextSetStrokeColorWithColor(context, axesColor.CGColor)
-        CGContextSetLineWidth(context, 0.5)
+        context?.setStrokeColor(axesColor.cgColor)
+        context?.setLineWidth(0.5)
 
         // horizontal axis at the bottom
-        CGContextMoveToPoint(context, inset.left, drawingHeight + inset.top)
-        CGContextAddLineToPoint(context, drawingWidth, drawingHeight + inset.top)
-        CGContextStrokePath(context)
+        context?.moveTo(x: inset.left, y: drawingHeight + inset.top)
+        context?.addLineTo(x: drawingWidth, y: drawingHeight + inset.top)
+        context?.strokePath()
 
         // horizontal axis at the top
-        CGContextMoveToPoint(context, inset.left, inset.top)
-        CGContextAddLineToPoint(context, drawingWidth + inset.left, inset.top)
-        CGContextStrokePath(context)
+        context?.moveTo(x: inset.left, y: inset.top)
+        context?.addLineTo(x: drawingWidth + inset.left, y: inset.top)
+        context?.strokePath()
 
         // horizontal axis when y = 0
         if min.y < 0 && max.y > 0 {
             let y = CGFloat(getZeroValueOnYAxis())
-            CGContextMoveToPoint(context, inset.left, y)
-            CGContextAddLineToPoint(context, drawingWidth + inset.left, y)
-            CGContextStrokePath(context)
+            context?.moveTo(x: inset.left, y: y)
+            context?.addLineTo(x: drawingWidth + inset.left, y: y)
+            context?.strokePath()
         }
 
         // vertical axis on the left
-        CGContextMoveToPoint(context, inset.left, inset.top)
-        CGContextAddLineToPoint(context, inset.left, drawingHeight + inset.top)
-        CGContextStrokePath(context)
+        context?.moveTo(x: inset.left, y: inset.top)
+        context?.addLineTo(x: inset.left, y: drawingHeight + inset.top)
+        context?.strokePath()
 
 
         // vertical axis on the right
-        CGContextMoveToPoint(context, drawingWidth + inset.left, inset.top)
-        CGContextAddLineToPoint(context, drawingWidth + inset.left, drawingHeight + inset.top)
-        CGContextStrokePath(context)
+        context?.moveTo(x: drawingWidth + inset.left, y: inset.top)
+        context?.addLineTo(x: drawingWidth + inset.left, y: drawingHeight + inset.top)
+        context?.strokePath()
 
     }
 
     private func drawLabelsAndGridOnXAxis() {
 
         let context = UIGraphicsGetCurrentContext()
-        CGContextSetStrokeColorWithColor(context, gridColor.CGColor)
-        CGContextSetLineWidth(context, 0.5)
+        context?.setStrokeColor(gridColor.cgColor)
+        context?.setLineWidth(0.5)
 
         var labels: Array<Float>
         if xLabels == nil {
@@ -588,13 +590,13 @@ public class Chart: UIControl {
         let scaled = labels.map { scaleValueOnXAxis($0) }
         let padding: CGFloat = 5
 
-        scaled.enumerate().forEach { (i, value) in
+        scaled.enumerated().forEach { (i, value) in
             let x = CGFloat(value)
 
             // Add vertical grid for each label, except axes on the left and right
-            CGContextMoveToPoint(context, x, inset.top)
-            CGContextAddLineToPoint(context, x, bounds.height)
-            CGContextStrokePath(context)
+            context?.moveTo(x: x, y: inset.top)
+            context?.addLineTo(x: x, y: bounds.height)
+            context?.strokePath()
 
             if x == drawingWidth {
                 // Do not add label at the most right position
@@ -629,18 +631,18 @@ public class Chart: UIControl {
     private func drawLabelsAndGridOnYAxis() {
 
         let context = UIGraphicsGetCurrentContext()
-        CGContextSetStrokeColorWithColor(context, gridColor.CGColor)
-        CGContextSetLineWidth(context, 1)
+        context?.setStrokeColor(gridColor.cgColor)
+        context?.setLineWidth(1)
 
         var labels: Array<Float>
         if yLabels == nil {
             if let yIncrement = yIncrement {
-                labels = min.y.stride(through: max.y, by: yIncrement)
+                labels = stride(from: min.y, through: max.y, by: yIncrement)
                     .map { $0 }
             } else {
                 labels = [(min.y + max.y) / 2, max.y]
                 if yLabelsOnRightSide || min.y != 0 {
-                    labels.insert(min.y, atIndex: 0)
+                    labels.insert(min.y, at: 0)
                 }
             }
         } else {
@@ -649,20 +651,20 @@ public class Chart: UIControl {
 
         let scaled = labels.map { scaleValueOnYAxis($0) }
 
-        scaled.enumerate().forEach { (i, value) in
+        scaled.enumerated().forEach { (i, value) in
 
             let y = CGFloat(value)
 
             // Add horizontal grid for each label
-            CGContextMoveToPoint(context, 0, y)
-            CGContextAddLineToPoint(context, self.bounds.width, y)
+            context?.moveTo(x: 0, y: y)
+            context?.addLineTo(x: self.bounds.width, y: y)
             if labels[i] != 0 {
                 // Horizontal grid for 0 is not dashed
-                CGContextSetLineDash(context, 0, [5], 1)
+                context?.setLineDash(phase: 0, lengths: [5], count: 1)
             } else {
-                CGContextSetLineDash(context, 0, nil, 0)
+                context?.setLineDash(phase: 0, lengths: nil, count: 0)
             }
-            CGContextStrokePath(context)
+            context?.strokePath()
 
             let label = UILabel(frame: CGRect(x: 0, y: y, width: 0, height: 0))
             label.font = labelFont
@@ -687,25 +689,25 @@ public class Chart: UIControl {
 
     // MARK: - Touch events
 
-    private func drawHighlightLineFromLeftPosition(left: CGFloat) {
+    private func drawHighlightLineFromLeftPosition(_ left: CGFloat) {
         if let shapeLayer = highlightShapeLayer {
             // Use line already created
-            let path = CGPathCreateMutable()
+            let path = CGMutablePath()
 
-            CGPathMoveToPoint(path, nil, left, 0)
-            CGPathAddLineToPoint(path, nil, left, drawingHeight  + inset.top)
+            path.moveTo(nil, x: left, y: 0)
+            path.addLineTo(nil, x: left, y: drawingHeight  + inset.top)
             shapeLayer.path = path
         } else {
             // Create the line
-            let path = CGPathCreateMutable()
+            let path = CGMutablePath()
 
-            CGPathMoveToPoint(path, nil, left, 0)
-            CGPathAddLineToPoint(path, nil, left, drawingHeight + inset.top)
+            path.moveTo(nil, x: left, y: 0)
+            path.addLineTo(nil, x: left, y: drawingHeight + inset.top)
 
             let shapeLayer = CAShapeLayer()
             shapeLayer.frame = self.bounds
             shapeLayer.path = path
-            shapeLayer.strokeColor = highlightLineColor.CGColor
+            shapeLayer.strokeColor = highlightLineColor.cgColor
             shapeLayer.fillColor = nil
             shapeLayer.lineWidth = highlightLineWidth
 
@@ -716,9 +718,9 @@ public class Chart: UIControl {
 
     }
 
-    func handleTouchEvents(touches: NSSet!, event: UIEvent!) {
+    func handleTouchEvents(_ touches: NSSet!, event: UIEvent!) {
         let point: AnyObject! = touches.anyObject()
-        let left = point.locationInView(self).x
+        let left = point.location(in: self).x
         let x = valueFromPointAtX(left)
 
         if left < 0 || left > drawingWidth {
@@ -753,35 +755,35 @@ public class Chart: UIControl {
         delegate!.didTouchChart(self, indexes: indexes, x: x, left: left)
 
     }
-    override public func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
+    override public func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         handleTouchEvents(touches, event: event)
     }
 
-    override public func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
+    override public func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         handleTouchEvents(touches, event: event)
     }
 
-    override public func touchesMoved(touches: Set<UITouch>, withEvent event: UIEvent?) {
+    override public func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         handleTouchEvents(touches, event: event)
     }
 
 
     // MARK: - Utilities
 
-    private func valueFromPointAtX(x: CGFloat) -> Float {
+    private func valueFromPointAtX(_ x: CGFloat) -> Float {
         let value = ((max.x-min.x) / Float(drawingWidth)) * Float(x) + min.x
         return value
     }
 
-    private func valueFromPointAtY(y: CGFloat) -> Float {
+    private func valueFromPointAtY(_ y: CGFloat) -> Float {
         let value = ((max.y - min.y) / Float(drawingHeight)) * Float(y) + min.y
         return -value
     }
 
-    private class func findClosestInValues(values: Array<Float>, forValue value: Float) -> (lowestValue: Float?, highestValue: Float?, lowestIndex: Int?, highestIndex: Int?) {
+    private class func findClosestInValues(_ values: Array<Float>, forValue value: Float) -> (lowestValue: Float?, highestValue: Float?, lowestIndex: Int?, highestIndex: Int?) {
         var lowestValue: Float?, highestValue: Float?, lowestIndex: Int?, highestIndex: Int?
 
-        values.enumerate().forEach { (i, currentValue) in
+        values.enumerated().forEach { (i, currentValue) in
 
             if currentValue <= value && (lowestValue == nil || lowestValue! < currentValue) {
                 lowestValue = currentValue
@@ -801,11 +803,11 @@ public class Chart: UIControl {
     Segment a line in multiple lines when the line touches the x-axis, i.e. separating
     positive from negative values.
     */
-    private class func segmentLine(line: ChartLineSegment) -> Array<ChartLineSegment> {
+    private class func segmentLine(_ line: ChartLineSegment) -> Array<ChartLineSegment> {
         var segments: Array<ChartLineSegment> = []
         var segment: ChartLineSegment = []
 
-        line.enumerate().forEach { (i, point) in
+        line.enumerated().forEach { (i, point) in
 
             segment.append(point)
             if i < line.count - 1 {
@@ -830,7 +832,7 @@ public class Chart: UIControl {
     /**
     Return the intersection of a line between two points on the x-axis
     */
-    private class func intersectionOnXAxisBetween(p1: ChartPoint, and p2: ChartPoint) -> ChartPoint {
+    private class func intersectionOnXAxisBetween(_ p1: ChartPoint, and p2: ChartPoint) -> ChartPoint {
         return (x: p1.x - (p2.x - p1.x) / (p2.y - p1.y) * p1.y, y: 0)
     }
 }

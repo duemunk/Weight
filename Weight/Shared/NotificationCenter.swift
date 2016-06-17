@@ -35,36 +35,36 @@ import Interstellar
 //    }
 //}
 
-class NotificationCenter: NSObject {
-    var observer: Observable<NSNotification>? = Observable<NSNotification>(options: .NoInitialValue) {
+class NotificationCenter_: NSObject {
+    var observer: Observable<Notification>? = Observable<Notification>(options: .NoInitialValue) {
         didSet {
             if observer == nil,
                 let notificationObserver = notificationObserver {
-                NotificationCenter.unobserve(notificationObserver)
+                NotificationCenter.default().removeObserver(notificationObserver)
                 self.notificationObserver = nil
             }
         }
     }
     private var notificationObserver: NSObjectProtocol?
 
-    init(name: String) {
+    init(name: NSNotification.Name) {
         super.init()
-        notificationObserver = NSNotificationCenter.defaultCenter().addObserverForName(name, object: nil, queue: nil) { [weak self] notification in
+        notificationObserver = Foundation.NotificationCenter.default().addObserver(forName: name, object: nil, queue: nil) { [weak self] notification in
             self?.observer?.update(notification)
         }
     }
 
-    class func post(name: String, object: AnyObject? = nil, userInfo: [NSObject : AnyObject]? = nil) {
-        NSNotificationCenter.defaultCenter().postNotificationName(name, object: object, userInfo: userInfo)
-    }
-    
-    class func observe(name: String, object: AnyObject? = nil, queue: NSOperationQueue? = nil, usingBlock block: NSNotification! -> ()) -> NSObjectProtocol {
-        return NSNotificationCenter.defaultCenter().addObserverForName(name, object: object, queue: queue, usingBlock: block)
-    }
-    
-    class func unobserve(observer: AnyObject, name: String? = nil, object: AnyObject? = nil) {
-        NSNotificationCenter.defaultCenter().removeObserver(observer, name: name, object: object)
-    }
+//    class func post(_ name: String, object: AnyObject? = nil, userInfo: [NSObject : AnyObject]? = nil) {
+//        Foundation.NotificationCenter.default().post(name: Notification.Name(rawValue: name), object: object, userInfo: userInfo)
+//    }
+//    
+//    class func observe(_ name: String, object: AnyObject? = nil, queue: OperationQueue? = nil, usingBlock block: (Notification!) -> ()) -> NSObjectProtocol {
+//        return Foundation.NotificationCenter.default().addObserver(forName: NSNotification.Name(rawValue: name), object: object, queue: queue, using: block)
+//    }
+//    
+//    class func unobserve(_ observer: AnyObject, name: String? = nil, object: AnyObject? = nil) {
+//        Foundation.NotificationCenter.default().removeObserver(observer, name: name.map { NSNotification.Name(rawValue: $0) }, object: object)
+//    }
 }
 
 

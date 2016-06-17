@@ -8,13 +8,13 @@
 
 import Foundation
 
-func closest(values: [Double], toValue value: Double) -> (closestValue: Double, index: Int)? {
+func closest(_ values: [Double], toValue value: Double) -> (closestValue: Double, index: Int)? {
     let diffs = values.map { abs($0 - value) }
     guard let someDiffValue = diffs.first else {
         return nil
     }
     let minimumDiff = diffs.reduce(someDiffValue) { min($0, $1) }
-    guard let index = diffs.indexOf(minimumDiff) else {
+    guard let index = diffs.index(of: minimumDiff) else {
         return nil
     }
     return (values[index], index)

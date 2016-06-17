@@ -12,27 +12,27 @@ import HealthKit
 class WeightsLocalStore {
     static let instance = WeightsLocalStore()
     
-    private let weightsDefaults = NSUserDefaults(suiteName: "group.weights")
+    private let weightsDefaults = UserDefaults(suiteName: "group.weights")
     private let lastWeightKey = "lastWeightKey"
-    let massUnit: HKUnit = .gramUnitWithMetricPrefix(.Kilo) // Always store in SI units
+    let massUnit: HKUnit = .gramUnit(with: .kilo) // Always store in SI units
     
-    private let weightType = HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMass)!
+    private let weightType = HKObjectType.quantityType(forIdentifier: HKQuantityTypeIdentifier.bodyMass)!
     var lastWeight: HKQuantitySample? {
         get {
-            guard let weight = weightsDefaults?.objectForKey(lastWeightKey) as? Double else {
+            guard let weight = weightsDefaults?.object(forKey: lastWeightKey) as? Double else {
                 return nil
             }
             let quantity = HKQuantity(unit: massUnit, doubleValue: weight)
-            let date = NSDate()
-            let sample = HKQuantitySample(type: weightType, quantity: quantity, startDate: date, endDate: date)
+            let date = Date()
+            let sample = HKQuantitySample(type: weightType, quantity: quantity, start: date, end: date)
             return sample
         }
         set {
             guard let weight = newValue else {
                 return
             }
-            let doubleValue = weight.quantity.doubleValueForUnit(massUnit)
-            weightsDefaults?.setObject(doubleValue, forKey: lastWeightKey)
+            let doubleValue = weight.quantity.doubleValue(for: massUnit)
+            weightsDefaults?.set(doubleValue, forKey: lastWeightKey)
             weightsDefaults?.synchronize()
         }
     }

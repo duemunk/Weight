@@ -9,50 +9,50 @@
 import Foundation
 
 
-extension NSMassFormatter {
+extension MassFormatter {
     
-    class func weightShortFormatter() -> NSMassFormatter {
-        let formatter = NSMassFormatter()
-        formatter.forPersonMassUse = true
-        formatter.unitStyle = .Short
-        formatter.numberFormatter.numberStyle = .DecimalStyle
+    class func weightShortFormatter() -> MassFormatter {
+        let formatter = MassFormatter()
+        formatter.isForPersonMassUse = true
+        formatter.unitStyle = .short
+        formatter.numberFormatter.numberStyle = .decimal
         formatter.numberFormatter.maximumFractionDigits = 1
         return formatter
     }
     
-    class func weightMediumFormatter() -> NSMassFormatter {
-        let formatter = NSMassFormatter()
-        formatter.forPersonMassUse = true
-        formatter.unitStyle = .Medium
-        formatter.numberFormatter.numberStyle = .DecimalStyle
+    class func weightMediumFormatter() -> MassFormatter {
+        let formatter = MassFormatter()
+        formatter.isForPersonMassUse = true
+        formatter.unitStyle = .medium
+        formatter.numberFormatter.numberStyle = .decimal
         formatter.numberFormatter.maximumFractionDigits = 2
         formatter.numberFormatter.minimumFractionDigits = 1
         return formatter
     }
     
-    class func weightLongFormatter() -> NSMassFormatter {
-        let formatter = NSMassFormatter()
-        formatter.forPersonMassUse = true
-        formatter.unitStyle = .Long
-        formatter.numberFormatter.numberStyle = .DecimalStyle
+    class func weightLongFormatter() -> MassFormatter {
+        let formatter = MassFormatter()
+        formatter.isForPersonMassUse = true
+        formatter.unitStyle = .long
+        formatter.numberFormatter.numberStyle = .decimal
         return formatter
     }
 }
 
 
-extension NSNumberFormatter {
+extension NumberFormatter {
     
-    class func weightNoUnitFormatter() -> NSNumberFormatter {
-        let formatter = NSNumberFormatter()
-        formatter.numberStyle = .DecimalStyle
+    class func weightNoUnitFormatter() -> NumberFormatter {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
         formatter.maximumFractionDigits = 2
         formatter.minimumFractionDigits = 1
         return formatter
     }
     
-    class func weightNoUnitShortFormatter() -> NSNumberFormatter {
-        let formatter = NSNumberFormatter()
-        formatter.numberStyle = .DecimalStyle
+    class func weightNoUnitShortFormatter() -> NumberFormatter {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
         formatter.maximumFractionDigits = 1
         formatter.minimumFractionDigits = 1
         return formatter

@@ -19,7 +19,6 @@
 		4E44D5C21B5BEE7D0014B9C8 /* WeightUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E44D5C11B5BEE7D0014B9C8 /* WeightUITests.swift */; };
 		4E44D5D71B5C354A0014B9C8 /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4E44D5D61B5C354A0014B9C8 /* HealthKit.framework */; };
 		4E55CA121C76535200EB5D88 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4E55CA111C76535200EB5D88 /* Assets.xcassets */; };
-		4E595D951CAC82C600D42B09 /* Cartography.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4E595D941CAC82C600D42B09 /* Cartography.framework */; };
 		4E595D9A1CAC877D00D42B09 /* Chart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E595D971CAC877D00D42B09 /* Chart.swift */; };
 		4E595D9B1CAC877D00D42B09 /* ChartColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E595D981CAC877D00D42B09 /* ChartColors.swift */; };
 		4E595D9C1CAC877D00D42B09 /* ChartSeries.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E595D991CAC877D00D42B09 /* ChartSeries.swift */; };
@@ -53,6 +52,8 @@
 		4EEE52E11B602B21009B1D15 /* GlobalHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EEE52E01B602B21009B1D15 /* GlobalHelpers.swift */; };
 		4EEE52E21B602B21009B1D15 /* GlobalHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EEE52E01B602B21009B1D15 /* GlobalHelpers.swift */; };
 		4EF597041B9EE8E9003C4DAF /* Loader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EF597031B9EE8E9003C4DAF /* Loader.swift */; };
+		4EFFEDE71D13337800EC0E27 /* InterstellarHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EFFEDE61D13337800EC0E27 /* InterstellarHelpers.swift */; };
+		4EFFEDE91D133DB100EC0E27 /* InterstellarHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EFFEDE61D13337800EC0E27 /* InterstellarHelpers.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -129,7 +130,6 @@
 		4E44D5D61B5C354A0014B9C8 /* HealthKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKit.framework; path = System/Library/Frameworks/HealthKit.framework; sourceTree = SDKROOT; };
 		4E44D5D81B5C354A0014B9C8 /* Weight.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Weight.entitlements; sourceTree = "<group>"; };
 		4E55CA111C76535200EB5D88 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		4E595D941CAC82C600D42B09 /* Cartography.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cartography.framework; path = ../Carthage/Build/iOS/Cartography.framework; sourceTree = "<group>"; };
 		4E595D971CAC877D00D42B09 /* Chart.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Chart.swift; sourceTree = "<group>"; };
 		4E595D981CAC877D00D42B09 /* ChartColors.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChartColors.swift; sourceTree = "<group>"; };
 		4E595D991CAC877D00D42B09 /* ChartSeries.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChartSeries.swift; sourceTree = "<group>"; };
@@ -161,6 +161,7 @@
 		4EE634841CD0CE5A007A602B /* Interstellar.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Interstellar.framework; path = ../Carthage/Build/watchOS/Interstellar.framework; sourceTree = "<group>"; };
 		4EEE52E01B602B21009B1D15 /* GlobalHelpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = GlobalHelpers.swift; path = Shared/GlobalHelpers.swift; sourceTree = "<group>"; };
 		4EF597031B9EE8E9003C4DAF /* Loader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Loader.swift; sourceTree = "<group>"; };
+		4EFFEDE61D13337800EC0E27 /* InterstellarHelpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InterstellarHelpers.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -169,7 +170,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				4E44D5D71B5C354A0014B9C8 /* HealthKit.framework in Frameworks */,
-				4E595D951CAC82C600D42B09 /* Cartography.framework in Frameworks */,
 				4EE634831CD0CD80007A602B /* Interstellar.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -316,6 +316,7 @@
 				4EEE52E01B602B21009B1D15 /* GlobalHelpers.swift */,
 				4EE529CC1B681F5B0045C1C3 /* Async.swift */,
 				4EE529CF1B682CE50045C1C3 /* Array.swift */,
+				4EFFEDE61D13337800EC0E27 /* InterstellarHelpers.swift */,
 			);
 			name = Shared;
 			sourceTree = "<group>";
@@ -337,7 +338,6 @@
 				4EE634821CD0CD80007A602B /* Interstellar.framework */,
 				4EE529C31B681DFC0045C1C3 /* Realm.framework */,
 				4E44D5D61B5C354A0014B9C8 /* HealthKit.framework */,
-				4E595D941CAC82C600D42B09 /* Cartography.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -459,6 +459,7 @@
 					4E44D59D1B5BEE7C0014B9C8 = {
 						CreatedOnToolsVersion = 7.0;
 						DevelopmentTeam = PFQ4698325;
+						LastSwiftMigration = 0800;
 						SystemCapabilities = {
 							com.apple.ApplicationGroups.iOS = {
 								enabled = 1;
@@ -473,15 +474,18 @@
 					};
 					4E44D5B11B5BEE7D0014B9C8 = {
 						CreatedOnToolsVersion = 7.0;
+						LastSwiftMigration = 0800;
 						TestTargetID = 4E44D59D1B5BEE7C0014B9C8;
 					};
 					4E44D5BC1B5BEE7D0014B9C8 = {
 						CreatedOnToolsVersion = 7.0;
+						LastSwiftMigration = 0800;
 						TestTargetID = 4E44D59D1B5BEE7C0014B9C8;
 					};
 					4E7769421B5E57340081017D = {
 						CreatedOnToolsVersion = 7.0;
 						DevelopmentTeam = PFQ4698325;
+						LastSwiftMigration = 0800;
 						SystemCapabilities = {
 							com.apple.ApplicationGroups.iOS = {
 								enabled = 1;
@@ -491,6 +495,7 @@
 					4E77694E1B5E57340081017D = {
 						CreatedOnToolsVersion = 7.0;
 						DevelopmentTeam = PFQ4698325;
+						LastSwiftMigration = 0800;
 						SystemCapabilities = {
 							com.apple.ApplicationGroups.iOS = {
 								enabled = 1;
@@ -607,6 +612,7 @@
 			files = (
 				4E77696E1B5E5FF00081017D /* HealthManager.swift in Sources */,
 				4E212C531B6C10F1007E19D3 /* WeightFormatters.swift in Sources */,
+				4EFFEDE71D13337800EC0E27 /* InterstellarHelpers.swift in Sources */,
 				4E7769711B5E61250081017D /* HealthStore_iOS.swift in Sources */,
 				4E212C561B6C11D5007E19D3 /* NSDateFormatter.swift in Sources */,
 				4EEE52E11B602B21009B1D15 /* GlobalHelpers.swift in Sources */,
@@ -656,6 +662,7 @@
 				4EE529D11B682CE50045C1C3 /* Array.swift in Sources */,
 				4E7769591B5E57340081017D /* ComplicationController.swift in Sources */,
 				4E7769781B5E70400081017D /* HealthStore.swift in Sources */,
+				4EFFEDE91D133DB100EC0E27 /* InterstellarHelpers.swift in Sources */,
 				4EE529CE1B681F630045C1C3 /* Async.swift in Sources */,
 				4EF597041B9EE8E9003C4DAF /* Loader.swift in Sources */,
 				4EA8A20F1B678F4400E1EF05 /* WeightsLocalStore.swift in Sources */,
@@ -814,6 +821,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = dk.developmunk.Weight;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
 		};
@@ -835,6 +843,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = dk.developmunk.Weight;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
 		};
@@ -846,6 +855,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = dk.developmunk.WeightTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Weight.app/Weight";
 			};
 			name = Debug;
@@ -858,6 +868,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = dk.developmunk.WeightTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Weight.app/Weight";
 			};
 			name = Release;
@@ -869,6 +880,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = dk.developmunk.WeightUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
 				TEST_TARGET_NAME = Weight;
 				USES_XCTRUNNER = YES;
 			};
@@ -881,6 +893,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = dk.developmunk.WeightUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
 				TEST_TARGET_NAME = Weight;
 				USES_XCTRUNNER = YES;
 			};
@@ -890,6 +903,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Watch/Watch.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -897,11 +911,14 @@
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
 				IBSC_MODULE = Watch_Extension;
 				INFOPLIST_FILE = Watch/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = dk.developmunk.Weight.watchkitapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = 4;
 				WATCHOS_DEPLOYMENT_TARGET = 2.0;
 			};
@@ -911,6 +928,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Watch/Watch.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -918,11 +936,13 @@
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
 				IBSC_MODULE = Watch_Extension;
 				INFOPLIST_FILE = Watch/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = dk.developmunk.Weight.watchkitapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = 4;
 				WATCHOS_DEPLOYMENT_TARGET = 2.0;
 			};
@@ -947,6 +967,7 @@
 				PROVISIONING_PROFILE = "";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = 4;
 				WATCHOS_DEPLOYMENT_TARGET = 2.2;
 			};
@@ -971,6 +992,7 @@
 				PROVISIONING_PROFILE = "";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = 4;
 				WATCHOS_DEPLOYMENT_TARGET = 2.2;
 			};

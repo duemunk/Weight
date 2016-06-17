@@ -8,28 +8,32 @@
 
 import Foundation
 import HealthKit
+import Interstellar
 
-
-let HealthPreferencesDidChangeNotification = "HealthPreferencesDidChangeNotification"
-let HealthDataDidChangeNotification = "HealthDataDidChangeNotification"
-
-typealias AsyncQuantitySampleResult = (() throws -> HKQuantitySample) -> ()
-typealias AsyncQuantitySamplesResult = (() throws -> [HKQuantitySample]) -> ()
+extension Notification.Name {
+    static let HealthPreferencesDidChange = "HealthPreferencesDidChangeNotification" as NSNotification.Name
+    static let HealthDataDidChange = "HealthDataDidChangeNotification" as NSNotification.Name
+}
 
 class HealthManager {
     static let instance = HealthManager()
     
-    enum Error: ErrorType {
-        case NoResults
-        case NoSuccessDespiteNoError
-        case WrongInput
+    enum Error: ErrorProtocol {
+        case noResults
+        case noSuccessDespiteNoError
+        case wrongInput
+        case wrongConversion
+    }
+
+    enum ErrorAuth: ErrorProtocol {
+        case denied
     }
     
     let healthStore = HKHealthStore()
 
-    let weightType = HKObjectType.quantityTypeForIdentifier(HKQuantityTypeIdentifierBodyMass)!
-    private(set) var massUnit: HKUnit = .gramUnitWithMetricPrefix(.Kilo)  // Default to [kg]
-    private(set) var massFormatterUnit = HKUnit.massFormatterUnitFromUnit(.gramUnitWithMetricPrefix(.Kilo))
+    let weightType = HKObjectType.quantityType(forIdentifier: .bodyMass)!
+    private(set) var massUnit: HKUnit = .gramUnit(with: .kilo)  // Default to [kg]
+    private(set) var massFormatterUnit = HKUnit.massFormatterUnit(from: .gramUnit(with: .kilo))
     
     init() {
         
@@ -39,7 +43,7 @@ class HealthManager {
         }
         
         // Observe and propagate user changes from other apps
-        NotificationCenter.observe(HKUserPreferencesDidChangeNotification) { [weak self] notification in
+        NotificationCenter.default().addObserver(forName: .HKUserPreferencesDidChange, object: nil, queue: nil) { [weak self] notification in
             self?.updatePreferredUnits()
         }
         
@@ -52,108 +56,109 @@ class HealthManager {
                 print(error)
             }
             defer {
-                NotificationCenter.post(HealthDataDidChangeNotification)
+                NotificationCenter.default().post(name: .HealthDataDidChange, object: nil)
             }
         }
-        
+
         // Initial setup of preferred units
         updatePreferredUnits()
     }
     
     deinit {
-        NotificationCenter.unobserve(self)
+//        NotificationCenter.default().unob.unobserve(self)
     }
     
     private func updatePreferredUnits() {
-        healthStore.preferredUnit(forQuantityType: weightType) { result in
-            if let unit = optionalResult(result) {
+        healthStore.preferredUnit(forQuantityType: weightType)
+            .then { unit in
                 self.massUnit = unit
-                self.massFormatterUnit = HKUnit.massFormatterUnitFromUnit(unit)
-                
-                NotificationCenter.post(HealthPreferencesDidChangeNotification)
+                self.massFormatterUnit = HKUnit.massFormatterUnit(from: unit)
+
+                NotificationCenter.default().post(name: .HealthPreferencesDidChange, object: nil)
             }
-        }
+            .error { print($0) }
     }
 
-    func saveWeight(doubleValue: Double, result: AsyncQuantitySampleResult) {
+    func saveWeight(_ doubleValue: Double) -> Observable<Result<HKQuantitySample>> {
         let quantity = HKQuantity(unit: massUnit, doubleValue: doubleValue)
-        saveQuantity(quantity, type: weightType, result: result)
+        return saveQuantity(quantity, type: weightType)
     }
 
-    func saveWeight(quantity: HKQuantity, date: NSDate = NSDate(), result: AsyncQuantitySampleResult) {
-        saveQuantity(quantity, type: weightType, date: date, result: result)
+    func saveWeight(_ quantity: HKQuantity, date: Date = Date()) -> Observable<Result<HKQuantitySample>> {
+        return saveQuantity(quantity, type: weightType, date: date)
+    }
+
+    private func castToSubType<T, U>(t: T) -> Result<U> {
+        guard let u = t as? U else {
+            print("Not of type \(U.self)")
+            return .error(Error.wrongConversion)
+        }
+        return .success(u)
+    }
+
+    private func castToSubTypeInArray<T, U>(t: [T]) -> Result<[U]> {
+        let casted = t
+            .flatMap { $0 as? U }
+        guard casted.count == t.count else {
+            return .error(Error.wrongConversion)
+        }
+        return .success(casted)
+
+    }
+
+    func getWeight() -> Observable<Result<HKQuantitySample>> {
+        return healthStore.mostRecentSample(ofType: weightType)
+            .then(castToSubType)
+            .next {
+                WeightsLocalStore.instance.lastWeight = $0
+            }
+    }
+
+    func getWeights() -> Observable<Result<[HKQuantitySample]>>{
+        return healthStore.samples(ofType: weightType)
+            .then(castToSubTypeInArray)
     }
     
-    func getWeight(result: AsyncQuantitySampleResult) {
-        healthStore.mostRecentSample(ofType: weightType) { _result in
-            do {
-                let sample = try _result()
-                guard let quantitySample = sample as? HKQuantitySample else {
-                    print("Not of type HKQuantitySample")
-                    result { throw Error.NoSuccessDespiteNoError }
-                    return
+    private func saveQuantity(_ quantity: HKQuantity, type: HKQuantityType, date: Date = Date()) -> Observable<Result<HKQuantitySample>> {
+        let sample = HKQuantitySample(type: type, quantity: quantity, start: date, end: date)
+        let observer = Observable<Result<Bool>>()
+        healthStore.save(sample, withCompletion: completionToObservable(observer: observer))
+        return observer
+            .then {
+                guard $0 else {
+                    print("No success, but no error")
+                    return .error(Error.noSuccessDespiteNoError)
                 }
-                WeightsLocalStore.instance.lastWeight = quantitySample
-                result { quantitySample }
-            } catch {
-                result { throw error}
+                print("Yay, stored \(sample) to HealthKit!")
+                return .success(sample)
             }
-        }
     }
+    
+    func checkHealthKitAuthorization() -> Observable<Result<Void>> {
 
-    func getWeights(result: AsyncQuantitySamplesResult) {
-        healthStore.samples(ofType: weightType) { _result in
-            do {
-                let samples = try _result()
-                let quantitySamples = samples.flatMap { return $0 as? HKQuantitySample }
-                result { quantitySamples }
-            } catch {
-                result { throw error}
-            }
-        }
-    }
-    
-    private func saveQuantity(quantity: HKQuantity, type: HKQuantityType, date: NSDate = NSDate(), result: AsyncQuantitySampleResult) {
-        let sample = HKQuantitySample(type: type, quantity: quantity, startDate: date, endDate: date)
-        healthStore.saveObject(sample) { success, error in
-            if let error = error {
-                print(error)
-                result { throw error }
-                return
-            }
-            guard success else {
-                print("No success, but no error")
-                result { throw Error.NoSuccessDespiteNoError }
-                return
-            }
-            result { sample }
-            print("Yay, stored \(sample) to HealthKit!")
-        }
-    }
-    
-    func checkHealthKitAuthorization(result: AsyncEmptyResult) {
-        
-        switch healthStore.authorizationStatusForType(weightType) {
-            case .SharingDenied:
+        switch healthStore.authorizationStatus(for: weightType) {
+            case .sharingDenied:
                 print("HealthKit access denied")
-                return
-            case .NotDetermined:
+                return Observable(.error(ErrorAuth.denied))
+            case .notDetermined:
                 print("HealthKit access undetermined")
                 break
-            case .SharingAuthorized:
-                return
+            case .sharingAuthorized:
+                return Observable(.success())
         }
-        
-        healthStore.requestAuthorizationTo(types: [weightType]) { _result in
-            result { try _result() }
-        }
+
+        let observer = Observable<Result<Void>>()
+        healthStore.requestAuthorizationTo(types: [weightType])
+            .next { observer.update(.success($0)) }
+            .error { observer.update(.error($0)) }
+        return observer
     }
 
     func humanWeightUnitDivision() -> Int {
         switch massUnit {
-        case HKUnit.stoneUnit(): return 28
-        case HKUnit.poundUnit(): return 2
-        case HKUnit.gramUnitWithMetricPrefix(.Kilo): return 10
+        case HKUnit.stone(): return 28
+        case HKUnit.pound(): return 2
+        case HKUnit.gramUnit(with: .kilo): return 10
         default: return 10
         }
     }
@@ -162,9 +167,9 @@ class HealthManager {
         let division = humanWeightUnitDivision()
         let (min, max): (Int, Int) = {
             switch massUnit {
-                case HKUnit.stoneUnit(): return (0, 100)
-                case HKUnit.poundUnit(): return (0, 1400)
-                case HKUnit.gramUnitWithMetricPrefix(.Kilo): return (50, 150)
+                case HKUnit.stone(): return (0, 100)
+                case HKUnit.pound(): return (0, 1400)
+                case HKUnit.gramUnit(with: .kilo): return (50, 150)
                 default: return (0, 1000)
             }
         }()
@@ -177,11 +182,11 @@ class HealthManager {
 }
 
 
-extension CollectionType where Generator.Element == HKQuantitySample {
+extension Collection where Iterator.Element == HKQuantitySample {
 
-    func averages(unit: CalendarUnit) -> [Generator.Element]? {
+    func averages(_ unit: CalendarUnit) -> [Iterator.Element]? {
 
-        let sorted = self.sort { $0.startDate.isBefore($1.endDate) }
+        let sorted = self.sorted { $0.startDate.isBefore($1.endDate) }
 
         guard let
             first = sorted.first,
@@ -193,7 +198,7 @@ extension CollectionType where Generator.Element == HKQuantitySample {
         guard let firstReferenceDay = firstDate.beginningOf(unit) else {
             return nil
         }
-        var referenceDateInAverageUnit = [NSDate]()
+        var referenceDateInAverageUnit = [Date]()
         referenceDateInAverageUnit.append(firstReferenceDay)
         while let previousReference = referenceDateInAverageUnit.last where previousReference.isBefore(lastDate) {
             guard let nextReference = previousReference.add(unit) else {
@@ -213,10 +218,10 @@ extension CollectionType where Generator.Element == HKQuantitySample {
                 let count = inUnit.count
                 guard count > 0 else { return nil }
                 let averageValue = inUnit
-                    .reduce(0) { $0 + $1.quantity.doubleValueForUnit(massUnit) }
+                    .reduce(0) { $0 + $1.quantity.doubleValue(for: massUnit) }
                     / Double(count)
                 let quantity = HKQuantity(unit: massUnit, doubleValue: averageValue)
-                return HKQuantitySample(type: quantityType, quantity: quantity, startDate: startDate, endDate: endDate)
+                return HKQuantitySample(type: quantityType, quantity: quantity, start: startDate, end: endDate)
             }
         return averages
     }
@@ -225,86 +230,86 @@ extension CollectionType where Generator.Element == HKQuantitySample {
 
 import UIKit
 enum CalendarUnit {
-    case Year, Month, Week, Day
+    case year, month, week, day
 
-    var timeInterval: NSTimeInterval {
-        return NSDate().add(self)!.timeIntervalSinceDate(NSDate())
+    var timeInterval: TimeInterval {
+        return Date().add(self)!.timeIntervalSince(Date())
     }
 }
-extension NSDate {
+extension Date {
 
-    func beginningOfDay() -> NSDate? {
-        let calendar = NSCalendar.currentCalendar()
-        let unitFlags: NSCalendarUnit = [.Year, .Month, .Day, .Hour, .Minute, .Second]
-        let components = calendar.components(unitFlags, fromDate: self)
+    func beginningOfDay() -> Date? {
+        let calendar = Calendar.current()
+        let unitFlags: Calendar.Unit = [.year, .month, .day, .hour, .minute, .second]
+        var components = calendar.components(unitFlags, from: self)
         components.hour = 0
         components.minute = 0
         components.second = 0
-        return calendar.dateFromComponents(components)
+        return calendar.date(from: components)
     }
 
-    func endOfDay() -> NSDate? {
-        let calendar = NSCalendar.currentCalendar()
-        let unitFlags: NSCalendarUnit = [.Year, .Month, .Day, .Hour, .Minute, .Second]
-        let components = calendar.components(unitFlags, fromDate: self)
+    func endOfDay() -> Date? {
+        let calendar = Calendar.current()
+        let unitFlags: Calendar.Unit = [.year, .month, .day, .hour, .minute, .second]
+        var components = calendar.components(unitFlags, from: self)
         components.hour = 23
         components.minute = 59
         components.second = 59
-        return calendar.dateFromComponents(components)
+        return calendar.date(from: components)
     }
 
-    func beginningOf(unit: CalendarUnit) -> NSDate? {
-        let calendar = NSCalendar.currentCalendar()
-        let unitFlags: NSCalendarUnit = [.Year, .Month, .Weekday, .Day, .Hour, .Minute, .Second]
-        let components = calendar.components(unitFlags, fromDate: self)
+    func beginningOf(_ unit: CalendarUnit) -> Date? {
+        let calendar = Calendar.current()
+        let unitFlags: Calendar.Unit = [.year, .month, .weekday, .day, .hour, .minute, .second]
+        var components = calendar.components(unitFlags, from: self)
         switch unit {
-        case .Year:
+        case .year:
             components.month = 1
             components.day = 1
             components.hour = 0
             components.minute = 0
             components.second = 0
-        case .Month:
+        case .month:
             components.day = 1
             components.hour = 0
             components.minute = 0
             components.second = 0
-        case .Week:
-            components.day -= components.weekday - 1
+        case .week:
+            components.day? -= components.weekday.flatMap { $0 - 1 } ?? 0
             components.hour = 0
             components.minute = 0
             components.second = 0
-        case .Day:
+        case .day:
             components.hour = 0
             components.minute = 0
             components.second = 0
         }
-        return calendar.dateFromComponents(components)
+        return calendar.date(from: components)
     }
 
-    func add(unit: CalendarUnit, count: Int = 1) -> NSDate? {
-        let components = NSDateComponents()
+    func add(_ unit: CalendarUnit, count: Int = 1) -> Date? {
+        var components = DateComponents()
         switch unit {
-        case .Year:
+        case .year:
             components.year = count
-        case .Month:
+        case .month:
             components.month = count
-        case .Week:
+        case .week:
             components.weekOfYear = count
-        case .Day:
+        case .day:
             components.day = count
         }
-        let calendar = NSCalendar.currentCalendar()
-        return calendar.dateByAddingComponents(components, toDate: self, options: .MatchFirst)
+        let calendar = Calendar.current()
+        return calendar.date(byAdding: components, to: self, options: .matchFirst)
     }
 
-    func isBefore(date: NSDate) -> Bool {
-        return compare(date) == .OrderedAscending
+    func isBefore(_ date: Date) -> Bool {
+        return compare(date) == .orderedAscending
     }
-    func isSame(date: NSDate) -> Bool {
-        return compare(date) == .OrderedSame
+    func isSame(_ date: Date) -> Bool {
+        return compare(date) == .orderedSame
     }
-    func isAfter(date: NSDate) -> Bool {
-        return compare(date) == .OrderedDescending
+    func isAfter(_ date: Date) -> Bool {
+        return compare(date) == .orderedDescending
     }
 }

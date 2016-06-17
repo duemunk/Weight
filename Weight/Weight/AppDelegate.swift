@@ -8,7 +8,9 @@
 
 import UIKit
 
-let UserActivityNotification = "userActivityNotification"
+extension Notification.Name {
+    static let UserActivity = "userActivityNotification" as Notification.Name
+}
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -16,12 +18,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
 
-    func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
         return true
     }
 
-    func application(application: UIApplication, performActionForShortcutItem shortcutItem: UIApplicationShortcutItem, completionHandler: (Bool) -> Void) {
+    func application(_ application: UIApplication, performActionFor shortcutItem: UIApplicationShortcutItem, completionHandler: (Bool) -> Void) {
         print("Short cut")
         switch shortcutItem.type {
         case QuickActionType.CustomWeight.rawValue:
@@ -34,52 +36,51 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 completionHandler(false)
                 return
             }
-            HealthManager.instance.saveWeight(doubleValue) { result in
-                do {
-                    try result()
+            HealthManager.instance.saveWeight(doubleValue)
+                .next { _ in
                     completionHandler(true)
-                } catch {
-                    print(error)
+                }
+                .error {
+                    print($0)
                     completionHandler(false)
                 }
-            }
         default:
             completionHandler(false)
         }
     }
 
-    func applicationWillResignActive(application: UIApplication) {
+    func applicationWillResignActive(_ application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
         // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
     }
 
-    func applicationDidEnterBackground(application: UIApplication) {
+    func applicationDidEnterBackground(_ application: UIApplication) {
         // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
         // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
     }
 
-    func applicationWillEnterForeground(application: UIApplication) {
+    func applicationWillEnterForeground(_ application: UIApplication) {
         // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
     }
 
-    func applicationDidBecomeActive(application: UIApplication) {
+    func applicationDidBecomeActive(_ application: UIApplication) {
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
     }
 
-    func applicationWillTerminate(application: UIApplication) {
+    func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
     
-    func application(application: UIApplication, continueUserActivity userActivity: NSUserActivity, restorationHandler: ([AnyObject]?) -> Void) -> Bool {
+    func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: ([AnyObject]?) -> Void) -> Bool {
         
         let userInfo = userActivity.userInfo
         print("Received a payload via handoff: \(userInfo)")
-        NotificationCenter.post(UserActivityNotification, object: userActivity, userInfo: userActivity.userInfo)
+        NotificationCenter.default().post(name: .UserActivity, object: userActivity, userInfo: userActivity.userInfo)
         
         return true
     }
     
-    func application(application: UIApplication, didUpdateUserActivity userActivity: NSUserActivity) {
+    func application(_ application: UIApplication, didUpdate userActivity: NSUserActivity) {
         let userInfo = userActivity.userInfo
         print("Updated user activity: \(userActivity) : \(userInfo)")
     }

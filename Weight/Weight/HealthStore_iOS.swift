@@ -8,29 +8,33 @@
 
 import Foundation
 import HealthKit
+import Interstellar
+
 
 extension HKHealthStore {
     
-    func observe(ofType sampleType: HKSampleType, predicate: NSPredicate? = nil, result: AsyncObserverResult) {
-        let observerQuery = HKObserverQuery(sampleType: sampleType, predicate: predicate) { observerQuery, observerQueryCompletionHandler, error in
-            if let error = error {
-                result { throw error }
-                return
+    func observe(ofType sampleType: HKSampleType, predicate: Predicate? = nil) -> Observable<Result<HKObserverQueryCompletionHandler>> {
+        let observer = Observable<Result<(HKObserverQuery, HKObserverQueryCompletionHandler)>>()
+        let observerQuery = HKObserverQuery(sampleType: sampleType, predicate: predicate, updateHandler: completionToObservable(observer: observer))
+        execute(observerQuery)
+
+        let backgroundObserver = Observable<Result<Bool>>()
+        enableBackgroundDelivery(for: sampleType, frequency: .immediate, withCompletion: completionToObservable(observer: backgroundObserver))
+        backgroundObserver
+            .next { success in
+                guard success else {
+                    observer.update(.error(AsyncError.noSuccessDespiteNoError))
+                    return
+                }
+                print("Enabled background delivery for \(sampleType)")
             }
-            result { observerQueryCompletionHandler }
-        }
-        executeQuery(observerQuery)
-        enableBackgroundDeliveryForType(sampleType, frequency: .Immediate) { success, error in
-            if let error = error {
-                result { throw error }
-                return
+            .error {
+                observer.update(.error($0))
             }
-            guard success else {
-                result { throw AsyncError.NoSuccessDespiteNoError }
-                return
+
+        return observer
+            .then {
+                return .success($0.1)
             }
-            // TODO
-            print("Enabled background delivery for \(sampleType)")
-        }
     }
 }

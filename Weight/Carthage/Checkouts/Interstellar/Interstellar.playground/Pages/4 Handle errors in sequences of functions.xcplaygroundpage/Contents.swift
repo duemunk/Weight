@@ -11,7 +11,7 @@ func greetMaybe(subject: String)->Result<String> {
         return .Success("Hello \(subject)")
     } else {
         let error = NSError(domain: "Don't feel like greeting you.", code: 401, userInfo: nil)
-        return .Error(error)
+        return .error(error)
     }
 }
 text

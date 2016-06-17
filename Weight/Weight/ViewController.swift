@@ -8,7 +8,7 @@
 
 import UIKit
 import HealthKit
-import Cartography
+//import Cartography
 import Interstellar
 
 
@@ -25,18 +25,18 @@ class ViewController: UIViewController {
     @IBOutlet weak var chartView: Chart!
     @IBOutlet weak var saveButton: UIButton!
     
-    let weightFormatter = NSMassFormatter.weightMediumFormatter()
-    let dateFormatter = NSDateFormatter(dateStyle: .MediumStyle, timeStyle: .ShortStyle)
-    let dateShortFormatter = NSDateFormatter(dateStyle: .ShortStyle, timeStyle: .ShortStyle)
-    let dateOnlyFormatter = NSDateFormatter(dateStyle: .MediumStyle, timeStyle: .NoStyle)
-    let dateWithOutYearFormatter = NSDateFormatter(template: "MMMd")
+    let weightFormatter = MassFormatter.weightMediumFormatter()
+    let dateFormatter = DateFormatter(dateStyle: .mediumStyle, timeStyle: .shortStyle)
+    let dateShortFormatter = DateFormatter(dateStyle: .shortStyle, timeStyle: .shortStyle)
+    let dateOnlyFormatter = DateFormatter(dateStyle: .mediumStyle, timeStyle: .noStyle)
+    let dateWithOutYearFormatter = DateFormatter(template: "MMMd")
     var pickerWeights: [HKQuantity] {
         return HealthManager.instance.humanWeightOptions()
     }
-    private let healthDataChange = NotificationCenter(name: HealthDataDidChangeNotification)
-    private let healthPreferencesChange = NotificationCenter(name: HealthPreferencesDidChangeNotification)
-    private let userActivityChange = NotificationCenter(name: UserActivityNotification)
-    private let updateUIObservable = Observable<Int>()
+    private let healthDataChange = NotificationCenter_(name: .HealthDataDidChange)
+    private let healthPreferencesChange = NotificationCenter_(name: .HealthPreferencesDidChange)
+    private let userActivityChange = NotificationCenter_(name: .UserActivity)
+    private let updateUIObservable = Observable<Void>()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -46,11 +46,11 @@ class ViewController: UIViewController {
             // TODO: Throttle/debounce
             self.updateUI()
         }
-        healthDataChange.observer?.subscribe { notification in
-            self.updateUIObservable.update(0)
+        healthDataChange.observer?.subscribe { _ in
+            self.updateUIObservable.update()
         }
         healthPreferencesChange.observer?.subscribe { _ in
-            self.updateUIObservable.update(0)
+            self.updateUIObservable.update()
         }
 
         userActivityChange.observer?.subscribe { notification in
@@ -61,49 +61,45 @@ class ViewController: UIViewController {
                 return
             }
             let weightType = HealthManager.instance.weightType
-            let massUnit = HKUnit.gramUnitWithMetricPrefix(.Kilo)
+            let massUnit = HKUnit.gramUnit(with: .kilo)
             let quantity = HKQuantity(unit: massUnit, doubleValue: temporaryWeightInKg)
-            let date = NSDate()
-            let sample = HKQuantitySample(type: weightType, quantity: quantity, startDate: date, endDate: date)
+            let date = Date()
+            let sample = HKQuantitySample(type: weightType, quantity: quantity, start: date, end: date)
             self.updateToWeight(forceWeight: sample)
         }
         
         setupWeightObserver()
 
         saveButton.tap.subscribe { _ in
-            let index = self.weightPickerView.selectedRowInComponent(0)
+            let index = self.weightPickerView.selectedRow(inComponent: 0)
             guard let quantity = self.weightForPickerRow(index) else {
                 return
             }
-            HealthManager.instance.saveWeight(quantity) { result in
-                do {
-                    try result()
+            HealthManager.instance.saveWeight(quantity)
+                .then { _ in
                     self.updateQuickActions()
-                } catch {
-                    print(error)
                 }
-            }
+                .error {
+                    print($0)
+                }
         }
     }
     
     override func preferredStatusBarStyle() -> UIStatusBarStyle {
-        return .LightContent
+        return .lightContent
     }
     
     deinit {
-        NotificationCenter.unobserve(self)
+        NotificationCenter.default().removeObserver(self)
     }
     
     func setupWeightObserver() {
-        HealthManager.instance.healthStore.observe(ofType: HealthManager.instance.weightType) { result in
-            do {
-                let systemCompletionHandler = try result()
-                self.updateUIObservable.update(0)
+        HealthManager.instance.healthStore.observe(ofType: HealthManager.instance.weightType)
+            .next { systemCompletionHandler in
+                self.updateUIObservable.update()
                 systemCompletionHandler()
-            } catch {
-                print(error)
             }
-        }
+            .error { print($0) }
     }
    
     func updateUI() {
@@ -113,44 +109,45 @@ class ViewController: UIViewController {
     }
 
     // MARK: - Weight
-    func updateToWeight(forceWeight forceWeight: HKQuantitySample? = nil) {
+    func updateToWeight(forceWeight: HKQuantitySample? = nil) {
         
-        let quantitySampleBlock: (HKQuantitySample, (() -> ())?) -> () = { quantitySample, completion in
+        let quantitySampleBlock: (HKQuantitySample) -> () = { quantitySample in
             let quantity = quantitySample.quantity
             let massUnit = HealthManager.instance.massUnit
-            let doubleValue = quantity.doubleValueForUnit(massUnit)
-            guard let (_, index) = closest(self.pickerWeights.map { $0.doubleValueForUnit(massUnit) }, toValue: doubleValue) else {
+            let doubleValue = quantity.doubleValue(for: massUnit)
+            guard let (_, index) = closest(self.pickerWeights.map { $0.doubleValue(for: massUnit) }, toValue: doubleValue) else {
                 return
             }
             let massFormatterUnit = HealthManager.instance.massFormatterUnit
-            self.weightLabel.text = self.weightFormatter.stringFromValue(doubleValue, unit: massFormatterUnit)
-            self.weightDetailLabel.text = self.dateFormatter.stringFromDate(quantitySample.startDate)
+            self.weightLabel.text = self.weightFormatter.string(fromValue: doubleValue, unit: massFormatterUnit)
+            self.weightDetailLabel.text = self.dateFormatter.string(from: quantitySample.startDate)
             self.weightPickerView.reloadAllComponents()
             self.weightPickerView.selectRow(index, inComponent: 0, animated: false)
         }
         
         if let forceWeight = forceWeight {
-            quantitySampleBlock(forceWeight, nil)
+            quantitySampleBlock(forceWeight)
             return
         }
         
-        HealthManager.instance.getWeight { result in
-            guard let quantitySample = optionalResult(result) else {
+        HealthManager.instance.getWeight()
+            .then { sample in
                 Async.main {
-                    self.weightLabel.text = self.weightFormatter.stringFromValue(0, unit: HealthManager.instance.massFormatterUnit)
+                    quantitySampleBlock(sample)
+                }
+            }
+            .error {
+                print($0)
+                Async.main {
+                    self.weightLabel.text = self.weightFormatter.string(fromValue: 0, unit: HealthManager.instance.massFormatterUnit)
                     self.weightDetailLabel.text = "No existing historic data"
                     self.weightPickerView.selectRow(0, inComponent: 0, animated: true)
                 }
-                return
             }
-            Async.main {
-                quantitySampleBlock(quantitySample, nil)
-            }
-        }
     }
     
-    func weightForPickerRow(index: Int) -> HKQuantity? {
-        let index = weightPickerView.selectedRowInComponent(0)
+    func weightForPickerRow(_ index: Int) -> HKQuantity? {
+        let index = weightPickerView.selectedRow(inComponent: 0)
         guard let quantity = pickerWeights[safe: index] else {
             return nil
         }
@@ -159,13 +156,11 @@ class ViewController: UIViewController {
 
     // MARK: - Quick Actions
     func updateQuickActions() {
-        HealthManager.instance.getWeights { result in
-            guard let quantitySamples = optionalResult(result) else {
-                return
-            }
-            Async.userInitiated {
+        HealthManager.instance.getWeights()
+            .flatMap(Queue.background)
+            .then { quantitySamples in
                 let massUnit = HealthManager.instance.massUnit
-                let values = quantitySamples.map { $0.quantity.doubleValueForUnit(massUnit) }
+                let values = quantitySamples.map { $0.quantity.doubleValue(for: massUnit) }
 
                 let increment = 1 / Double(HealthManager.instance.humanWeightUnitDivision())
 
@@ -183,13 +178,13 @@ class ViewController: UIViewController {
                         }
                     }()
                 }
-                let sortedValues = aggregate.sort { $0.1 > $1.1 }.map { $0.0 }
+                let sortedValues = aggregate.sorted { $0.1 > $1.1 }.map { $0.0 }
                 var shortcuts = [UIApplicationShortcutItem]()
                 // Take 3 most usual changes to weight
                 let bestValues = sortedValues[0..<min(3, sortedValues.count)]
                 if let latestSample = quantitySamples.last {
                     for value in bestValues {
-                        let doubleValue = Double(value) * increment + latestSample.quantity.doubleValueForUnit(massUnit)
+                        let doubleValue = Double(value) * increment + latestSample.quantity.doubleValue(for: massUnit)
                         let shortcut: UIApplicationShortcutItem = {
                             if value == 0 {
                                 return self.sameWeightShortcut(for: latestSample)
@@ -201,7 +196,7 @@ class ViewController: UIViewController {
                         shortcuts.append(shortcut)
                     }
                     if bestValues.count == 0 {
-                        let latestDoubleValue = latestSample.quantity.doubleValueForUnit(massUnit)
+                        let latestDoubleValue = latestSample.quantity.doubleValue(for: massUnit)
                         shortcuts.append(self.upWeightShortcut(for: latestDoubleValue + increment))
                         shortcuts.append(self.sameWeightShortcut(for: latestSample))
                         shortcuts.append(self.downWeightShortcut(for: latestDoubleValue - increment))
@@ -210,29 +205,29 @@ class ViewController: UIViewController {
                 } else {
                     shortcuts.append(self.customWeightShortcut(with: "Add weight"))
                 }
-
-                Async.main {
-                    UIApplication.sharedApplication().shortcutItems = shortcuts
-                }
+                return .success(shortcuts)
             }
-        }
+            .flatMap(Queue.main)
+            .then { shortcuts in
+                UIApplication.shared().shortcutItems = shortcuts
+            }
     }
 
     func sameWeightShortcut(for previousSample: HKQuantitySample) -> UIApplicationShortcutItem {
         let massUnit = HealthManager.instance.massUnit
         let formatter = HealthManager.instance.massFormatterUnit
-        let doubleValue = previousSample.quantity.doubleValueForUnit(massUnit)
-        let weightString = weightFormatter.stringFromValue(doubleValue, unit: formatter)
+        let doubleValue = previousSample.quantity.doubleValue(for: massUnit)
+        let weightString = weightFormatter.string(fromValue: doubleValue, unit: formatter)
         return shortcut(for: .SameWeightAsLast,
                         imageName: "Same",
                         title: weightString,
-                        subtitle: "Last: " + self.dateShortFormatter.stringFromDate(previousSample.startDate),
+                        subtitle: "Last: " + self.dateShortFormatter.string(from: previousSample.startDate),
                         value: doubleValue)
     }
 
     func upWeightShortcut(for doubleValue: Double) -> UIApplicationShortcutItem {
         let formatter = HealthManager.instance.massFormatterUnit
-        let weightString = weightFormatter.stringFromValue(doubleValue, unit: formatter)
+        let weightString = weightFormatter.string(fromValue: doubleValue, unit: formatter)
         return shortcut(for: .UpWeight,
                         imageName: "Up",
                         title: weightString,
@@ -241,7 +236,7 @@ class ViewController: UIViewController {
 
     func downWeightShortcut(for doubleValue: Double) -> UIApplicationShortcutItem {
         let formatter = HealthManager.instance.massFormatterUnit
-        let weightString = weightFormatter.stringFromValue(doubleValue, unit: formatter)
+        let weightString = weightFormatter.string(fromValue: doubleValue, unit: formatter)
         return shortcut(for: .DownWeight,
                         imageName: "Down",
                         title: weightString,
@@ -269,108 +264,87 @@ class ViewController: UIViewController {
 
 
     // MARK: - Chart
-    func updateChart(average: CalendarUnit = .Week, range: (unit: CalendarUnit, count: Int) = (.Month, 6)) {
-        chartView.userInteractionEnabled = false
-        chartView.gridColor = UIColor.whiteColor().colorWithAlphaComponent(0.3)
-        chartView.labelColor = UIColor.whiteColor() //.colorWithAlphaComponent(0.5)
+    func updateChart(_ average: CalendarUnit = .week, range: (unit: CalendarUnit, count: Int) = (.month, 6)) {
+        chartView.isUserInteractionEnabled = false
+        chartView.gridColor = UIColor.white().withAlphaComponent(0.3)
+        chartView.labelColor = UIColor.white() //.colorWithAlphaComponent(0.5)
         chartView.lineWidth = 1.5
         chartView.dotSize = 1.5
-        chartView.xLabelsFormatter = {
+        chartView.xLabelsFormatter = { (index, value) in
             (self.dateWithOutYearFormatter ?? self.dateOnlyFormatter)
-                .stringFromDate(NSDate(timeIntervalSince1970: Double($1)))
+                .string(from: Date(timeIntervalSince1970: Double(value)))
         }
 
-        HealthManager.instance.getWeights { result in
-            guard let quantitySamples = optionalResult(result) else {
-                return
-            }
-            Async.userInitiated {
+        HealthManager.instance.getWeights()
+            .flatMap(Queue.queue(DispatchQueue.global(attributes: .qosUserInitiated)))
+            .then { quantitySamples in
                 let massUnit = HealthManager.instance.massUnit
 
-                guard let rangeStart = quantitySamples.last?.startDate.add(range.unit, count: -range.count) else { return }
+                guard let rangeStart = quantitySamples.last?.startDate.add(range.unit, count: -range.count) else {
+                    return .error(NSError(domain: "", code: 0, userInfo: nil))
+                }
                 let rangedSamples = quantitySamples.filter { $0.startDate.isAfter(rangeStart) }
 
-                let values: Array<(x: Double, y: Double)> = rangedSamples.map { ($0.startDate.timeIntervalSince1970, $0.quantity.doubleValueForUnit(massUnit)) }
+                let values: Array<(x: Double, y: Double)> = rangedSamples.map { ($0.startDate.timeIntervalSince1970, $0.quantity.doubleValue(for: massUnit)) }
 
                 let individualSeries = ChartSeries(data: values)
-                individualSeries.color = UIColor.whiteColor()//.colorWithAlphaComponent(0.5)
+                individualSeries.color = UIColor.white()//.colorWithAlphaComponent(0.5)
                 individualSeries.line = false
                 individualSeries.dots = true
 
                 let valuesWeekly: Array<(x: Double, y: Double)>? = rangedSamples
                     .averages(average)?
-                    .map { ($0.endDate.timeIntervalSince1970, $0.quantity.doubleValueForUnit(massUnit)) }
+                    .map { ($0.endDate.timeIntervalSince1970, $0.quantity.doubleValue(for: massUnit)) }
                 let runningAverageSeries: ChartSeries? = valuesWeekly != nil ? ChartSeries(data: valuesWeekly!) : nil
-                runningAverageSeries?.color = UIColor.whiteColor().colorWithAlphaComponent(0.6)
+                runningAverageSeries?.color = UIColor.white().withAlphaComponent(0.6)
                 runningAverageSeries?.line = true
 
-                Async.main {
-                    self.chartView.removeSeries()
-                    self.chartView.addSeries(individualSeries)
-                    if let runningAverageSeries = runningAverageSeries {
-                        self.chartView.addSeries(runningAverageSeries)
-                    }
-
-                    self.chartView.xLabels = rangeStart.timeIntervalSince1970
-                        .stride(through: NSDate().timeIntervalSince1970, by: range.unit.timeInterval)
-                        .map { Float($0) }
-                }
-
-                // i-schuetz/SwiftCharts
-
-                // ios-charts
-//                var index = 0
-//                let yValues = values.map { ChartDataEntry(value: $0, xIndex: index++) }
-//                let set = LineChartDataSet(yVals: yValues, label: "Weight")
-//
-//                let lineChartData = LineChartData(xVals: xValues, dataSets: [set])
-//
-////                set.colors = [UIColor.whiteColor()]
-//                set.colors = ChartColorTemplates.joyful()
-//                set.lineWidth = 4
-////                set.drawCubicEnabled = true
-//
-//                Async.main {
-//                    self.lineChartView.data = lineChartData
-//                }
+                return .success(individualSeries, runningAverageSeries, rangeStart, range)
             }
-        }
-
-
+            .flatMap(Queue.main)
+            .then { (individualSeries: ChartSeries, runningAverageSeries: ChartSeries?, rangeStart: Date, range: (unit: CalendarUnit, count: Int)) in
+                self.chartView.removeSeries()
+                self.chartView.addSeries(individualSeries)
+                if let runningAverageSeries = runningAverageSeries {
+                    self.chartView.addSeries(runningAverageSeries)
+                }
+                self.chartView.xLabels = stride(from: rangeStart.timeIntervalSince1970, through: Date().timeIntervalSince1970, by: range.unit.timeInterval)
+                    .map(Float.init)
+            }
     }
 }
 
 extension ViewController: UIPickerViewDataSource {
     
-    func numberOfComponentsInPickerView(pickerView: UIPickerView) -> Int {
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
         return 1
     }
     
-    func pickerView(pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
         return pickerWeights.count
     }
 }
 
 extension ViewController: UIPickerViewDelegate {
     
-    func pickerView(pickerView: UIPickerView, attributedTitleForRow row: Int, forComponent component: Int) -> NSAttributedString? {
+    func pickerView(_ pickerView: UIPickerView, attributedTitleForRow row: Int, forComponent component: Int) -> AttributedString? {
         let quantity = pickerWeights[safe: row]
         let massUnit = HealthManager.instance.massUnit
         let massFormatterUnit = HealthManager.instance.massFormatterUnit
-        let weight = quantity?.doubleValueForUnit(massUnit) ?? 0
-        let title = weightFormatter.stringFromValue(weight, unit: massFormatterUnit)
-        let attributedTitle = NSAttributedString(string: title, attributes: [NSForegroundColorAttributeName : UIColor.whiteColor()])
+        let weight = quantity?.doubleValue(for: massUnit) ?? 0
+        let title = weightFormatter.string(fromValue: weight, unit: massFormatterUnit)
+        let attributedTitle = AttributedString(string: title, attributes: [NSForegroundColorAttributeName : UIColor.white()])
         return attributedTitle
     }
     
-    func pickerView(pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         guard let tempWeight = weightForPickerRow(row) else {
             return
         }
         let activityDictionary: [NSObject: AnyObject] = ["TemporaryWeight" : tempWeight]
         if let userActivity = self.userActivity {
-            userActivity.addUserInfoEntriesFromDictionary(activityDictionary)
-            self.userActivity?.needsSave
+            userActivity.addUserInfoEntries(from: activityDictionary)
+            self.userActivity?.needsSave = true
         } else {
             let activityType = "dk.developmunk.weight.updatingWeight"
             let activityTitle = "Updating to weight \(tempWeight)"

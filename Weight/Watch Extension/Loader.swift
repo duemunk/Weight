@@ -15,16 +15,16 @@ class Loader {
     let interfaceImages: [WKInterfaceImage]
     let tintColor: UIColor
     let size: CGSize
-    let duration: NSTimeInterval
-    private var timer: NSTimer?
+    let duration: TimeInterval
+    private var timer: Timer?
     private(set) var animating: Bool = false
     
     convenience init(controller: WKInterfaceController, interfaceImages: [WKInterfaceImage]) {
         let size = controller.contentFrame.size
-        self.init(controller: controller, interfaceImages: interfaceImages, tintColor: .whiteColor(), size: size, duration: 1)
+        self.init(controller: controller, interfaceImages: interfaceImages, tintColor: .white(), size: size, duration: 1)
     }
     
-    init(controller: WKInterfaceController, interfaceImages: [WKInterfaceImage], tintColor: UIColor, size: CGSize, duration: NSTimeInterval) {
+    init(controller: WKInterfaceController, interfaceImages: [WKInterfaceImage], tintColor: UIColor, size: CGSize, duration: TimeInterval) {
         self.controller = controller
         self.interfaceImages = interfaceImages
         self.size = size
@@ -39,7 +39,7 @@ class Loader {
     }
     
     func startAnimating() {
-        timer = NSTimer.scheduledTimerWithTimeInterval(duration, target: self, selector: #selector(Loader.setupAnimation), userInfo: nil, repeats: true)
+        timer = Timer.scheduledTimer(timeInterval: duration, target: self, selector: #selector(Loader.setupAnimation), userInfo: nil, repeats: true)
         animating = true
     }
     
@@ -53,15 +53,15 @@ class Loader {
 
 class Animation {
 
-    func drawImage(size: CGSize, tintColor: UIColor) -> UIImage {
-        let scale = WKInterfaceDevice.currentDevice().screenScale
+    func drawImage(_ size: CGSize, tintColor: UIColor) -> UIImage {
+        let scale = WKInterfaceDevice.current().screenScale
         
         UIGraphicsBeginImageContextWithOptions(size, false, scale)
         
-        let center = CGPointMake(size.width/2, size.height/2)
+        let center = CGPoint(x: size.width/2, y: size.height/2)
         let radius = min(size.width/2, size.height/2) / 2
         let circlePath = UIBezierPath()
-        circlePath.addArcWithCenter(center, radius: radius, startAngle: 0, endAngle: CGFloat(2 * M_PI), clockwise: true)
+        circlePath.addArc(withCenter: center, radius: radius, startAngle: 0, endAngle: CGFloat(2 * M_PI), clockwise: true)
         circlePath.lineWidth = 2
         tintColor.setFill()
         circlePath.fill()
@@ -71,20 +71,20 @@ class Animation {
         let img = UIGraphicsGetImageFromCurrentImageContext();
         UIGraphicsEndImageContext()
         
-        return img
+        return img!
     }
     
-    func setupAnimationInController(controller: WKInterfaceController, images: [WKInterfaceImage], size: CGSize, tintColor: UIColor, duration: NSTimeInterval) {
+    func setupAnimationInController(_ controller: WKInterfaceController, images: [WKInterfaceImage], size: CGSize, tintColor: UIColor, duration: TimeInterval) {
         let image = images.first!
         let img = drawImage(size, tintColor: tintColor)
         image.setImage(img)
         image.setAlpha(1)
         image.setWidth(0)
         image.setHeight(0)
-        image.setHorizontalAlignment(.Center)
-        image.setVerticalAlignment(.Center)
+        image.setHorizontalAlignment(.center)
+        image.setVerticalAlignment(.center)
         
-        controller.animateWithDuration(duration) {
+        controller.animate(withDuration: duration) {
             image.setWidth(size.width)
             image.setHeight(size.height)
             image.setAlpha(0)

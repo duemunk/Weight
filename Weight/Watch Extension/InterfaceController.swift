@@ -22,17 +22,17 @@ class InterfaceController: WKInterfaceController {
     
 //    var loader: Loader?
 
-    let weightFormatter = NSMassFormatter.weightMediumFormatter()
-    let dateFormatter = NSDateFormatter(dateStyle: .MediumStyle, timeStyle: .ShortStyle)
+    let weightFormatter = MassFormatter.weightMediumFormatter()
+    let dateFormatter = DateFormatter(dateStyle: .mediumStyle, timeStyle: .shortStyle)
     
     var selectedWeight: HKQuantity?
     var pickerWeights: [HKQuantity] {
         return HealthManager.instance.humanWeightOptions()
     }
     
-    override func awakeWithContext(context: AnyObject?) {
+    override func awake(withContext context: AnyObject?) {
         print("awakeWithContext \(context)")
-        super.awakeWithContext(context)
+        super.awake(withContext: context)
         
 //        loader = Loader(controller: self, interfaceImages: [loaderImage])
         
@@ -40,15 +40,16 @@ class InterfaceController: WKInterfaceController {
         updatePicker()
         
 //        setTitle("Weight")
-        
-        NotificationCenter.observe(HealthDataDidChangeNotification) { [weak self] notification in
+
+        NotificationCenter.default().addObserver(forName: .HealthDataDidChange, object: nil, queue: nil) { [weak self] notification in
             Async.main {
                 self?.updateWeight().subscribe { _ in
                     self?.updateComplications()
                 }
             }
         }
-        NotificationCenter.observe(HealthPreferencesDidChangeNotification) { [weak self] notification in
+
+        NotificationCenter.default().addObserver(forName: .HealthPreferencesDidChange, object: nil, queue: nil) { [weak self] notification in
             Async.main {
                 self?.updatePicker()
                 self?.updateWeight().subscribe { _ in
@@ -96,7 +97,7 @@ class InterfaceController: WKInterfaceController {
         super.didDeactivate()
     }
     
-    @IBAction func pickerDidChange(index: Int) {
+    @IBAction func pickerDidChange(_ index: Int) {
         let weight = pickerWeights[safe: index]
         selectedWeight = weight
         print("Selected weight: \(weight)")
@@ -106,8 +107,8 @@ class InterfaceController: WKInterfaceController {
         guard let tempWeight = weight else { return }
         
         let activityType = "dk.developmunk.Weight.updatingWeight"
-        let unit = HKUnit.gramUnitWithMetricPrefix(.Kilo)
-        let value = tempWeight.doubleValueForUnit(unit)
+        let unit = HKUnit.gramUnit(with: .kilo)
+        let value = tempWeight.doubleValue(for: unit)
         let activityDictionary: [NSObject: AnyObject] = [
             "TemporaryWeightKg" : value,
             "TemporaryWeightDescription": "\(tempWeight)"]
@@ -117,43 +118,44 @@ class InterfaceController: WKInterfaceController {
     @IBAction func didTapSaveButton() {
         guard let selectedWeight = selectedWeight else {
             print("No selected weight. Couldn't save.")
-            WKInterfaceDevice.currentDevice().playHaptic(.Failure)
+            WKInterfaceDevice.current().play(.failure)
             return
         }
 //        NSProcessInfo.processInfo().performExpiringActivityWithReason("Make sure weight is stored, even though user went away from app") { expired in
 //          guard expired == false else { return }
-            HealthManager.instance.saveWeight(selectedWeight) { result in
-                do {
-                    let sample = try result()
-                    WKInterfaceDevice.currentDevice().playHaptic(.Success)
-                    self.updatePicker(referenceWeight: sample) // Update to
-                    self.updateWeight().subscribe { _ in
-                        self.updateComplications()
-                    }
-                } catch {
-                    print("Couldn't save weight: \(error)")
-                    WKInterfaceDevice.currentDevice().playHaptic(.Failure)
+        HealthManager.instance.saveWeight(selectedWeight)
+            .then {
+                WKInterfaceDevice.current().play(.success)
+                self.updatePicker(referenceWeight: $0) // Update to
+                self.updateWeight().subscribe { _ in
+                    self.updateComplications()
                 }
             }
+            .error {
+                print("Couldn't save weight: \($0)")
+                WKInterfaceDevice.current().play(.failure)
+            }
+
+
 //        }
     }
 
-    private func updateWeight(forceWeight forceWeight: HKQuantitySample? = nil) -> Observable<Int> { //  = WeightsLocalStore.instance.lastWeight
-        let observable = Observable<Int>()
+    private func updateWeight(forceWeight: HKQuantitySample? = nil) -> Observable<Void> { //  = WeightsLocalStore.instance.lastWeight
+        let observable = Observable<Void>()
 
         let quantitySampleBlock: (HKQuantitySample) -> () = { quantitySample in
             // Date
-            self.dateLabel.setText(self.dateFormatter.stringFromDate(quantitySample.startDate))
+            self.dateLabel.setText(self.dateFormatter.string(from: quantitySample.startDate))
             // Weight
             let quantity = quantitySample.quantity
             let massUnit = HealthManager.instance.massUnit
-            let doubleValue = quantity.doubleValueForUnit(massUnit)
-            guard let (_, index) = self.pickerWeights.map({ $0.doubleValueForUnit(massUnit) }).closestToElement(doubleValue) else {
-                observable.update(0)
+            let doubleValue = quantity.doubleValue(for: massUnit)
+            guard let (_, index) = self.pickerWeights.map({ $0.doubleValue(for: massUnit) }).closestToElement(doubleValue) else {
+                observable.update()
                 return
             }
             self.picker.setSelectedItemIndex(index)
-            observable.update(0)
+            observable.update()
         }
         
         if let forceWeight = forceWeight {
@@ -161,17 +163,20 @@ class InterfaceController: WKInterfaceController {
             return observable
         }
         // Get latest weight
-        HealthManager.instance.getWeight { result in
-            Async.main {
-                // Setup picker
-                guard let quantitySample = optionalResult(result) else {
-                    self.dateLabel.setText("Add your weight")
-                    observable.update(0)
-                    return
+        HealthManager.instance.getWeight()
+            .then { sample in
+                Async.main {
+                    // Setup picker
+                    quantitySampleBlock(sample)
                 }
-                quantitySampleBlock(quantitySample)
             }
-        }
+            .error {
+                print($0)
+                Async.main {
+                    self.dateLabel.setText("Add your weight")
+                    observable.update()
+                }
+            }
         return observable
     }
     
@@ -182,12 +187,12 @@ class InterfaceController: WKInterfaceController {
         let massFormatterUnit = HealthManager.instance.massFormatterUnit
         for weightQuantity in pickerWeights {
             let item = WKPickerItem()
-            let weight = weightQuantity.doubleValueForUnit(massUnit)
-            item.title = weightFormatter.stringFromValue(weight, unit: massFormatterUnit)
+            let weight = weightQuantity.doubleValue(for: massUnit)
+            item.title = weightFormatter.string(fromValue: weight, unit: massFormatterUnit)
             if let referenceWeightQuantity = referenceWeightQuantitySample?.quantity {
-                let referenceWeight = referenceWeightQuantity.doubleValueForUnit(massUnit)
+                let referenceWeight = referenceWeightQuantity.doubleValue(for: massUnit)
                 let diffWeight = weight - referenceWeight
-                let diffString = weightFormatter.stringFromValue(abs(diffWeight), unit: massFormatterUnit)
+                let diffString = weightFormatter.string(fromValue: abs(diffWeight), unit: massFormatterUnit)
                 switch diffWeight {
                     case 0: item.caption = "="
                     case let d where d > 0: item.caption = "+" + diffString
@@ -207,7 +212,7 @@ class InterfaceController: WKInterfaceController {
             return
         }
         for complication in activeComplications {
-            complicationServer.reloadTimelineForComplication(complication)
+            complicationServer.reloadTimeline(for: complication)
         }
     }
 }
@@ -235,15 +240,17 @@ class InterfaceController: WKInterfaceController {
 //}
 
 
-extension Array where Element: FloatingPointType {
+extension Array where Element: FloatingPoint {
     
-    func closestToElement(element: Element) -> (Element, Array.Index)? {
+    func closestToElement(_ element: Element) -> (Element, Array.Index)? {
         let diffs = map { abs($0 - element) }
-        guard let someDiffValue = diffs.first else {
-            return nil
-        }
-        let minimumDiff = diffs.reduce(someDiffValue) { min($0, $1) }
-        guard let index = diffs.indexOf(minimumDiff) else {
+
+        guard let minimumDiff = diffs.min() else { return nil }
+//        guard let someDiffValue = diffs.first else { return nil }
+//        let minimumDiff = diffs.reduce(someDiffValue) {
+//            return min($0, $1)
+//        }
+        guard let index = diffs.index(of: minimumDiff) else {
             return nil
         }
         return (self[index], index)
@@ -253,9 +260,9 @@ extension Array where Element: FloatingPointType {
 
 
 
-var date = NSDate()
+var date = Date()
 func tic() {
-    date = NSDate()
+    date = Date()
     print("Tic: ", date)
 }
 func toc() {
