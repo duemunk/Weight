@@ -21,7 +21,7 @@ extension HKHealthStore {
         let backgroundObserver = Observable<Result<Bool>>()
         enableBackgroundDelivery(for: sampleType, frequency: .immediate, withCompletion: completionToObservable(observer: backgroundObserver))
         backgroundObserver
-            .next { success in
+            .then { success in
                 guard success else {
                     observer.update(.error(AsyncError.noSuccessDespiteNoError))
                     return

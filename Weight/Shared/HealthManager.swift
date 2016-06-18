@@ -32,9 +32,15 @@ class HealthManager {
     let healthStore = HKHealthStore()
 
     let weightType = HKObjectType.quantityType(forIdentifier: .bodyMass)!
-    private(set) var massUnit: HKUnit = .gramUnit(with: .kilo)  // Default to [kg]
+    private(set) var massUnit: HKUnit = .gramUnit(with: .kilo) { // Default to [kg]
+        didSet {
+            guard massUnit != oldValue else { return }
+            massFormatterUnit = HKUnit.massFormatterUnit(from: massUnit)
+            NotificationCenter.default().post(name: .HealthPreferencesDidChange, object: nil)
+        }
+    }
     private(set) var massFormatterUnit = HKUnit.massFormatterUnit(from: .gramUnit(with: .kilo))
-    
+
     init() {
         
         if !HKHealthStore.isHealthDataAvailable() {
@@ -48,17 +54,16 @@ class HealthManager {
         }
         
         // Setup access
-        checkHealthKitAuthorization { [weak self] result in
-            do {
-                try result()
-                self?.updatePreferredUnits()
-            } catch {
-                print(error)
+        checkHealthKitAuthorization()
+            .then {
+                self.updatePreferredUnits()
             }
-            defer {
+            .error { print($0) }
+            .flatMap(Queue.main)
+            .next {
                 NotificationCenter.default().post(name: .HealthDataDidChange, object: nil)
             }
-        }
+
 
         // Initial setup of preferred units
         updatePreferredUnits()
@@ -72,9 +77,6 @@ class HealthManager {
         healthStore.preferredUnit(forQuantityType: weightType)
             .then { unit in
                 self.massUnit = unit
-                self.massFormatterUnit = HKUnit.massFormatterUnit(from: unit)
-
-                NotificationCenter.default().post(name: .HealthPreferencesDidChange, object: nil)
             }
             .error { print($0) }
     }
@@ -149,7 +151,7 @@ class HealthManager {
 
         let observer = Observable<Result<Void>>()
         healthStore.requestAuthorizationTo(types: [weightType])
-            .next { observer.update(.success($0)) }
+            .then { observer.update(.success($0)) }
             .error { observer.update(.error($0)) }
         return observer
     }

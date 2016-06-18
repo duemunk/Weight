@@ -12,6 +12,71 @@ import HealthKit
 import Interstellar
 
 
+public extension Observable {
+    /**
+     Creates a new signal that mirrors the original signal but is delayed by x seconds. If no queue is specified, the new signal will call it's observers and transforms on the main queue.
+     */
+    public func delay(_ seconds: TimeInterval, queue: DispatchQueue = .main) -> Observable<T> {
+        let signal = Observable<T>()
+        subscribe { result in
+            queue.after(when: DispatchTime.now() + seconds) {
+                signal.update(result)
+            }
+        }
+        return signal
+    }
+}
+
+
+private var ObserverableUpdateCalledHandle: UInt8 = 0
+extension Observable {
+    internal var lastCalled: Date? {
+        get {
+            if let handle = objc_getAssociatedObject(self, &ObserverableUpdateCalledHandle) as? Date {
+                return handle
+            } else {
+                return nil
+            }
+        }
+        set {
+            objc_setAssociatedObject(self, &ObserverableUpdateCalledHandle, newValue, .OBJC_ASSOCIATION_COPY_NONATOMIC)
+        }
+    }
+
+    /**
+     Creates a new signal that is only firing once per specified time interval. The last
+     call to update will always be delivered (although it might be delayed up to the
+     specified amount of seconds).
+     */
+    public func debounce(_ seconds: TimeInterval) -> Observable<T> {
+        let observer = Observable<T>()
+
+        subscribe { value in
+            let currentTime = Date()
+            func updateIfNeeded(_ observer: Observable<T>) -> (T) -> Void {
+                return { value in
+                    let timeSinceLastCall = observer.lastCalled?.timeIntervalSinceNow
+                    if timeSinceLastCall == nil || timeSinceLastCall <= -seconds {
+                        // no update before or update outside of debounce window
+                        observer.lastCalled = Date()
+                        observer.update(value)
+                    } else {
+                        // skip result if there was a newer result
+                        if currentTime.compare(observer.lastCalled!) == .orderedDescending {
+                            let s = Observable<T>()
+                            s.delay(seconds - timeSinceLastCall!).subscribe(updateIfNeeded(observer))
+                            s.update(value)
+                        }
+                    }
+                }
+            }
+            updateIfNeeded(observer)(value)
+        }
+
+        return observer
+    }
+}
+
 enum QuickActionType: String {
     case UpWeight, SameWeightAsLast, DownWeight, CustomWeight
 }
@@ -41,19 +106,19 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
+        updateUIObservable
+            .flatMap(Queue.main)
+            .debounce(0.05)
+            .map { self.updateUI() }
 
-        updateUIObservable.subscribe { _ in
-            // TODO: Throttle/debounce
-            self.updateUI()
-        }
-        healthDataChange.observer?.subscribe { _ in
+        healthDataChange.observer.subscribe { _ in
             self.updateUIObservable.update()
         }
-        healthPreferencesChange.observer?.subscribe { _ in
+        healthPreferencesChange.observer.subscribe { _ in
             self.updateUIObservable.update()
         }
 
-        userActivityChange.observer?.subscribe { notification in
+        userActivityChange.observer.map { notification in
             guard let
                 userActivity = notification.object as? NSUserActivity,
                 userInfo = userActivity.userInfo as? [String: AnyObject],
@@ -76,12 +141,7 @@ class ViewController: UIViewController {
                 return
             }
             HealthManager.instance.saveWeight(quantity)
-                .then { _ in
-                    self.updateQuickActions()
-                }
-                .error {
-                    print($0)
-                }
+                .error { print($0) }
         }
     }
     
@@ -95,17 +155,19 @@ class ViewController: UIViewController {
     
     func setupWeightObserver() {
         HealthManager.instance.healthStore.observe(ofType: HealthManager.instance.weightType)
-            .next { systemCompletionHandler in
+            .then { systemCompletionHandler in
                 self.updateUIObservable.update()
                 systemCompletionHandler()
             }
             .error { print($0) }
     }
-   
+
     func updateUI() {
-        updateToWeight()
-        updateQuickActions()
-        updateChart()
+        Async.main {
+            self.updateToWeight()
+            self.updateQuickActions()
+            self.updateChart()
+        }
     }
 
     // MARK: - Weight
@@ -131,18 +193,15 @@ class ViewController: UIViewController {
         }
         
         HealthManager.instance.getWeight()
+            .flatMap(Queue.main)
             .then { sample in
-                Async.main {
-                    quantitySampleBlock(sample)
-                }
+                quantitySampleBlock(sample)
             }
             .error {
                 print($0)
-                Async.main {
-                    self.weightLabel.text = self.weightFormatter.string(fromValue: 0, unit: HealthManager.instance.massFormatterUnit)
-                    self.weightDetailLabel.text = "No existing historic data"
-                    self.weightPickerView.selectRow(0, inComponent: 0, animated: true)
-                }
+                self.weightLabel.text = self.weightFormatter.string(fromValue: 0, unit: HealthManager.instance.massFormatterUnit)
+                self.weightDetailLabel.text = "No existing historic data"
+                self.weightPickerView.selectRow(0, inComponent: 0, animated: true)
             }
     }
     
@@ -159,6 +218,7 @@ class ViewController: UIViewController {
         HealthManager.instance.getWeights()
             .flatMap(Queue.background)
             .then { quantitySamples in
+                print("background false ==", Thread.isMainThread())
                 let massUnit = HealthManager.instance.massUnit
                 let values = quantitySamples.map { $0.quantity.doubleValue(for: massUnit) }
 
@@ -342,8 +402,8 @@ extension ViewController: UIPickerViewDelegate {
             return
         }
         let activityDictionary: [NSObject: AnyObject] = ["TemporaryWeight" : tempWeight]
-        if let userActivity = self.userActivity {
-            userActivity.addUserInfoEntries(from: activityDictionary)
+        if self.userActivity != nil {
+            self.userActivity?.addUserInfoEntries(from: activityDictionary)
             self.userActivity?.needsSave = true
         } else {
             let activityType = "dk.developmunk.weight.updatingWeight"

@@ -210,7 +210,7 @@ public class Chart: UIControl {
     override public func draw(_ rect: CGRect) {
         #if TARGET_INTERFACE_BUILDER
             drawIBPlaceholder()
-            #else
+        #else
             drawChart()
         #endif
     }

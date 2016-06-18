@@ -36,22 +36,18 @@ import Interstellar
 //}
 
 class NotificationCenter_: NSObject {
-    var observer: Observable<Notification>? = Observable<Notification>(options: .NoInitialValue) {
-        didSet {
-            if observer == nil,
-                let notificationObserver = notificationObserver {
-                NotificationCenter.default().removeObserver(notificationObserver)
-                self.notificationObserver = nil
-            }
-        }
-    }
-    private var notificationObserver: NSObjectProtocol?
+    var observer: Observable<Notification> = Observable<Notification>(options: .NoInitialValue)
+    private var notificationObserver: NSObjectProtocol!
 
     init(name: NSNotification.Name) {
         super.init()
-        notificationObserver = Foundation.NotificationCenter.default().addObserver(forName: name, object: nil, queue: nil) { [weak self] notification in
-            self?.observer?.update(notification)
+        notificationObserver = NotificationCenter.default().addObserver(forName: name, object: nil, queue: nil) { [weak self] notification in
+            self?.observer.update(notification)
         }
+    }
+
+    deinit {
+        NotificationCenter.default().removeObserver(notificationObserver)
     }
 
 //    class func post(_ name: String, object: AnyObject? = nil, userInfo: [NSObject : AnyObject]? = nil) {

@@ -37,7 +37,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 return
             }
             HealthManager.instance.saveWeight(doubleValue)
-                .next { _ in
+                .then { _ in
                     completionHandler(true)
                 }
                 .error {
