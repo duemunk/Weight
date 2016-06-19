@@ -194,9 +194,7 @@ class ViewController: UIViewController {
         
         HealthManager.instance.getWeight()
             .flatMap(Queue.main)
-            .then { sample in
-                quantitySampleBlock(sample)
-            }
+            .then(quantitySampleBlock)
             .error {
                 print($0)
                 self.weightLabel.text = self.weightFormatter.string(fromValue: 0, unit: HealthManager.instance.massFormatterUnit)
@@ -217,109 +215,13 @@ class ViewController: UIViewController {
     func updateQuickActions() {
         HealthManager.instance.getWeights()
             .flatMap(Queue.background)
-            .then { quantitySamples in
-                print("background false ==", Thread.isMainThread())
-                let massUnit = HealthManager.instance.massUnit
-                let values = quantitySamples.map { $0.quantity.doubleValue(for: massUnit) }
-
-                let increment = 1 / Double(HealthManager.instance.humanWeightUnitDivision())
-
-                var previousValue = values.first ?? 0
-                var aggregate: [Int: Int] = [:]
-                for value in values {
-                    let change = value - previousValue
-                    previousValue = value
-                    let index = Int(round(change / increment))
-                    aggregate[index] = {
-                        if let current = aggregate[index] {
-                            return current + 1
-                        } else {
-                            return 1
-                        }
-                    }()
-                }
-                let sortedValues = aggregate.sorted { $0.1 > $1.1 }.map { $0.0 }
-                var shortcuts = [UIApplicationShortcutItem]()
-                // Take 3 most usual changes to weight
-                let bestValues = sortedValues[0..<min(3, sortedValues.count)]
-                if let latestSample = quantitySamples.last {
-                    for value in bestValues {
-                        let doubleValue = Double(value) * increment + latestSample.quantity.doubleValue(for: massUnit)
-                        let shortcut: UIApplicationShortcutItem = {
-                            if value == 0 {
-                                return self.sameWeightShortcut(for: latestSample)
-                            } else if value > 0 {
-                                return self.upWeightShortcut(for: doubleValue)
-                            }
-                            return self.downWeightShortcut(for: doubleValue)
-                        }()
-                        shortcuts.append(shortcut)
-                    }
-                    if bestValues.count == 0 {
-                        let latestDoubleValue = latestSample.quantity.doubleValue(for: massUnit)
-                        shortcuts.append(self.upWeightShortcut(for: latestDoubleValue + increment))
-                        shortcuts.append(self.sameWeightShortcut(for: latestSample))
-                        shortcuts.append(self.downWeightShortcut(for: latestDoubleValue - increment))
-                    }
-                    shortcuts.append(self.customWeightShortcut(with: "Other weight"))
-                } else {
-                    shortcuts.append(self.customWeightShortcut(with: "Add weight"))
-                }
-                return .success(shortcuts)
+            .then {
+                QuickActionsHelper.update(with: $0, weightFormatter: self.weightFormatter, dateFormatter: self.dateShortFormatter)
             }
             .flatMap(Queue.main)
-            .then { shortcuts in
-                UIApplication.shared().shortcutItems = shortcuts
+            .next {
+                UIApplication.shared().shortcutItems = $0
             }
-    }
-
-    func sameWeightShortcut(for previousSample: HKQuantitySample) -> UIApplicationShortcutItem {
-        let massUnit = HealthManager.instance.massUnit
-        let formatter = HealthManager.instance.massFormatterUnit
-        let doubleValue = previousSample.quantity.doubleValue(for: massUnit)
-        let weightString = weightFormatter.string(fromValue: doubleValue, unit: formatter)
-        return shortcut(for: .SameWeightAsLast,
-                        imageName: "Same",
-                        title: weightString,
-                        subtitle: "Last: " + self.dateShortFormatter.string(from: previousSample.startDate),
-                        value: doubleValue)
-    }
-
-    func upWeightShortcut(for doubleValue: Double) -> UIApplicationShortcutItem {
-        let formatter = HealthManager.instance.massFormatterUnit
-        let weightString = weightFormatter.string(fromValue: doubleValue, unit: formatter)
-        return shortcut(for: .UpWeight,
-                        imageName: "Up",
-                        title: weightString,
-                        value: doubleValue)
-    }
-
-    func downWeightShortcut(for doubleValue: Double) -> UIApplicationShortcutItem {
-        let formatter = HealthManager.instance.massFormatterUnit
-        let weightString = weightFormatter.string(fromValue: doubleValue, unit: formatter)
-        return shortcut(for: .DownWeight,
-                        imageName: "Down",
-                        title: weightString,
-                        value: doubleValue)
-    }
-
-    func customWeightShortcut(with title: String) -> UIApplicationShortcutItem {
-        return
-            UIApplicationShortcutItem(
-            type: QuickActionType.CustomWeight.rawValue,
-            localizedTitle: title,
-            localizedSubtitle: nil,
-            icon: UIApplicationShortcutIcon(templateImageName: "New"),
-            userInfo: nil)
-    }
-
-    func shortcut(for type: QuickActionType, imageName: String, title: String, subtitle: String? = nil, value: Double) -> UIApplicationShortcutItem {
-        return UIApplicationShortcutItem(
-            type: type.rawValue,
-            localizedTitle: title,
-            localizedSubtitle: subtitle,
-            icon: UIApplicationShortcutIcon(templateImageName: imageName),
-            userInfo: [directWeightKey : value])
     }
 
 
