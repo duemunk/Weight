@@ -188,9 +188,6 @@
 		4E7769761B5E70400081017D /* NotificationCenter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationCenter.swift; sourceTree = "<group>"; };
 		4EA8A20C1B678EAD00E1EF05 /* Watch.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Watch.entitlements; sourceTree = "<group>"; };
 		4EA8A20D1B678F3E00E1EF05 /* WeightsLocalStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WeightsLocalStore.swift; sourceTree = "<group>"; };
-		4EDEAB0F1D16BC350021A99D /* TodayViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayViewController.swift; sourceTree = "<group>"; };
-		4EDEAB121D16BC350021A99D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
-		4EDEAB141D16BC350021A99D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4EDEAB1B1D16C4FE0021A99D /* QuickActions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QuickActions.swift; sourceTree = "<group>"; };
 		4EDEAB201D16D2750021A99D /* ChartHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChartHelper.swift; sourceTree = "<group>"; };
 		4EDEAB221D16D2750021A99D /* Chart.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Chart.swift; sourceTree = "<group>"; };
@@ -269,7 +266,6 @@
 				4E7769441B5E57340081017D /* Watch */,
 				4E7769531B5E57340081017D /* Watch Extension */,
 				4EFFEDF21D14D62500EC0E27 /* Weight Widget */,
-				4EDEAB0E1D16BC350021A99D /* asfsdf */,
 				4EFFEDEF1D14D62500EC0E27 /* Frameworks */,
 				4E44D59F1B5BEE7C0014B9C8 /* Products */,
 			);
@@ -384,16 +380,6 @@
 				4E212C521B6C10F1007E19D3 /* WeightFormatters.swift */,
 			);
 			name = Health;
-			sourceTree = "<group>";
-		};
-		4EDEAB0E1D16BC350021A99D /* asfsdf */ = {
-			isa = PBXGroup;
-			children = (
-				4EDEAB0F1D16BC350021A99D /* TodayViewController.swift */,
-				4EDEAB111D16BC350021A99D /* MainInterface.storyboard */,
-				4EDEAB141D16BC350021A99D /* Info.plist */,
-			);
-			path = asfsdf;
 			sourceTree = "<group>";
 		};
 		4EDEAB211D16D2750021A99D /* SwiftChart */ = {
@@ -895,14 +881,6 @@
 				4E7769461B5E57340081017D /* Base */,
 			);
 			name = Interface.storyboard;
-			sourceTree = "<group>";
-		};
-		4EDEAB111D16BC350021A99D /* MainInterface.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				4EDEAB121D16BC350021A99D /* Base */,
-			);
-			name = MainInterface.storyboard;
 			sourceTree = "<group>";
 		};
 		4EFFEDF51D14D62500EC0E27 /* MainInterface.storyboard */ = {
