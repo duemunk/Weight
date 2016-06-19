@@ -143,6 +143,8 @@ class ViewController: UIViewController {
             HealthManager.instance.saveWeight(quantity)
                 .error { print($0) }
         }
+
+        setupChart()
     }
     
     override func preferredStatusBarStyle() -> UIStatusBarStyle {
@@ -163,28 +165,30 @@ class ViewController: UIViewController {
     }
 
     func updateUI() {
-        Async.main {
-            self.updateToWeight()
-            self.updateQuickActions()
-            self.updateChart()
-        }
+
+        self.updateToWeight()
+        self.updateQuickActions()
+        self.updateChart(.week, range: Chart.Range(unit: .month, count: 6, softStart: false))
     }
 
     // MARK: - Weight
     func updateToWeight(forceWeight: HKQuantitySample? = nil) {
         
         let quantitySampleBlock: (HKQuantitySample) -> () = { quantitySample in
-            let quantity = quantitySample.quantity
-            let massUnit = HealthManager.instance.massUnit
-            let doubleValue = quantity.doubleValue(for: massUnit)
-            guard let (_, index) = closest(self.pickerWeights.map { $0.doubleValue(for: massUnit) }, toValue: doubleValue) else {
-                return
+            Async.main {
+                assert(Thread.isMainThread())
+                let quantity = quantitySample.quantity
+                let massUnit = HealthManager.instance.massUnit
+                let doubleValue = quantity.doubleValue(for: massUnit)
+                guard let (_, index) = closest(self.pickerWeights.map { $0.doubleValue(for: massUnit) }, toValue: doubleValue) else {
+                    return
+                }
+                let massFormatterUnit = HealthManager.instance.massFormatterUnit
+                self.weightLabel.text = self.weightFormatter.string(fromValue: doubleValue, unit: massFormatterUnit)
+                self.weightDetailLabel.text = self.dateFormatter.string(from: quantitySample.startDate)
+                self.weightPickerView.reloadAllComponents()
+                self.weightPickerView.selectRow(index, inComponent: 0, animated: false)
             }
-            let massFormatterUnit = HealthManager.instance.massFormatterUnit
-            self.weightLabel.text = self.weightFormatter.string(fromValue: doubleValue, unit: massFormatterUnit)
-            self.weightDetailLabel.text = self.dateFormatter.string(from: quantitySample.startDate)
-            self.weightPickerView.reloadAllComponents()
-            self.weightPickerView.selectRow(index, inComponent: 0, animated: false)
         }
         
         if let forceWeight = forceWeight {
@@ -194,9 +198,10 @@ class ViewController: UIViewController {
         
         HealthManager.instance.getWeight()
             .flatMap(Queue.main)
-            .then(quantitySampleBlock)
+            .next(quantitySampleBlock)
             .error {
                 print($0)
+                assert(Thread.isMainThread())
                 self.weightLabel.text = self.weightFormatter.string(fromValue: 0, unit: HealthManager.instance.massFormatterUnit)
                 self.weightDetailLabel.text = "No existing historic data"
                 self.weightPickerView.selectRow(0, inComponent: 0, animated: true)
@@ -219,59 +224,32 @@ class ViewController: UIViewController {
                 QuickActionsHelper.update(with: $0, weightFormatter: self.weightFormatter, dateFormatter: self.dateShortFormatter)
             }
             .flatMap(Queue.main)
-            .next {
-                UIApplication.shared().shortcutItems = $0
+            .next { shortcuts in
+                Async.main {
+                    assert(Thread.isMainThread())
+                    UIApplication.shared().shortcutItems = shortcuts
+                }
             }
     }
 
 
     // MARK: - Chart
-    func updateChart(_ average: CalendarUnit = .week, range: (unit: CalendarUnit, count: Int) = (.month, 6)) {
+    func setupChart() {
         chartView.isUserInteractionEnabled = false
         chartView.gridColor = UIColor.white().withAlphaComponent(0.3)
-        chartView.labelColor = UIColor.white() //.colorWithAlphaComponent(0.5)
+        chartView.labelColor = .white()
         chartView.lineWidth = 1.5
         chartView.dotSize = 1.5
         chartView.xLabelsFormatter = { (index, value) in
             (self.dateWithOutYearFormatter ?? self.dateOnlyFormatter)
                 .string(from: Date(timeIntervalSince1970: Double(value)))
         }
+    }
 
+    func updateChart(_ average: CalendarUnit = .week, range: Chart.Range) {
         HealthManager.instance.getWeights()
-            .flatMap(Queue.queue(DispatchQueue.global(attributes: .qosUserInitiated)))
-            .then { quantitySamples in
-                let massUnit = HealthManager.instance.massUnit
-
-                guard let rangeStart = quantitySamples.last?.startDate.add(range.unit, count: -range.count) else {
-                    return .error(NSError(domain: "", code: 0, userInfo: nil))
-                }
-                let rangedSamples = quantitySamples.filter { $0.startDate.isAfter(rangeStart) }
-
-                let values: Array<(x: Double, y: Double)> = rangedSamples.map { ($0.startDate.timeIntervalSince1970, $0.quantity.doubleValue(for: massUnit)) }
-
-                let individualSeries = ChartSeries(data: values)
-                individualSeries.color = UIColor.white()//.colorWithAlphaComponent(0.5)
-                individualSeries.line = false
-                individualSeries.dots = true
-
-                let valuesWeekly: Array<(x: Double, y: Double)>? = rangedSamples
-                    .averages(average)?
-                    .map { ($0.endDate.timeIntervalSince1970, $0.quantity.doubleValue(for: massUnit)) }
-                let runningAverageSeries: ChartSeries? = valuesWeekly != nil ? ChartSeries(data: valuesWeekly!) : nil
-                runningAverageSeries?.color = UIColor.white().withAlphaComponent(0.6)
-                runningAverageSeries?.line = true
-
-                return .success(individualSeries, runningAverageSeries, rangeStart, range)
-            }
-            .flatMap(Queue.main)
-            .then { (individualSeries: ChartSeries, runningAverageSeries: ChartSeries?, rangeStart: Date, range: (unit: CalendarUnit, count: Int)) in
-                self.chartView.removeSeries()
-                self.chartView.addSeries(individualSeries)
-                if let runningAverageSeries = runningAverageSeries {
-                    self.chartView.addSeries(runningAverageSeries)
-                }
-                self.chartView.xLabels = stride(from: rangeStart.timeIntervalSince1970, through: Date().timeIntervalSince1970, by: range.unit.timeInterval)
-                    .map(Float.init)
+            .then {
+                self.chartView.update(with: $0, dotColor: .white(), lineColor: UIColor.white().withAlphaComponent(0.6), average: .week, range: range)
             }
     }
 }

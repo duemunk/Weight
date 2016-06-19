@@ -19,9 +19,6 @@
 		4E44D5C21B5BEE7D0014B9C8 /* WeightUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E44D5C11B5BEE7D0014B9C8 /* WeightUITests.swift */; };
 		4E44D5D71B5C354A0014B9C8 /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4E44D5D61B5C354A0014B9C8 /* HealthKit.framework */; };
 		4E55CA121C76535200EB5D88 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4E55CA111C76535200EB5D88 /* Assets.xcassets */; };
-		4E595D9A1CAC877D00D42B09 /* Chart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E595D971CAC877D00D42B09 /* Chart.swift */; };
-		4E595D9B1CAC877D00D42B09 /* ChartColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E595D981CAC877D00D42B09 /* ChartColors.swift */; };
-		4E595D9C1CAC877D00D42B09 /* ChartSeries.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E595D991CAC877D00D42B09 /* ChartSeries.swift */; };
 		4E7769471B5E57340081017D /* Interface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4E7769451B5E57340081017D /* Interface.storyboard */; };
 		4E7769491B5E57340081017D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4E7769481B5E57340081017D /* Assets.xcassets */; };
 		4E7769501B5E57340081017D /* Watch Extension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 4E77694F1B5E57340081017D /* Watch Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -43,6 +40,14 @@
 		4EA8A20E1B678F3E00E1EF05 /* WeightsLocalStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EA8A20D1B678F3E00E1EF05 /* WeightsLocalStore.swift */; };
 		4EA8A20F1B678F4400E1EF05 /* WeightsLocalStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EA8A20D1B678F3E00E1EF05 /* WeightsLocalStore.swift */; };
 		4EDEAB1C1D16C4FE0021A99D /* QuickActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EDEAB1B1D16C4FE0021A99D /* QuickActions.swift */; };
+		4EDEAB251D16D2750021A99D /* ChartHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EDEAB201D16D2750021A99D /* ChartHelper.swift */; };
+		4EDEAB261D16D2750021A99D /* ChartHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EDEAB201D16D2750021A99D /* ChartHelper.swift */; };
+		4EDEAB271D16D2750021A99D /* Chart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EDEAB221D16D2750021A99D /* Chart.swift */; };
+		4EDEAB281D16D2750021A99D /* Chart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EDEAB221D16D2750021A99D /* Chart.swift */; };
+		4EDEAB291D16D2750021A99D /* ChartColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EDEAB231D16D2750021A99D /* ChartColors.swift */; };
+		4EDEAB2A1D16D2750021A99D /* ChartColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EDEAB231D16D2750021A99D /* ChartColors.swift */; };
+		4EDEAB2B1D16D2750021A99D /* ChartSeries.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EDEAB241D16D2750021A99D /* ChartSeries.swift */; };
+		4EDEAB2C1D16D2750021A99D /* ChartSeries.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EDEAB241D16D2750021A99D /* ChartSeries.swift */; };
 		4EE529CD1B681F5B0045C1C3 /* Async.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EE529CC1B681F5B0045C1C3 /* Async.swift */; };
 		4EE529CE1B681F630045C1C3 /* Async.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EE529CC1B681F5B0045C1C3 /* Async.swift */; };
 		4EE529D01B682CE50045C1C3 /* Array.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EE529CF1B682CE50045C1C3 /* Array.swift */; };
@@ -147,7 +152,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		4E212C521B6C10F1007E19D3 /* WeightFormatters.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = WeightFormatters.swift; path = Shared/WeightFormatters.swift; sourceTree = "<group>"; };
+		4E212C521B6C10F1007E19D3 /* WeightFormatters.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WeightFormatters.swift; sourceTree = "<group>"; };
 		4E212C551B6C11D5007E19D3 /* NSDateFormatter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSDateFormatter.swift; sourceTree = "<group>"; };
 		4E44D59E1B5BEE7C0014B9C8 /* Weight.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Weight.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4E44D5A11B5BEE7C0014B9C8 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -164,9 +169,6 @@
 		4E44D5D61B5C354A0014B9C8 /* HealthKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKit.framework; path = System/Library/Frameworks/HealthKit.framework; sourceTree = SDKROOT; };
 		4E44D5D81B5C354A0014B9C8 /* Weight.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Weight.entitlements; sourceTree = "<group>"; };
 		4E55CA111C76535200EB5D88 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		4E595D971CAC877D00D42B09 /* Chart.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Chart.swift; sourceTree = "<group>"; };
-		4E595D981CAC877D00D42B09 /* ChartColors.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChartColors.swift; sourceTree = "<group>"; };
-		4E595D991CAC877D00D42B09 /* ChartSeries.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChartSeries.swift; sourceTree = "<group>"; };
 		4E7769431B5E57340081017D /* Watch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Watch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4E7769461B5E57340081017D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Interface.storyboard; sourceTree = "<group>"; };
 		4E7769481B5E57340081017D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -179,25 +181,29 @@
 		4E77695C1B5E57340081017D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4E7769681B5E5F8C0081017D /* Watch Extension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "Watch Extension.entitlements"; sourceTree = "<group>"; };
 		4E7769691B5E5F8C0081017D /* HealthKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKit.framework; path = Platforms/WatchOS.platform/Developer/SDKs/WatchOS2.0.sdk/System/Library/Frameworks/HealthKit.framework; sourceTree = DEVELOPER_DIR; };
-		4E77696D1B5E5FF00081017D /* HealthManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = HealthManager.swift; path = Shared/HealthManager.swift; sourceTree = "<group>"; };
+		4E77696D1B5E5FF00081017D /* HealthManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HealthManager.swift; sourceTree = "<group>"; };
 		4E7769701B5E61250081017D /* HealthStore_iOS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HealthStore_iOS.swift; sourceTree = "<group>"; };
 		4E7769721B5E6E070081017D /* ErrorHandling.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ErrorHandling.swift; sourceTree = "<group>"; };
-		4E7769751B5E70400081017D /* HealthStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = HealthStore.swift; path = Shared/HealthStore.swift; sourceTree = "<group>"; };
-		4E7769761B5E70400081017D /* NotificationCenter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = NotificationCenter.swift; path = Shared/NotificationCenter.swift; sourceTree = "<group>"; };
+		4E7769751B5E70400081017D /* HealthStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HealthStore.swift; sourceTree = "<group>"; };
+		4E7769761B5E70400081017D /* NotificationCenter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationCenter.swift; sourceTree = "<group>"; };
 		4EA8A20C1B678EAD00E1EF05 /* Watch.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Watch.entitlements; sourceTree = "<group>"; };
-		4EA8A20D1B678F3E00E1EF05 /* WeightsLocalStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = WeightsLocalStore.swift; path = Shared/WeightsLocalStore.swift; sourceTree = "<group>"; };
+		4EA8A20D1B678F3E00E1EF05 /* WeightsLocalStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WeightsLocalStore.swift; sourceTree = "<group>"; };
 		4EDEAB0F1D16BC350021A99D /* TodayViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayViewController.swift; sourceTree = "<group>"; };
 		4EDEAB121D16BC350021A99D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
 		4EDEAB141D16BC350021A99D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4EDEAB1B1D16C4FE0021A99D /* QuickActions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QuickActions.swift; sourceTree = "<group>"; };
+		4EDEAB201D16D2750021A99D /* ChartHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChartHelper.swift; sourceTree = "<group>"; };
+		4EDEAB221D16D2750021A99D /* Chart.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Chart.swift; sourceTree = "<group>"; };
+		4EDEAB231D16D2750021A99D /* ChartColors.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChartColors.swift; sourceTree = "<group>"; };
+		4EDEAB241D16D2750021A99D /* ChartSeries.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChartSeries.swift; sourceTree = "<group>"; };
 		4EE529C31B681DFC0045C1C3 /* Realm.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Realm.framework; path = ../Frameworks/Realm.framework; sourceTree = "<group>"; };
 		4EE529C61B681E080045C1C3 /* Realm.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Realm.framework; path = ../Frameworks/Realm.framework; sourceTree = "<group>"; };
-		4EE529CC1B681F5B0045C1C3 /* Async.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Async.swift; path = Shared/Async.swift; sourceTree = "<group>"; };
-		4EE529CF1B682CE50045C1C3 /* Array.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Array.swift; path = Shared/Array.swift; sourceTree = "<group>"; };
+		4EE529CC1B681F5B0045C1C3 /* Async.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Async.swift; sourceTree = "<group>"; };
+		4EE529CF1B682CE50045C1C3 /* Array.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Array.swift; sourceTree = "<group>"; };
 		4EE634331CCE8C64007A602B /* UIButton+Signal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIButton+Signal.swift"; sourceTree = "<group>"; };
 		4EE634821CD0CD80007A602B /* Interstellar.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Interstellar.framework; path = ../Carthage/Build/iOS/Interstellar.framework; sourceTree = "<group>"; };
 		4EE634841CD0CE5A007A602B /* Interstellar.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Interstellar.framework; path = ../Carthage/Build/watchOS/Interstellar.framework; sourceTree = "<group>"; };
-		4EEE52E01B602B21009B1D15 /* GlobalHelpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = GlobalHelpers.swift; path = Shared/GlobalHelpers.swift; sourceTree = "<group>"; };
+		4EEE52E01B602B21009B1D15 /* GlobalHelpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GlobalHelpers.swift; sourceTree = "<group>"; };
 		4EF597031B9EE8E9003C4DAF /* Loader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Loader.swift; sourceTree = "<group>"; };
 		4EFFEDE61D13337800EC0E27 /* InterstellarHelpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InterstellarHelpers.swift; sourceTree = "<group>"; };
 		4EFFEDEE1D14D62500EC0E27 /* Weight Widget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Weight Widget.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -290,7 +296,6 @@
 				4E44D5A11B5BEE7C0014B9C8 /* AppDelegate.swift */,
 				4E44D5A31B5BEE7C0014B9C8 /* ViewController.swift */,
 				4EDEAB1B1D16C4FE0021A99D /* QuickActions.swift */,
-				4E595D961CAC877D00D42B09 /* SwiftChart */,
 				4E44D5D31B5BFD5D0014B9C8 /* Library */,
 				4E44D5A51B5BEE7C0014B9C8 /* Main.storyboard */,
 				4E55CA111C76535200EB5D88 /* Assets.xcassets */,
@@ -325,17 +330,6 @@
 				4EE634331CCE8C64007A602B /* UIButton+Signal.swift */,
 			);
 			name = Library;
-			sourceTree = "<group>";
-		};
-		4E595D961CAC877D00D42B09 /* SwiftChart */ = {
-			isa = PBXGroup;
-			children = (
-				4E595D971CAC877D00D42B09 /* Chart.swift */,
-				4E595D981CAC877D00D42B09 /* ChartColors.swift */,
-				4E595D991CAC877D00D42B09 /* ChartSeries.swift */,
-			);
-			name = SwiftChart;
-			path = Source;
 			sourceTree = "<group>";
 		};
 		4E7769441B5E57340081017D /* Watch */ = {
@@ -375,8 +369,10 @@
 				4EE529CC1B681F5B0045C1C3 /* Async.swift */,
 				4EE529CF1B682CE50045C1C3 /* Array.swift */,
 				4EFFEDE61D13337800EC0E27 /* InterstellarHelpers.swift */,
+				4EDEAB201D16D2750021A99D /* ChartHelper.swift */,
+				4EDEAB211D16D2750021A99D /* SwiftChart */,
 			);
-			name = Shared;
+			path = Shared;
 			sourceTree = "<group>";
 		};
 		4E77697B1B5E72B20081017D /* Health */ = {
@@ -398,6 +394,16 @@
 				4EDEAB141D16BC350021A99D /* Info.plist */,
 			);
 			path = asfsdf;
+			sourceTree = "<group>";
+		};
+		4EDEAB211D16D2750021A99D /* SwiftChart */ = {
+			isa = PBXGroup;
+			children = (
+				4EDEAB221D16D2750021A99D /* Chart.swift */,
+				4EDEAB231D16D2750021A99D /* ChartColors.swift */,
+				4EDEAB241D16D2750021A99D /* ChartSeries.swift */,
+			);
+			path = SwiftChart;
 			sourceTree = "<group>";
 		};
 		4EE529CA1B681E220045C1C3 /* Frameworks */ = {
@@ -754,24 +760,25 @@
 			buildActionMask = 2147483647;
 			files = (
 				4E77696E1B5E5FF00081017D /* HealthManager.swift in Sources */,
+				4EDEAB291D16D2750021A99D /* ChartColors.swift in Sources */,
 				4E212C531B6C10F1007E19D3 /* WeightFormatters.swift in Sources */,
 				4EFFEDE71D13337800EC0E27 /* InterstellarHelpers.swift in Sources */,
 				4E7769711B5E61250081017D /* HealthStore_iOS.swift in Sources */,
 				4E212C561B6C11D5007E19D3 /* NSDateFormatter.swift in Sources */,
 				4EEE52E11B602B21009B1D15 /* GlobalHelpers.swift in Sources */,
 				4E7769731B5E6E070081017D /* ErrorHandling.swift in Sources */,
+				4EDEAB2B1D16D2750021A99D /* ChartSeries.swift in Sources */,
 				4E44D5A41B5BEE7C0014B9C8 /* ViewController.swift in Sources */,
 				4E44D5A21B5BEE7C0014B9C8 /* AppDelegate.swift in Sources */,
-				4E595D9A1CAC877D00D42B09 /* Chart.swift in Sources */,
-				4E595D9C1CAC877D00D42B09 /* ChartSeries.swift in Sources */,
+				4EDEAB251D16D2750021A99D /* ChartHelper.swift in Sources */,
 				4EE529D01B682CE50045C1C3 /* Array.swift in Sources */,
+				4EDEAB271D16D2750021A99D /* Chart.swift in Sources */,
 				4E7769791B5E70400081017D /* NotificationCenter.swift in Sources */,
 				4E7769771B5E70400081017D /* HealthStore.swift in Sources */,
 				4EE529CD1B681F5B0045C1C3 /* Async.swift in Sources */,
 				4EA8A20E1B678F3E00E1EF05 /* WeightsLocalStore.swift in Sources */,
 				4EDEAB1C1D16C4FE0021A99D /* QuickActions.swift in Sources */,
 				4EE634341CCE8C64007A602B /* UIButton+Signal.swift in Sources */,
-				4E595D9B1CAC877D00D42B09 /* ChartColors.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -824,10 +831,14 @@
 				4EFFEE011D14D72500EC0E27 /* HealthManager.swift in Sources */,
 				4EFFEE091D14D72500EC0E27 /* Array.swift in Sources */,
 				4EFFEE061D14D72500EC0E27 /* ErrorHandling.swift in Sources */,
+				4EDEAB281D16D2750021A99D /* Chart.swift in Sources */,
+				4EDEAB2C1D16D2750021A99D /* ChartSeries.swift in Sources */,
 				4EFFEE0A1D14D72500EC0E27 /* InterstellarHelpers.swift in Sources */,
+				4EDEAB261D16D2750021A99D /* ChartHelper.swift in Sources */,
 				4EFFEE031D14D72500EC0E27 /* WeightFormatters.swift in Sources */,
 				4EFFEE081D14D72500EC0E27 /* Async.swift in Sources */,
 				4EFFEE001D14D72500EC0E27 /* HealthStore.swift in Sources */,
+				4EDEAB2A1D16D2750021A99D /* ChartColors.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

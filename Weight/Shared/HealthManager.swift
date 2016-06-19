@@ -188,7 +188,7 @@ extension Collection where Iterator.Element == HKQuantitySample {
 
     func averages(_ unit: CalendarUnit) -> [Iterator.Element]? {
 
-        let sorted = self.sorted { $0.startDate.isBefore($1.endDate) }
+        let sorted = self.sorted { $0.startDate < $1.endDate }
 
         guard let
             first = sorted.first,
@@ -202,7 +202,7 @@ extension Collection where Iterator.Element == HKQuantitySample {
         }
         var referenceDateInAverageUnit = [Date]()
         referenceDateInAverageUnit.append(firstReferenceDay)
-        while let previousReference = referenceDateInAverageUnit.last where previousReference.isBefore(lastDate) {
+        while let previousReference = referenceDateInAverageUnit.last where previousReference < lastDate {
             guard let nextReference = previousReference.add(unit) else {
                 break
             }
@@ -216,7 +216,7 @@ extension Collection where Iterator.Element == HKQuantitySample {
         let startEndDates = Array(zip(referenceDateInAverageUnit[0..<referenceCount - 1], referenceDateInAverageUnit[1..<referenceCount]))
         let averages: [HKQuantitySample] = startEndDates
             .flatMap { (startDate, endDate) in
-                let inUnit = self.filter { $0.startDate.isAfter(startDate) && $0.startDate.isBefore(endDate) }
+                let inUnit = self.filter { startDate < $0.startDate && $0.startDate < endDate }
                 let count = inUnit.count
                 guard count > 0 else { return nil }
                 let averageValue = inUnit
@@ -303,15 +303,5 @@ extension Date {
         }
         let calendar = Calendar.current()
         return calendar.date(byAdding: components, to: self, options: .matchFirst)
-    }
-
-    func isBefore(_ date: Date) -> Bool {
-        return compare(date) == .orderedAscending
-    }
-    func isSame(_ date: Date) -> Bool {
-        return compare(date) == .orderedSame
-    }
-    func isAfter(_ date: Date) -> Bool {
-        return compare(date) == .orderedDescending
     }
 }
