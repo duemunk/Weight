@@ -17,6 +17,9 @@ class TodayViewController: UIViewController, NCWidgetProviding {
     @IBOutlet weak var chartView: Chart!
     @IBOutlet weak var weightLabel: UILabel!
     @IBOutlet weak var weightDetailLabel: UILabel!
+    @IBOutlet weak var weightLabelVisualEffectView: UIVisualEffectView!
+    @IBOutlet weak var weightDetailLabelVisualEffectView: UIVisualEffectView!
+    @IBOutlet weak var chartVisualEffectView: UIVisualEffectView!
 
     private let weightFormatter = MassFormatter.weightMediumFormatter()
     private let dateChartFormatter = DateFormatter(template: "MMMd") ?? DateFormatter(dateStyle: .shortStyle)
@@ -27,6 +30,9 @@ class TodayViewController: UIViewController, NCWidgetProviding {
         super.viewDidLoad()
         // Do any additional setup after loading the view from its nib.
 
+        weightLabelVisualEffectView.effect = UIVibrancyEffect.widgetPrimary()
+        weightDetailLabelVisualEffectView.effect = UIVibrancyEffect.widgetSecondary()
+        chartVisualEffectView.effect = UIVibrancyEffect.widgetSecondary()
         setupChart()
     }
 
@@ -43,6 +49,10 @@ class TodayViewController: UIViewController, NCWidgetProviding {
         
         completionHandler(NCUpdateResult.newData)
     }
+
+    func widgetActiveDisplayModeDidChange(_ activeDisplayMode: NCWidgetDisplayMode, withMaximumSize maxSize: CGSize) {
+
+    }
 }
 
 
@@ -51,11 +61,11 @@ private extension TodayViewController {
     // MARK: Chart
     func setupChart() {
         chartView.isUserInteractionEnabled = false
-        chartView.gridColor = UIColor.black().withAlphaComponent(0.1)
-        chartView.labelColor = UIColor.black().withAlphaComponent(0.2)
+        chartView.gridColor = UIColor.gray().withAlphaComponent(0.1)
         chartView.labelFont = UIFont.preferredFont(forTextStyle: UIFontTextStyleCaption1)
         chartView.lineWidth = 1.5
-        chartView.dotSize = 1.5
+        chartView.dotSize = 3
+        chartView.yLabelsOnRightSide = false
         chartView.xLabelsFormatter = { (index, value) in
             self.dateChartFormatter.string(from: Date(timeIntervalSince1970: Double(value)))
         }
@@ -64,7 +74,7 @@ private extension TodayViewController {
     func updateChart(_ average: CalendarUnit = .week, range: Chart.Range) {
         HealthManager.instance.getWeights()
             .then {
-                self.chartView.update(with: $0, dotColor: .black(), lineColor: UIColor.black().withAlphaComponent(0.4), average: .week, range: range)
+                self.chartView.update(with: $0, dotColor: .black(), lineColor: UIColor.black().withAlphaComponent(0.3), average: .week, range: range)
             }
     }
 

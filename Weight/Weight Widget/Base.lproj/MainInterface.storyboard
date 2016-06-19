@@ -21,23 +21,74 @@
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="czM-yA-3K9">
                                 <subviews>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="87B-4c-OIo" customClass="Chart" customModule="Weight_Widget" customModuleProvider="target">
-                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                    </view>
+                                    <visualEffectView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="r81-vR-ccA">
+                                        <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="QIz-Fl-qSy">
+                                            <frame key="frameInset"/>
+                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                            <subviews>
+                                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="87B-4c-OIo" customClass="Chart" customModule="Weight_Widget" customModuleProvider="target">
+                                                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                                </view>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstAttribute="trailing" secondItem="87B-4c-OIo" secondAttribute="trailing" id="LbX-ut-AY4"/>
+                                                <constraint firstItem="87B-4c-OIo" firstAttribute="top" secondItem="QIz-Fl-qSy" secondAttribute="top" id="M4L-ta-H9m"/>
+                                                <constraint firstItem="87B-4c-OIo" firstAttribute="leading" secondItem="QIz-Fl-qSy" secondAttribute="leading" id="bJw-Zi-to9"/>
+                                                <constraint firstAttribute="bottom" secondItem="87B-4c-OIo" secondAttribute="bottom" id="cgn-5Y-fbi"/>
+                                            </constraints>
+                                        </view>
+                                        <vibrancyEffect>
+                                            <blurEffect style="light"/>
+                                        </vibrancyEffect>
+                                    </visualEffectView>
                                     <stackView opaque="NO" contentMode="scaleToFill" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="1dh-Ji-bsR">
                                         <subviews>
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="VS6-lF-8B4">
                                                 <subviews>
-                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" text="73.3 kg" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="48h-DW-0TD">
-                                                        <fontDescription key="fontDescription" type="system" weight="medium" pointSize="30"/>
-                                                        <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                                                        <nil key="highlightedColor"/>
-                                                    </label>
-                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" text="19 Jun 12:20" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4HD-Xz-8Cw">
-                                                        <fontDescription key="fontDescription" style="UICTFontTextStyleCaption1"/>
-                                                        <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
-                                                        <nil key="highlightedColor"/>
-                                                    </label>
+                                                    <visualEffectView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="QBt-fb-Wxm">
+                                                        <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="cFn-7N-KQJ">
+                                                            <frame key="frameInset"/>
+                                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                            <subviews>
+                                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" text="73.3 kg" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="48h-DW-0TD">
+                                                                    <fontDescription key="fontDescription" type="system" weight="medium" pointSize="30"/>
+                                                                    <nil key="textColor"/>
+                                                                    <nil key="highlightedColor"/>
+                                                                </label>
+                                                            </subviews>
+                                                            <constraints>
+                                                                <constraint firstItem="48h-DW-0TD" firstAttribute="top" secondItem="cFn-7N-KQJ" secondAttribute="top" id="FJC-gw-ce7"/>
+                                                                <constraint firstItem="48h-DW-0TD" firstAttribute="leading" secondItem="cFn-7N-KQJ" secondAttribute="leading" id="KAa-1f-x1W"/>
+                                                                <constraint firstAttribute="trailing" secondItem="48h-DW-0TD" secondAttribute="trailing" id="cU7-VU-t3a"/>
+                                                                <constraint firstAttribute="bottom" secondItem="48h-DW-0TD" secondAttribute="bottom" id="v0Z-mo-5ch"/>
+                                                            </constraints>
+                                                        </view>
+                                                        <vibrancyEffect>
+                                                            <blurEffect style="light"/>
+                                                        </vibrancyEffect>
+                                                    </visualEffectView>
+                                                    <visualEffectView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="LME-eQ-2tg">
+                                                        <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="Jsp-sr-b2Q">
+                                                            <frame key="frameInset"/>
+                                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                            <subviews>
+                                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" text="19 Jun 12:20" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4HD-Xz-8Cw">
+                                                                    <fontDescription key="fontDescription" style="UICTFontTextStyleCaption1"/>
+                                                                    <nil key="textColor"/>
+                                                                    <nil key="highlightedColor"/>
+                                                                </label>
+                                                            </subviews>
+                                                            <constraints>
+                                                                <constraint firstItem="4HD-Xz-8Cw" firstAttribute="top" secondItem="Jsp-sr-b2Q" secondAttribute="top" id="6ed-iB-Bgq"/>
+                                                                <constraint firstItem="4HD-Xz-8Cw" firstAttribute="leading" secondItem="Jsp-sr-b2Q" secondAttribute="leading" id="RDu-3r-3vD"/>
+                                                                <constraint firstAttribute="trailing" secondItem="4HD-Xz-8Cw" secondAttribute="trailing" id="dXH-O0-3Jx"/>
+                                                                <constraint firstAttribute="bottom" secondItem="4HD-Xz-8Cw" secondAttribute="bottom" id="vZy-Lg-eFH"/>
+                                                            </constraints>
+                                                        </view>
+                                                        <vibrancyEffect>
+                                                            <blurEffect style="light"/>
+                                                        </vibrancyEffect>
+                                                    </visualEffectView>
                                                 </subviews>
                                             </stackView>
                                         </subviews>
@@ -60,8 +111,11 @@
                     <size key="freeformSize" width="320" height="125"/>
                     <connections>
                         <outlet property="chartView" destination="87B-4c-OIo" id="Rv7-nC-TnR"/>
+                        <outlet property="chartVisualEffectView" destination="r81-vR-ccA" id="0Gm-rA-sK8"/>
                         <outlet property="weightDetailLabel" destination="4HD-Xz-8Cw" id="xiN-ng-47H"/>
+                        <outlet property="weightDetailLabelVisualEffectView" destination="LME-eQ-2tg" id="fpp-4l-HSW"/>
                         <outlet property="weightLabel" destination="48h-DW-0TD" id="RYc-cV-ZSj"/>
+                        <outlet property="weightLabelVisualEffectView" destination="QBt-fb-Wxm" id="fPt-gP-7lx"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="vXp-U4-Rya" userLabel="First Responder" sceneMemberID="firstResponder"/>
