@@ -14,6 +14,7 @@ class WeightsLocalStore {
     
     private let weightsDefaults = UserDefaults(suiteName: "group.weights")
     private let lastWeightKey = "lastWeightKey"
+    private let lastWeightDateKey = "lastWeightDateKey"
     let massUnit: HKUnit = .gramUnit(with: .kilo) // Always store in SI units
     
     private let weightType = HKObjectType.quantityType(forIdentifier: HKQuantityTypeIdentifier.bodyMass)!
@@ -23,7 +24,7 @@ class WeightsLocalStore {
                 return nil
             }
             let quantity = HKQuantity(unit: massUnit, doubleValue: weight)
-            let date = Date()
+            let date = WeightsLocalStore.instance.lastWeightDate ?? Date()
             let sample = HKQuantitySample(type: weightType, quantity: quantity, start: date, end: date)
             return sample
         }
@@ -33,6 +34,21 @@ class WeightsLocalStore {
             }
             let doubleValue = weight.quantity.doubleValue(for: massUnit)
             weightsDefaults?.set(doubleValue, forKey: lastWeightKey)
+            weightsDefaults?.synchronize()
+            // Also store date
+            lastWeightDate = weight.startDate
+        }
+    }
+
+    private var lastWeightDate: Date? {
+        get {
+            return weightsDefaults?.object(forKey: lastWeightDateKey) as? Date
+        }
+        set {
+            guard let date = newValue else {
+                return
+            }
+            weightsDefaults?.set(date, forKey: lastWeightDateKey)
             weightsDefaults?.synchronize()
         }
     }

@@ -57,4 +57,12 @@ extension NumberFormatter {
         formatter.minimumFractionDigits = 1
         return formatter
     }
+
+    class func weightNoUnitUltraShortFormatter() -> NumberFormatter {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.maximumFractionDigits = 0
+        formatter.minimumFractionDigits = 0
+        return formatter
+    }
 }

@@ -18,6 +18,7 @@ class ComplicationController: NSObject {
     let weightLongFormatter = MassFormatter.weightLongFormatter()
     let weightNoUnitFormatter = NumberFormatter.weightNoUnitFormatter()
     let weightNoUnitShortFormatter = NumberFormatter.weightNoUnitShortFormatter()
+    let weightNoUnitUltraShortFormatter = NumberFormatter.weightNoUnitUltraShortFormatter()
 }
 
 extension ComplicationController: CLKComplicationDataSource {
@@ -46,9 +47,11 @@ extension ComplicationController: CLKComplicationDataSource {
     func getCurrentTimelineEntry(for complication: CLKComplication, withHandler handler: ((CLKComplicationTimelineEntry?) -> Void)) {
         // Call the handler with the current timeline entry
         let now = Date()
-        let weight = WeightsLocalStore.instance.lastWeight?.quantity.doubleValue(for: HKUnit.gramUnit(with: .kilo))
+        let lastWeight = WeightsLocalStore.instance.lastWeight
+        let weight = lastWeight?.quantity.doubleValue(for: HKUnit.gramUnit(with: .kilo))
+        let date = lastWeight?.startDate
         
-        guard let template = templateForComplication(complication, weight: weight) else {
+        guard let template = templateForComplication(complication, weight: weight, date: date ?? now) else {
             return
         }
         let complicationTimelineEntry = CLKComplicationTimelineEntry(date: now, complicationTemplate: template)
@@ -90,7 +93,7 @@ extension ComplicationController: CLKComplicationDataSource {
     
     func getPlaceholderTemplate(for complication: CLKComplication, withHandler handler: (CLKComplicationTemplate?) -> Void) {
         // This method will be called once per supported complication, and the results will be cached
-        let template = templateForComplication(complication, weight: nil)
+        let template = templateForComplication(complication, weight: nil, date: Date())
         handler(template)
     }
 }
@@ -98,7 +101,7 @@ extension ComplicationController: CLKComplicationDataSource {
 
 extension ComplicationController {
     
-    func templateForComplication(_ complication: CLKComplication, weight weightInKiloGrams: Double?, emptyWeight: String = "##", date: Date = Date()) -> CLKComplicationTemplate? {
+    func templateForComplication(_ complication: CLKComplication, weight weightInKiloGrams: Double?, emptyWeight: String = "##", date: Date) -> CLKComplicationTemplate? {
         let userMassUnit = HealthManager.instance.massUnit
         let userMassFormatterUnit = HealthManager.instance.massFormatterUnit
         let userWeight: Double? = {
@@ -112,8 +115,9 @@ extension ComplicationController {
         let shortWeightText = userWeight == nil ? emptyWeight : weightShortFormatter.string(fromValue: userWeight ?? 0, unit: userMassFormatterUnit)
         let weightNoUnitText = userWeight == nil ? emptyWeight : weightNoUnitFormatter.string(from: userWeight ?? 0) ?? emptyWeight
         let weightNoUnitShortText = userWeight == nil ? emptyWeight : weightNoUnitShortFormatter.string(from: userWeight ?? 0) ?? emptyWeight
+        let weightNoUnitUltraShortText = userWeight == nil ? emptyWeight : weightNoUnitUltraShortFormatter.string(from: userWeight ?? 0) ?? emptyWeight
         let weightUnitText = weightMediumFormatter.unitString(fromValue: userWeight ?? 0, unit: userMassFormatterUnit)
-        let tintColor = UIColor(red: 200/255, green: 109/255, blue: 215/255, alpha: 0.8)
+        let tintColor = UIColor(red: 79/255, green: 217/255, blue: 100/255, alpha: 0.8)
 //        let tintColor = UIColor(red: 222/255, green: 127/255, blue: 255/255, alpha: 1)
 //        let tintColor = UIColor(red: 237/255, green: 185/255, blue: 255/255, alpha: 1)
         let template: CLKComplicationTemplate = {
@@ -136,13 +140,13 @@ extension ComplicationController {
                 return template
             case .utilitarianSmall:
                 let template = CLKComplicationTemplate.Utilitarian.Small.ringText()
-                template.textProvider = CLKSimpleTextProvider(text: weightText, shortText: shortWeightText)
+                template.textProvider = CLKSimpleTextProvider(text: weightText, shortText: weightNoUnitUltraShortText)
                 template.ringStyle = .open
                 template.fillFraction = 0.5 // TODO: Inverse proximity to goal?
                 return template
             case .utilitarianSmallFlat:
                 let template = CLKComplicationTemplate.Utilitarian.SmallFlat.flat()
-                template.textProvider = CLKSimpleTextProvider(text: weightText, shortText: shortWeightText)
+                template.textProvider = CLKSimpleTextProvider(text: weightText, shortText: weightText)
                 return template
             case .utilitarianLarge:
                 let template = CLKComplicationTemplate.Utilitarian.Large.flat()
