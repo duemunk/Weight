@@ -15,7 +15,7 @@
                         <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="hbs-kx-55M">
@@ -24,7 +24,9 @@
                                         <constraints>
                                             <constraint firstAttribute="height" constant="120" id="Lt7-LY-XYF"/>
                                             <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="60" id="T8T-Vp-Wbt"/>
-                                            <constraint firstAttribute="height" constant="150" id="Xgj-cm-yPz"/>
+                                            <constraint firstAttribute="height" constant="200" id="Xgj-cm-yPz">
+                                                <variation key="heightClass=compact" constant="100"/>
+                                            </constraint>
                                         </constraints>
                                         <variation key="default">
                                             <mask key="constraints">
@@ -38,42 +40,70 @@
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="mad-6m-qfR">
                                                 <subviews>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="KN1-Zx-pNM">
-                                                        <fontDescription key="fontDescription" type="system" pointSize="40"/>
-                                                        <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                        <fontDescription key="fontDescription" type="system" weight="medium" pointSize="27"/>
+                                                        <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                                         <nil key="highlightedColor"/>
+                                                        <variation key="heightClass=regular" ambiguous="YES" misplaced="YES">
+                                                            <rect key="frame" x="118" y="0.0" width="66" height="16"/>
+                                                        </variation>
                                                     </label>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="P2H-ak-ItY">
-                                                        <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
-                                                        <color key="textColor" red="1" green="1" blue="1" alpha="0.59999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
+                                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                        <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                                                         <nil key="highlightedColor"/>
+                                                        <variation key="heightClass=regular" ambiguous="YES" misplaced="YES">
+                                                            <rect key="frame" x="129" y="16" width="42" height="21"/>
+                                                        </variation>
                                                     </label>
                                                 </subviews>
+                                                <variation key="heightClass=regular" misplaced="YES">
+                                                    <rect key="frame" x="0.0" y="0.0" width="300" height="36"/>
+                                                </variation>
                                             </stackView>
                                         </subviews>
+                                        <variation key="heightClass=regular" misplaced="YES">
+                                            <rect key="frame" x="10" y="160" width="300" height="36"/>
+                                        </variation>
                                     </stackView>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="3If-gl-JJR">
                                         <subviews>
                                             <pickerView contentMode="scaleToFill" verticalHuggingPriority="251" verticalCompressionResistancePriority="1000" translatesAutoresizingMaskIntoConstraints="NO" id="AuZ-HD-KAC">
-                                                <color key="tintColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                <color key="tintColor" cocoaTouchSystemColor="darkTextColor"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="150" id="eW9-xl-v1c">
+                                                        <variation key="heightClass=compact" constant="90"/>
+                                                        <variation key="heightClass=regular" constant="150"/>
+                                                    </constraint>
+                                                </constraints>
+                                                <variation key="heightClass=regular" misplaced="YES">
+                                                    <rect key="frame" x="0.0" y="0.0" width="300" height="200"/>
+                                                </variation>
                                                 <connections>
                                                     <outlet property="dataSource" destination="BYZ-38-t0r" id="jZz-xX-Tpc"/>
                                                     <outlet property="delegate" destination="BYZ-38-t0r" id="u55-G9-pVg"/>
                                                 </connections>
                                             </pickerView>
                                             <button opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="251" verticalCompressionResistancePriority="1000" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ras-EN-q8K">
-                                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="20"/>
-                                                <inset key="contentEdgeInsets" minX="20" minY="20" maxX="20" maxY="20"/>
+                                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="27"/>
+                                                <inset key="contentEdgeInsets" minX="10" minY="10" maxX="10" maxY="10"/>
                                                 <state key="normal" title="Save">
-                                                    <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <color key="titleColor" red="0.30980392159999998" green="0.85098039219999999" blue="0.3921568627" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                 </state>
+                                                <variation key="heightClass=regular" misplaced="YES">
+                                                    <rect key="frame" x="0.0" y="200" width="300" height="64"/>
+                                                </variation>
                                             </button>
                                         </subviews>
+                                        <variation key="heightClass=regular" misplaced="YES">
+                                            <rect key="frame" x="10" y="196" width="300" height="264"/>
+                                        </variation>
                                     </stackView>
                                 </subviews>
-                                <edgeInsets key="layoutMargins" top="10" left="10" bottom="0.0" right="10"/>
+                                <edgeInsets key="layoutMargins" top="10" left="10" bottom="10" right="10"/>
                             </stackView>
                         </subviews>
-                        <color key="backgroundColor" red="0.13504864275455475" green="0.0" blue="0.63244277238845825" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="hbs-kx-55M" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" id="Lh9-Y8-K8c"/>
                             <constraint firstAttribute="trailing" secondItem="hbs-kx-55M" secondAttribute="trailing" id="P81-9v-Y0Q"/>
@@ -81,7 +111,6 @@
                             <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="hbs-kx-55M" secondAttribute="bottom" id="qrn-bQ-pEL"/>
                         </constraints>
                     </view>
-                    <simulatedStatusBarMetrics key="simulatedStatusBarMetrics" statusBarStyle="lightContent"/>
                     <connections>
                         <outlet property="chartView" destination="nnw-Gw-QCt" id="aoT-Xp-03Q"/>
                         <outlet property="saveButton" destination="ras-EN-q8K" id="lGP-ln-PbJ"/>

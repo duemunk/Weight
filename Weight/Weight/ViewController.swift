@@ -148,7 +148,7 @@ class ViewController: UIViewController {
     }
     
     override func preferredStatusBarStyle() -> UIStatusBarStyle {
-        return .lightContent
+        return .default
     }
     
     deinit {
@@ -236,10 +236,13 @@ class ViewController: UIViewController {
     // MARK: - Chart
     func setupChart() {
         chartView.isUserInteractionEnabled = false
-        chartView.gridColor = UIColor.white().withAlphaComponent(0.3)
-        chartView.labelColor = .white()
-        chartView.lineWidth = 1.5
-        chartView.dotSize = 1.5
+        chartView.gridColor = .lightGray()
+        chartView.labelColor = .lightGray()
+        chartView.lineWidth = 2
+        chartView.gridLineWidth = 1
+        chartView.axesLineWidth = 1
+        chartView.dotSize = 3
+        chartView.labelFont = UIFont.boldSystemFont(ofSize: 12)
         chartView.xLabelsFormatter = { (index, value) in
             self.dateChartXLabelFormatter
                 .string(from: Date(timeIntervalSince1970: Double(value)))
@@ -249,7 +252,7 @@ class ViewController: UIViewController {
     func updateChart(_ average: CalendarUnit = .week, range: Chart.Range) {
         HealthManager.instance.getWeights()
             .then {
-                self.chartView.update(with: $0, dotColor: .white(), lineColor: UIColor.white().withAlphaComponent(0.6), average: .week, range: range)
+                self.chartView.update(with: $0, dotColor: .black(), lineColor: UIColor.black().withAlphaComponent(0.3), average: .week, range: range)
             }
     }
 }
@@ -273,7 +276,10 @@ extension ViewController: UIPickerViewDelegate {
         let massFormatterUnit = HealthManager.instance.massFormatterUnit
         let weight = quantity?.doubleValue(for: massUnit) ?? 0
         let title = weightFormatter.string(fromValue: weight, unit: massFormatterUnit)
-        let attributedTitle = AttributedString(string: title, attributes: [NSForegroundColorAttributeName : UIColor.white()])
+        let attributedTitle = AttributedString(string: title, attributes: [
+            NSForegroundColorAttributeName : UIColor.black(),
+            NSFontAttributeName : UIFont.boldSystemFont(ofSize: 27)
+            ])
         return attributedTitle
     }
     

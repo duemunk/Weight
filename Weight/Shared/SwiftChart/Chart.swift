@@ -106,11 +106,15 @@ public class Chart: UIControl {
     @IBInspectable
     public var axesColor: UIColor = UIColor.gray().withAlphaComponent(0.3)
 
+    public var axesLineWidth: CGFloat = 1
+
     /**
     Color for the grid.
     */
     @IBInspectable
     public var gridColor: UIColor = UIColor.gray().withAlphaComponent(0.3)
+
+    public var gridLineWidth: CGFloat = 1
 
     /**
     Inset of the area at the bottom of the chart, containing the labels for the x-axis.
@@ -540,7 +544,7 @@ public class Chart: UIControl {
 
         let context = UIGraphicsGetCurrentContext()
         context?.setStrokeColor(axesColor.cgColor)
-        context?.setLineWidth(0.5)
+        context?.setLineWidth(axesLineWidth)
 
         // horizontal axis at the bottom
         context?.moveTo(x: inset.left, y: drawingHeight + inset.top)
@@ -577,7 +581,7 @@ public class Chart: UIControl {
 
         let context = UIGraphicsGetCurrentContext()
         context?.setStrokeColor(gridColor.cgColor)
-        context?.setLineWidth(0.5)
+        context?.setLineWidth(gridLineWidth)
 
         var labels: Array<Float>
         if xLabels == nil {
@@ -632,7 +636,7 @@ public class Chart: UIControl {
 
         let context = UIGraphicsGetCurrentContext()
         context?.setStrokeColor(gridColor.cgColor)
-        context?.setLineWidth(1)
+        context?.setLineWidth(gridLineWidth)
 
         var labels: Array<Float>
         if yLabels == nil {
