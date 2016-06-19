@@ -39,19 +39,9 @@ class TodayViewController: UIViewController, NCWidgetProviding {
     
     func widgetPerformUpdate(completionHandler: ((NCUpdateResult) -> Void)) {
         // Perform any setup necessary in order to update the view.
-
         updateChart(.week, range: Chart.Range(unit: .month, count: 6, softStart: true))
+            .next{ completionHandler(.newData) }
         updateLabels()
-
-        // If an error is encountered, use NCUpdateResult.Failed
-        // If there's no update required, use NCUpdateResult.NoData
-        // If there's an update, use NCUpdateResult.NewData
-        
-        completionHandler(NCUpdateResult.newData)
-    }
-
-    func widgetActiveDisplayModeDidChange(_ activeDisplayMode: NCWidgetDisplayMode, withMaximumSize maxSize: CGSize) {
-
     }
 }
 
@@ -71,28 +61,32 @@ private extension TodayViewController {
         }
     }
 
-    func updateChart(_ average: CalendarUnit = .week, range: Chart.Range) {
-        HealthManager.instance.getWeights()
+    @discardableResult
+    func updateChart(_ average: CalendarUnit = .week, range: Chart.Range) -> Observable<Result<Void>> {
+        return HealthManager.instance.getWeights()
             .then {
                 self.chartView.update(with: $0, dotColor: .black(), lineColor: UIColor.black().withAlphaComponent(0.3), average: .week, range: range)
             }
     }
 
     // MARK: Labels
-    func updateLabels(forceWeight: HKQuantitySample? = nil) {
+    @discardableResult
+    func updateLabels(forceWeight: HKQuantitySample? = nil) -> Observable<Result<Void>> {
 
+        let observer = Observable<Result<Void>>()
         let quantitySampleBlock: (HKQuantitySample) -> () = { quantitySample in
             Async.main {
                 let doubleValue = quantitySample.quantity.doubleValue(for: HealthManager.instance.massUnit)
                 let massFormatterUnit = HealthManager.instance.massFormatterUnit
                 self.weightLabel.text = self.weightFormatter.string(fromValue: doubleValue, unit: massFormatterUnit)
                 self.weightDetailLabel.text = self.dateLastWeightFormatter.string(from: quantitySample.startDate)
+                observer.update(.success())
             }
         }
 
         if let forceWeight = forceWeight {
             quantitySampleBlock(forceWeight)
-            return
+            return Observable(.success())
         }
 
         HealthManager.instance.getWeight()
@@ -102,7 +96,9 @@ private extension TodayViewController {
                 Async.main {
                     self.weightLabel.text = self.weightFormatter.string(fromValue: 0, unit: HealthManager.instance.massFormatterUnit)
                     self.weightDetailLabel.text = "No existing historic data"
+                    observer.update(.success())
                 }
         }
+        return observer
     }
 }
