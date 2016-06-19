@@ -658,12 +658,6 @@ public class Chart: UIControl {
             // Add horizontal grid for each label
             context?.moveTo(x: 0, y: y)
             context?.addLineTo(x: self.bounds.width, y: y)
-            if labels[i] != 0 {
-                // Horizontal grid for 0 is not dashed
-                context?.setLineDash(phase: 0, lengths: [5], count: 1)
-            } else {
-                context?.setLineDash(phase: 0, lengths: nil, count: 0)
-            }
             context?.strokePath()
 
             let label = UILabel(frame: CGRect(x: 0, y: y, width: 0, height: 0))
@@ -684,7 +678,6 @@ public class Chart: UIControl {
         }
 
         UIGraphicsEndImageContext()
-
     }
 
     // MARK: - Touch events
