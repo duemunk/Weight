@@ -168,7 +168,7 @@ class ViewController: UIViewController {
 
         self.updateToWeight()
         self.updateQuickActions()
-        self.updateChart(.week, range: Chart.Range(unit: .month, count: 6, softStart: false))
+        self.updateChart(.week, range: Chart.Range(unit: .month, count: 6, softStart: true))
     }
 
     // MARK: - Weight
