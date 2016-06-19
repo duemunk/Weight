@@ -23,7 +23,7 @@ class InterfaceController: WKInterfaceController {
 //    var loader: Loader?
 
     let weightFormatter = MassFormatter.weightMediumFormatter()
-    let dateFormatter = DateFormatter(dateStyle: .mediumStyle, timeStyle: .shortStyle)
+    private let dateLastWeightFormatter = DateFormatter(template: "jjmmMMMd") ?? DateFormatter(dateStyle: .mediumStyle, timeStyle: .shortStyle)
     
     var selectedWeight: HKQuantity?
     var pickerWeights: [HKQuantity] {
@@ -145,7 +145,7 @@ class InterfaceController: WKInterfaceController {
 
         let quantitySampleBlock: (HKQuantitySample) -> () = { quantitySample in
             // Date
-            self.dateLabel.setText(self.dateFormatter.string(from: quantitySample.startDate))
+            self.dateLabel.setText(self.dateLastWeightFormatter.string(from: quantitySample.startDate))
             // Weight
             let quantity = quantitySample.quantity
             let massUnit = HealthManager.instance.massUnit

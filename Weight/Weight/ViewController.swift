@@ -91,10 +91,10 @@ class ViewController: UIViewController {
     @IBOutlet weak var saveButton: UIButton!
     
     let weightFormatter = MassFormatter.weightMediumFormatter()
-    let dateFormatter = DateFormatter(dateStyle: .mediumStyle, timeStyle: .shortStyle)
-    let dateShortFormatter = DateFormatter(dateStyle: .shortStyle, timeStyle: .shortStyle)
-    let dateOnlyFormatter = DateFormatter(dateStyle: .mediumStyle, timeStyle: .noStyle)
-    let dateWithOutYearFormatter = DateFormatter(template: "MMMd")
+
+    private let dateLastWeightFormatter = DateFormatter(template: "jjmmMMMd") ?? DateFormatter(dateStyle: .mediumStyle, timeStyle: .shortStyle)
+    private let dateQuickActionFormatter = DateFormatter(template: "jjmmMMMd") ?? DateFormatter(dateStyle: .mediumStyle, timeStyle: .shortStyle)
+    private let dateChartXLabelFormatter = DateFormatter(template: "dMMM") ?? DateFormatter(dateStyle: .mediumStyle, timeStyle: .noStyle)
     var pickerWeights: [HKQuantity] {
         return HealthManager.instance.humanWeightOptions()
     }
@@ -185,7 +185,7 @@ class ViewController: UIViewController {
                 }
                 let massFormatterUnit = HealthManager.instance.massFormatterUnit
                 self.weightLabel.text = self.weightFormatter.string(fromValue: doubleValue, unit: massFormatterUnit)
-                self.weightDetailLabel.text = self.dateFormatter.string(from: quantitySample.startDate)
+                self.weightDetailLabel.text = self.dateLastWeightFormatter.string(from: quantitySample.startDate)
                 self.weightPickerView.reloadAllComponents()
                 self.weightPickerView.selectRow(index, inComponent: 0, animated: false)
             }
@@ -221,7 +221,7 @@ class ViewController: UIViewController {
         HealthManager.instance.getWeights()
             .flatMap(Queue.background)
             .then {
-                QuickActionsHelper.update(with: $0, weightFormatter: self.weightFormatter, dateFormatter: self.dateShortFormatter)
+                QuickActionsHelper.update(with: $0, weightFormatter: self.weightFormatter, dateFormatter: self.dateQuickActionFormatter)
             }
             .flatMap(Queue.main)
             .next { shortcuts in
@@ -241,7 +241,7 @@ class ViewController: UIViewController {
         chartView.lineWidth = 1.5
         chartView.dotSize = 1.5
         chartView.xLabelsFormatter = { (index, value) in
-            (self.dateWithOutYearFormatter ?? self.dateOnlyFormatter)
+            self.dateChartXLabelFormatter
                 .string(from: Date(timeIntervalSince1970: Double(value)))
         }
     }
