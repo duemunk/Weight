@@ -33,28 +33,27 @@ class InterfaceController: WKInterfaceController {
     override func awake(withContext context: AnyObject?) {
         print("awakeWithContext \(context)")
         super.awake(withContext: context)
-        
-//        loader = Loader(controller: self, interfaceImages: [loaderImage])
-        
+
         // Configure interface objects here.
-        updatePicker()
-        
+        self.updatePicker()
+            .subscribe { _ in
+                self.updateWeightAssumingPicker()
+        }
+
 //        setTitle("Weight")
 
         NotificationCenter.default().addObserver(forName: .HealthDataDidChange, object: nil, queue: nil) { [weak self] notification in
             Async.main {
-                self?.updateWeight().subscribe { _ in
-                    self?.updateComplications()
-                }
+                self?.updateWeightAssumingPicker()
             }
         }
 
         NotificationCenter.default().addObserver(forName: .HealthPreferencesDidChange, object: nil, queue: nil) { [weak self] notification in
             Async.main {
                 self?.updatePicker()
-                self?.updateWeight().subscribe { _ in
-                    self?.updateComplications()
-                }
+                    .subscribe { _ in
+                        self?.updateWeightAssumingPicker()
+                    }
             }
         }
     }
@@ -63,32 +62,12 @@ class InterfaceController: WKInterfaceController {
         print("willActivate")
         // This method is called when watch view controller is about to be visible to user
         super.willActivate()
-        
-        self.updateWeight().subscribe { _ in
-            self.updateComplications()
-        }
+
+//        loaderImage.setHidden(false)
 //        loader?.startAnimating()
-        
 //        picker.setHidden(true)
 //        dateLabel.setHidden(true)
 //        saveButton.setHidden(true)
-        
-//        Async.background {
-//            tic()
-//            self.updatePicker()
-//            self.updateWeight {
-//                self.updateComplications()
-//            }
-//            toc()
-//            Async.main() {
-//                self.loader?.stopAnimating()
-//                self.picker.setHidden(false)
-//                self.dateLabel.setHidden(false)
-//                self.saveButton.setHidden(false)
-//                self.loader?.stopAnimating()
-//                self.loaderImage.setHidden(true)
-//            }
-//        }
     }
 
     override func didDeactivate() {
@@ -127,9 +106,9 @@ class InterfaceController: WKInterfaceController {
             .then {
                 WKInterfaceDevice.current().play(.success)
                 self.updatePicker(referenceWeight: $0) // Update to
-                self.updateWeight().subscribe { _ in
-                    self.updateComplications()
-                }
+                    .subscribe { _ in
+                        self.updateWeightAssumingPicker()
+                    }
             }
             .error {
                 print("Couldn't save weight: \($0)")
@@ -139,8 +118,18 @@ class InterfaceController: WKInterfaceController {
 
 //        }
     }
+}
 
-    private func updateWeight(forceWeight: HKQuantitySample? = nil) -> Observable<Void> { //  = WeightsLocalStore.instance.lastWeight
+private extension InterfaceController {
+
+    func updateWeightAssumingPicker() {
+        self.updateLabelsAndPickerPosition()
+            .subscribe {
+                self.updateComplications()
+            }
+    }
+
+    func updateLabelsAndPickerPosition(forceWeight: HKQuantitySample? = nil) -> Observable<Void> { //  = WeightsLocalStore.instance.lastWeight
         let observable = Observable<Void>()
 
         let quantitySampleBlock: (HKQuantitySample) -> () = { quantitySample in
@@ -179,30 +168,39 @@ class InterfaceController: WKInterfaceController {
             }
         return observable
     }
-    
-    private func updatePicker(referenceWeight referenceWeightQuantitySample: HKQuantitySample? = WeightsLocalStore.instance.lastWeight) {
-        
-        var pickerItems = [WKPickerItem]()
-        let massUnit = HealthManager.instance.massUnit
-        let massFormatterUnit = HealthManager.instance.massFormatterUnit
-        for weightQuantity in pickerWeights {
-            let item = WKPickerItem()
-            let weight = weightQuantity.doubleValue(for: massUnit)
-            item.title = weightFormatter.string(fromValue: weight, unit: massFormatterUnit)
-            if let referenceWeightQuantity = referenceWeightQuantitySample?.quantity {
-                let referenceWeight = referenceWeightQuantity.doubleValue(for: massUnit)
-                let diffWeight = weight - referenceWeight
-                let diffString = weightFormatter.string(fromValue: abs(diffWeight), unit: massFormatterUnit)
-                switch diffWeight {
-                    case 0: item.caption = "="
-                    case let d where d > 0: item.caption = "+" + diffString
-                    case let d where d < 0: item.caption = "-" + diffString
-                    default: item.caption = diffString
+
+    @discardableResult
+    func updatePicker(referenceWeight referenceWeightQuantitySample: HKQuantitySample? = WeightsLocalStore.instance.lastWeight) -> Observable<Void> {
+        return Observable<Void>((), options: [.Once])
+            .flatMap(Queue.background)
+            .flatMap { (_: Void) -> Observable<[WKPickerItem]> in
+                var pickerItems = [WKPickerItem]()
+                let massUnit = HealthManager.instance.massUnit
+                let massFormatterUnit = HealthManager.instance.massFormatterUnit
+                for weightQuantity in self.pickerWeights {
+                    let item = WKPickerItem()
+                    let weight = weightQuantity.doubleValue(for: massUnit)
+                    item.title = self.weightFormatter.string(fromValue: weight, unit: massFormatterUnit)
+                    if let referenceWeightQuantity = referenceWeightQuantitySample?.quantity {
+                        let referenceWeight = referenceWeightQuantity.doubleValue(for: massUnit)
+                        let diffWeight = weight - referenceWeight
+                        let diffString = self.weightFormatter.string(fromValue: abs(diffWeight), unit: massFormatterUnit)
+                        switch diffWeight {
+                            case 0: item.caption = "="
+                            case let d where d > 0: item.caption = "+" + diffString
+                            case let d where d < 0: item.caption = "-" + diffString
+                            default: item.caption = diffString
+                        }
+                    }
+                    pickerItems.append(item)
                 }
+                return Observable(pickerItems)
             }
-            pickerItems.append(item)
-        }
-        picker.setItems(pickerItems)
+            .flatMap(Queue.main)
+            .flatMap { (pickerItems) -> Observable<Void> in
+                self.picker.setItems(pickerItems)
+                return Observable()
+            }
     }
     
     func updateComplications() {
