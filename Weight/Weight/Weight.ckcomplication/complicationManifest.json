@@ -1,0 +1,10 @@
+{
+  "supported complication families" : {
+    "3" : "FC9088D5-95F0-4B7C-AD56-ACEE0B1E74FD.json",
+    "1" : "722C3E8F-CCA4-48A3-989A-1E0436464193.json",
+    "4" : "4C6DFA91-6D72-43A7-9946-379CCDC8B10A.json",
+    "2" : "013ED975-A159-46E2-BC7B-DD60F84C5780.json",
+    "0" : "AC7919C2-B019-448D-9B2D-15C342D939DB.json"
+  },
+  "client ID" : "dk.developmunk.Weight.watchkitapp.watchkitextension"
+}

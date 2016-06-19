@@ -1,0 +1,17 @@
+{
+  "tintColor" : {
+    "green" : 0.8509804,
+    "red" : 0.3098039,
+    "alpha" : 0.8,
+    "blue" : 0.3921569
+  },
+  "class" : "CLKComplicationTemplateUtilitarianSmallRingText",
+  "fillFraction" : 0.5,
+  "ringStyle" : 1,
+  "textProvider" : {
+    "shortText" : "68",
+    "class" : "CLKSimpleTextProvider",
+    "text" : "68.4 kg"
+  },
+  "version" : 30000
+}

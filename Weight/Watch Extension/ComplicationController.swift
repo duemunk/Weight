@@ -96,6 +96,13 @@ extension ComplicationController: CLKComplicationDataSource {
         let template = templateForComplication(complication, weight: nil, date: Date())
         handler(template)
     }
+
+
+    // For iOS Complications Gallery
+    func getLocalizableSampleTemplate(for complication: CLKComplication, withHandler handler: (CLKComplicationTemplate?) -> Void) {
+        let template = templateForComplication(complication, weight: 68.4, date: Date())
+        handler(template)
+    }
 }
 
 

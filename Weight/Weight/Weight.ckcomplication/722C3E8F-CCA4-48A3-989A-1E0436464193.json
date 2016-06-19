@@ -1,0 +1,23 @@
+{
+  "tintColor" : {
+    "green" : 0.8509804,
+    "red" : 0.3098039,
+    "alpha" : 0.8,
+    "blue" : 0.3921569
+  },
+  "class" : "CLKComplicationTemplateModularLargeStandardBody",
+  "body2TextProvider" : {
+    "calendarUnits" : 28,
+    "class" : "CLKDateTextProvider",
+    "date" : 488068254.376914
+  },
+  "body1TextProvider" : {
+    "class" : "CLKTimeTextProvider",
+    "date" : 488068254.376914
+  },
+  "version" : 30000,
+  "headerTextProvider" : {
+    "class" : "CLKSimpleTextProvider",
+    "text" : "68.4 kg"
+  }
+}

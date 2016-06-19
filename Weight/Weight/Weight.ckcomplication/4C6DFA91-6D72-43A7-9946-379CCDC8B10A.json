@@ -1,0 +1,19 @@
+{
+  "tintColor" : {
+    "green" : 0.8509804,
+    "red" : 0.3098039,
+    "alpha" : 0.8,
+    "blue" : 0.3921569
+  },
+  "class" : "CLKComplicationTemplateCircularSmallStackText",
+  "line2TextProvider" : {
+    "class" : "CLKSimpleTextProvider",
+    "text" : "kg"
+  },
+  "version" : 30000,
+  "line1TextProvider" : {
+    "shortText" : "68.4",
+    "class" : "CLKSimpleTextProvider",
+    "text" : "68.4"
+  }
+}
