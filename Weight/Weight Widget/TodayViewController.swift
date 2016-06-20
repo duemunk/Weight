@@ -89,7 +89,7 @@ private extension TodayViewController {
             return Observable(.success())
         }
 
-        HealthManager.instance.getWeight()
+        HealthManager.instance.getWeight(forceSource: false)
             .flatMap(Queue.main)
             .then(quantitySampleBlock)
             .error { _ in

@@ -37,14 +37,20 @@ class InterfaceController: WKInterfaceController {
         // Configure interface objects here.
         self.updatePicker()
             .subscribe { _ in
-                self.updateWeightAssumingPicker()
+                self.updateWeightAssumingPicker(forceSource: true)
         }
+
+        WatchConnection.instance.newWeightObserver
+            .subscribe { weight in
+                WeightsLocalStore.instance.lastWeight = weight.hkQuantitySample
+                self.updateWeightAssumingPicker(forceSource: false)
+            }
 
 //        setTitle("Weight")
 
         NotificationCenter.default().addObserver(forName: .HealthDataDidChange, object: nil, queue: nil) { [weak self] notification in
             Async.main {
-                self?.updateWeightAssumingPicker()
+                self?.updateWeightAssumingPicker(forceSource: true)
             }
         }
 
@@ -52,7 +58,7 @@ class InterfaceController: WKInterfaceController {
             Async.main {
                 self?.updatePicker()
                     .subscribe { _ in
-                        self?.updateWeightAssumingPicker()
+                        self?.updateWeightAssumingPicker(forceSource: false)
                     }
             }
         }
@@ -89,8 +95,8 @@ class InterfaceController: WKInterfaceController {
         let unit = HKUnit.gramUnit(with: .kilo)
         let value = tempWeight.doubleValue(for: unit)
         let activityDictionary: [NSObject: AnyObject] = [
-            "TemporaryWeightKg" : value,
-            "TemporaryWeightDescription": "\(tempWeight)"]
+            Keys.temporaryWeightKg : value,
+            Keys.temporaryWeightDescription : "\(tempWeight)"]
         updateUserActivity(activityType, userInfo: activityDictionary, webpageURL: nil)
     }
     
@@ -103,11 +109,11 @@ class InterfaceController: WKInterfaceController {
 //        NSProcessInfo.processInfo().performExpiringActivityWithReason("Make sure weight is stored, even though user went away from app") { expired in
 //          guard expired == false else { return }
         HealthManager.instance.saveWeight(selectedWeight)
-            .then {
+            .then { _ in
                 WKInterfaceDevice.current().play(.success)
-                self.updatePicker(referenceWeight: $0) // Update to
+                self.updatePicker() // Update to
                     .subscribe { _ in
-                        self.updateWeightAssumingPicker()
+                        self.updateWeightAssumingPicker(forceSource: true)
                     }
             }
             .error {
@@ -122,41 +128,32 @@ class InterfaceController: WKInterfaceController {
 
 private extension InterfaceController {
 
-    func updateWeightAssumingPicker() {
-        self.updateLabelsAndPickerPosition()
+    func updateWeightAssumingPicker(forceSource: Bool) {
+        updateLabelsAndPickerPosition(forceSource: forceSource)
             .subscribe {
                 self.updateComplications()
             }
     }
 
-    func updateLabelsAndPickerPosition(forceWeight: HKQuantitySample? = nil) -> Observable<Void> { //  = WeightsLocalStore.instance.lastWeight
+    func updateLabelsAndPickerPosition(forceSource: Bool) -> Observable<Void> { //  = WeightsLocalStore.instance.lastWeight
         let observable = Observable<Void>()
 
-        let quantitySampleBlock: (HKQuantitySample) -> () = { quantitySample in
-            // Date
-            self.dateLabel.setText(self.dateLastWeightFormatter.string(from: quantitySample.startDate))
-            // Weight
-            let quantity = quantitySample.quantity
-            let massUnit = HealthManager.instance.massUnit
-            let doubleValue = quantity.doubleValue(for: massUnit)
-            guard let (_, index) = self.pickerWeights.map({ $0.doubleValue(for: massUnit) }).closestToElement(doubleValue) else {
-                observable.update()
-                return
-            }
-            self.picker.setSelectedItemIndex(index)
-            observable.update()
-        }
-        
-        if let forceWeight = forceWeight {
-            quantitySampleBlock(forceWeight)
-            return observable
-        }
         // Get latest weight
-        HealthManager.instance.getWeight()
-            .then { sample in
+        HealthManager.instance.getWeight(forceSource: forceSource)
+            .then { quantitySample in
                 Async.main {
                     // Setup picker
-                    quantitySampleBlock(sample)
+                    self.dateLabel.setText(self.dateLastWeightFormatter.string(from: quantitySample.startDate))
+                    // Weight
+                    let quantity = quantitySample.quantity
+                    let massUnit = HealthManager.instance.massUnit
+                    let doubleValue = quantity.doubleValue(for: massUnit)
+                    guard let (_, index) = self.pickerWeights.map({ $0.doubleValue(for: massUnit) }).closestToElement(doubleValue) else {
+                        observable.update()
+                        return
+                    }
+                    self.picker.setSelectedItemIndex(index)
+                    observable.update()
                 }
             }
             .error {
@@ -170,7 +167,7 @@ private extension InterfaceController {
     }
 
     @discardableResult
-    func updatePicker(referenceWeight referenceWeightQuantitySample: HKQuantitySample? = WeightsLocalStore.instance.lastWeight) -> Observable<Void> {
+    func updatePicker() -> Observable<Void> {
         return Observable<Void>((), options: [.Once])
             .flatMap(Queue.background)
             .flatMap { (_: Void) -> Observable<[WKPickerItem]> in
@@ -181,6 +178,7 @@ private extension InterfaceController {
                     let item = WKPickerItem()
                     let weight = weightQuantity.doubleValue(for: massUnit)
                     item.title = self.weightFormatter.string(fromValue: weight, unit: massFormatterUnit)
+                    let referenceWeightQuantitySample = WeightsLocalStore.instance.lastWeight
                     if let referenceWeightQuantity = referenceWeightQuantitySample?.quantity {
                         let referenceWeight = referenceWeightQuantity.doubleValue(for: massUnit)
                         let diffWeight = weight - referenceWeight

@@ -84,6 +84,10 @@ let directWeightKey = "DirectWeightKey"
 
 class ViewController: UIViewController {
 
+    private enum UpdateType {
+        case source, `default`
+    }
+
     @IBOutlet weak var weightLabel: UILabel!
     @IBOutlet weak var weightDetailLabel: UILabel!
     @IBOutlet weak var weightPickerView: UIPickerView!
@@ -102,7 +106,7 @@ class ViewController: UIViewController {
     private let healthDataChange = NotificationCenter_(name: .HealthDataDidChange)
     private let healthPreferencesChange = NotificationCenter_(name: .HealthPreferencesDidChange)
     private let userActivityChange = NotificationCenter_(name: .UserActivity)
-    private let updateUIObservable = Observable<Void>()
+    private let updateUIObservable = Observable<UpdateType>()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -110,31 +114,29 @@ class ViewController: UIViewController {
         updateUIObservable
             .flatMap(Queue.main)
             .debounce(0.05)
-            .map { self.updateUI() }
+            .subscribe { self.updateUI(type: $0) }
 
         healthDataChange.observer.subscribe { _ in
-            self.updateUIObservable.update()
+            self.updateUIObservable.update(.source)
         }
         healthPreferencesChange.observer.subscribe { _ in
-            self.updateUIObservable.update()
+            self.updateUIObservable.update(.default)
+        }
+
+        WatchConnection.instance.newWeightObserver.subscribe { weight in
+            WeightsLocalStore.instance.lastWeight = weight.hkQuantitySample
+            self.updateUIObservable.update(.default)
         }
 
         userActivityChange.observer.map { notification in
             guard let
                 userActivity = notification.object as? NSUserActivity,
                 userInfo = userActivity.userInfo as? [String: AnyObject],
-                temporaryWeightInKg = userInfo["TemporaryWeightKg"] as? Double else {
+                temporaryWeight = Weight.temporaryNewWeight(from: userInfo) else {
                 return
             }
-            let weightType = HealthManager.instance.weightType
-            let massUnit = HKUnit.gramUnit(with: .kilo)
-            let quantity = HKQuantity(unit: massUnit, doubleValue: temporaryWeightInKg)
-            let date = Date()
-            let sample = HKQuantitySample(type: weightType, quantity: quantity, start: date, end: date)
-            self.updateToWeight(forceWeight: sample)
+            self.updateToWeight(request: .forceWeight(weight: temporaryWeight))
         }
-        
-        setupWeightObserver()
 
         saveButton.tap.subscribe { _ in
             let index = self.weightPickerView.selectedRow(inComponent: 0)
@@ -142,8 +144,11 @@ class ViewController: UIViewController {
                 return
             }
             HealthManager.instance.saveWeight(quantity)
+                .next { WatchConnection.instance.send(new: $0.weight) }
                 .error { print($0) }
         }
+
+        setupWeightObserver()
 
         setupChart()
     }
@@ -159,22 +164,26 @@ class ViewController: UIViewController {
     func setupWeightObserver() {
         HealthManager.instance.healthStore.observe(ofType: HealthManager.instance.weightType)
             .then { systemCompletionHandler in
-                self.updateUIObservable.update()
+                self.updateUIObservable.update(.source)
                 systemCompletionHandler()
             }
             .error { print($0) }
     }
 
-    func updateUI() {
-
-        self.updateToWeight()
+    private func updateUI(type: UpdateType) {
+        self.updateToWeight(request: .source(type: type))
         self.updateQuickActions()
         self.updateChart(.week, range: Chart.Range(unit: .month, count: 6, softStart: true))
     }
 
     // MARK: - Weight
-    func updateToWeight(forceWeight: HKQuantitySample? = nil) {
-        
+    private enum WeightRequest {
+        case forceWeight(weight: Weight)
+        case source(type: UpdateType)
+    }
+
+    private func updateToWeight(request: WeightRequest) {
+
         let quantitySampleBlock: (HKQuantitySample) -> () = { quantitySample in
             Async.main {
                 assert(Thread.isMainThread())
@@ -191,22 +200,22 @@ class ViewController: UIViewController {
                 self.weightPickerView.selectRow(index, inComponent: 0, animated: false)
             }
         }
-        
-        if let forceWeight = forceWeight {
-            quantitySampleBlock(forceWeight)
-            return
-        }
-        
-        HealthManager.instance.getWeight()
-            .flatMap(Queue.main)
-            .next(quantitySampleBlock)
-            .error {
-                print($0)
-                assert(Thread.isMainThread())
-                self.weightLabel.text = self.weightFormatter.string(fromValue: 0, unit: HealthManager.instance.massFormatterUnit)
-                self.weightDetailLabel.text = "No existing historic data"
-                self.weightPickerView.selectRow(0, inComponent: 0, animated: true)
+
+        switch request {
+        case .forceWeight(let weight):
+            quantitySampleBlock(weight.hkQuantitySample)
+        case .source(let type):
+            HealthManager.instance.getWeight(forceSource: .source == type)
+                .flatMap(Queue.main)
+                .next(quantitySampleBlock)
+                .error {
+                    print($0)
+                    assert(Thread.isMainThread())
+                    self.weightLabel.text = self.weightFormatter.string(fromValue: 0, unit: HealthManager.instance.massFormatterUnit)
+                    self.weightDetailLabel.text = "No existing historic data"
+                    self.weightPickerView.selectRow(0, inComponent: 0, animated: true)
             }
+        }
     }
     
     func weightForPickerRow(_ index: Int) -> HKQuantity? {
@@ -304,7 +313,10 @@ extension ViewController: UIPickerViewDelegate {
         guard let tempWeight = weightForPickerRow(row) else {
             return
         }
-        let activityDictionary: [NSObject: AnyObject] = ["TemporaryWeight" : tempWeight]
+        let activityDictionary: [NSObject: AnyObject] = [
+            Keys.temporaryWeightKg : tempWeight,
+            Keys.date : Date()
+        ]
         if self.userActivity != nil {
             self.userActivity?.addUserInfoEntries(from: activityDictionary)
             self.userActivity?.needsSave = true

@@ -38,6 +38,14 @@
 		4E7769781B5E70400081017D /* HealthStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E7769751B5E70400081017D /* HealthStore.swift */; };
 		4E7769791B5E70400081017D /* NotificationCenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E7769761B5E70400081017D /* NotificationCenter.swift */; };
 		4E77697A1B5E70400081017D /* NotificationCenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E7769761B5E70400081017D /* NotificationCenter.swift */; };
+		4E81F1CA1D18266A009BE1D4 /* Keys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E81F1C91D18266A009BE1D4 /* Keys.swift */; };
+		4E81F1CB1D18266A009BE1D4 /* Keys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E81F1C91D18266A009BE1D4 /* Keys.swift */; };
+		4E81F1CC1D18266A009BE1D4 /* Keys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E81F1C91D18266A009BE1D4 /* Keys.swift */; };
+		4E81F1D01D184187009BE1D4 /* Weight.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E81F1CF1D184187009BE1D4 /* Weight.swift */; };
+		4E81F1D11D184187009BE1D4 /* Weight.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E81F1CF1D184187009BE1D4 /* Weight.swift */; };
+		4E81F1D21D184187009BE1D4 /* Weight.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E81F1CF1D184187009BE1D4 /* Weight.swift */; };
+		4E81F1D41D1846C1009BE1D4 /* WatchConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E81F1D31D1846C1009BE1D4 /* WatchConnection.swift */; };
+		4E81F1D51D1846C1009BE1D4 /* WatchConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E81F1D31D1846C1009BE1D4 /* WatchConnection.swift */; };
 		4EA8A20E1B678F3E00E1EF05 /* WeightsLocalStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EA8A20D1B678F3E00E1EF05 /* WeightsLocalStore.swift */; };
 		4EA8A20F1B678F4400E1EF05 /* WeightsLocalStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EA8A20D1B678F3E00E1EF05 /* WeightsLocalStore.swift */; };
 		4EDEAB1C1D16C4FE0021A99D /* QuickActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EDEAB1B1D16C4FE0021A99D /* QuickActions.swift */; };
@@ -188,6 +196,9 @@
 		4E7769721B5E6E070081017D /* ErrorHandling.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ErrorHandling.swift; sourceTree = "<group>"; };
 		4E7769751B5E70400081017D /* HealthStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HealthStore.swift; sourceTree = "<group>"; };
 		4E7769761B5E70400081017D /* NotificationCenter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationCenter.swift; sourceTree = "<group>"; };
+		4E81F1C91D18266A009BE1D4 /* Keys.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Keys.swift; sourceTree = "<group>"; };
+		4E81F1CF1D184187009BE1D4 /* Weight.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Weight.swift; sourceTree = "<group>"; };
+		4E81F1D31D1846C1009BE1D4 /* WatchConnection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WatchConnection.swift; sourceTree = "<group>"; };
 		4EA8A20C1B678EAD00E1EF05 /* Watch.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Watch.entitlements; sourceTree = "<group>"; };
 		4EA8A20D1B678F3E00E1EF05 /* WeightsLocalStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WeightsLocalStore.swift; sourceTree = "<group>"; };
 		4EDEAB1B1D16C4FE0021A99D /* QuickActions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QuickActions.swift; sourceTree = "<group>"; };
@@ -362,12 +373,14 @@
 			children = (
 				4E77697B1B5E72B20081017D /* Health */,
 				4E7769761B5E70400081017D /* NotificationCenter.swift */,
+				4E81F1C91D18266A009BE1D4 /* Keys.swift */,
 				4E212C551B6C11D5007E19D3 /* NSDateFormatter.swift */,
 				4E7769721B5E6E070081017D /* ErrorHandling.swift */,
 				4EEE52E01B602B21009B1D15 /* GlobalHelpers.swift */,
 				4EE529CC1B681F5B0045C1C3 /* Async.swift */,
 				4EE529CF1B682CE50045C1C3 /* Array.swift */,
 				4EFFEDE61D13337800EC0E27 /* InterstellarHelpers.swift */,
+				4E81F1D31D1846C1009BE1D4 /* WatchConnection.swift */,
 				4EDEAB201D16D2750021A99D /* ChartHelper.swift */,
 				4EDEAB211D16D2750021A99D /* SwiftChart */,
 			);
@@ -381,6 +394,7 @@
 				4E77696D1B5E5FF00081017D /* HealthManager.swift */,
 				4EA8A20D1B678F3E00E1EF05 /* WeightsLocalStore.swift */,
 				4E212C521B6C10F1007E19D3 /* WeightFormatters.swift */,
+				4E81F1CF1D184187009BE1D4 /* Weight.swift */,
 			);
 			name = Health;
 			sourceTree = "<group>";
@@ -751,10 +765,12 @@
 			files = (
 				4E77696E1B5E5FF00081017D /* HealthManager.swift in Sources */,
 				4EDEAB291D16D2750021A99D /* ChartColors.swift in Sources */,
+				4E81F1D41D1846C1009BE1D4 /* WatchConnection.swift in Sources */,
 				4E212C531B6C10F1007E19D3 /* WeightFormatters.swift in Sources */,
 				4EFFEDE71D13337800EC0E27 /* InterstellarHelpers.swift in Sources */,
 				4E7769711B5E61250081017D /* HealthStore_iOS.swift in Sources */,
 				4E212C561B6C11D5007E19D3 /* NSDateFormatter.swift in Sources */,
+				4E81F1D01D184187009BE1D4 /* Weight.swift in Sources */,
 				4EEE52E11B602B21009B1D15 /* GlobalHelpers.swift in Sources */,
 				4E7769731B5E6E070081017D /* ErrorHandling.swift in Sources */,
 				4EDEAB2B1D16D2750021A99D /* ChartSeries.swift in Sources */,
@@ -763,6 +779,7 @@
 				4EDEAB251D16D2750021A99D /* ChartHelper.swift in Sources */,
 				4EE529D01B682CE50045C1C3 /* Array.swift in Sources */,
 				4EDEAB271D16D2750021A99D /* Chart.swift in Sources */,
+				4E81F1CA1D18266A009BE1D4 /* Keys.swift in Sources */,
 				4E7769791B5E70400081017D /* NotificationCenter.swift in Sources */,
 				4E7769771B5E70400081017D /* HealthStore.swift in Sources */,
 				4EE529CD1B681F5B0045C1C3 /* Async.swift in Sources */,
@@ -793,15 +810,18 @@
 			buildActionMask = 2147483647;
 			files = (
 				4E77696F1B5E5FF00081017D /* HealthManager.swift in Sources */,
+				4E81F1CB1D18266A009BE1D4 /* Keys.swift in Sources */,
 				4E212C541B6C10F1007E19D3 /* WeightFormatters.swift in Sources */,
 				4E7769571B5E57340081017D /* ExtensionDelegate.swift in Sources */,
 				4E212C571B6C11D5007E19D3 /* NSDateFormatter.swift in Sources */,
 				4EEE52E21B602B21009B1D15 /* GlobalHelpers.swift in Sources */,
+				4E81F1D11D184187009BE1D4 /* Weight.swift in Sources */,
 				4E7769551B5E57340081017D /* InterfaceController.swift in Sources */,
 				4E77697A1B5E70400081017D /* NotificationCenter.swift in Sources */,
 				4E7769741B5E6E070081017D /* ErrorHandling.swift in Sources */,
 				4EE529D11B682CE50045C1C3 /* Array.swift in Sources */,
 				4E7769591B5E57340081017D /* ComplicationController.swift in Sources */,
+				4E81F1D51D1846C1009BE1D4 /* WatchConnection.swift in Sources */,
 				4E7769781B5E70400081017D /* HealthStore.swift in Sources */,
 				4EFFEDE91D133DB100EC0E27 /* InterstellarHelpers.swift in Sources */,
 				4EE529CE1B681F630045C1C3 /* Async.swift in Sources */,
@@ -815,6 +835,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4EFFEE071D14D72500EC0E27 /* GlobalHelpers.swift in Sources */,
+				4E81F1CC1D18266A009BE1D4 /* Keys.swift in Sources */,
 				4EFFEDF41D14D62500EC0E27 /* TodayViewController.swift in Sources */,
 				4EFFEE051D14D72500EC0E27 /* NSDateFormatter.swift in Sources */,
 				4EFFEE021D14D72500EC0E27 /* WeightsLocalStore.swift in Sources */,
@@ -824,6 +845,7 @@
 				4EDEAB281D16D2750021A99D /* Chart.swift in Sources */,
 				4EDEAB2C1D16D2750021A99D /* ChartSeries.swift in Sources */,
 				4EFFEE0A1D14D72500EC0E27 /* InterstellarHelpers.swift in Sources */,
+				4E81F1D21D184187009BE1D4 /* Weight.swift in Sources */,
 				4EDEAB261D16D2750021A99D /* ChartHelper.swift in Sources */,
 				4EFFEE031D14D72500EC0E27 /* WeightFormatters.swift in Sources */,
 				4EFFEE081D14D72500EC0E27 /* Async.swift in Sources */,
@@ -1147,7 +1169,7 @@
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = 4;
-				WATCHOS_DEPLOYMENT_TARGET = 2.2;
+				WATCHOS_DEPLOYMENT_TARGET = 3.0;
 			};
 			name = Debug;
 		};
@@ -1172,7 +1194,7 @@
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = 4;
-				WATCHOS_DEPLOYMENT_TARGET = 2.2;
+				WATCHOS_DEPLOYMENT_TARGET = 3.0;
 			};
 			name = Release;
 		};

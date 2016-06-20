@@ -108,10 +108,19 @@ class HealthManager {
 
     }
 
-    func getWeight() -> Observable<Result<HKQuantitySample>> {
+    func getWeight(forceSource: Bool) -> Observable<Result<HKQuantitySample>> {
         return healthStore.mostRecentSample(ofType: weightType)
             .then(castToSubType)
-            .next {
+            .then { (source: HKQuantitySample) -> HKQuantitySample  in
+                guard let cached = WeightsLocalStore.instance.lastWeight else {
+                    return source
+                }
+                let useSource = forceSource || source.startDate > cached.startDate
+                if useSource {
+                    return source
+                }
+                return cached
+            }.next {
                 WeightsLocalStore.instance.lastWeight = $0
             }
     }
@@ -132,6 +141,7 @@ class HealthManager {
                     return .error(Error.noSuccessDespiteNoError)
                 }
                 print("Yay, stored \(sample) to HealthKit!")
+                WeightsLocalStore.instance.lastWeight = sample
                 return .success(sample)
             }
     }
