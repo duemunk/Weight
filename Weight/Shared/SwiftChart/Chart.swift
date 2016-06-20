@@ -390,14 +390,32 @@ public class Chart: UIControl {
 
     private func axesIncrementIn(range valueRange: Float, axesRange: Float) -> Float? {
         guard valueRange != 0 else { return nil }
-        let incrementApproxHeight: Float = 30
-        let naiveIncrement = axesRange / incrementApproxHeight / valueRange
-        let roundedIncrement = nearestPowerOf10(naiveIncrement)
+        let incrementApproxHeight: Float = 40
+        let roomForRows = axesRange / incrementApproxHeight
+        let naiveIncrement = valueRange / roomForRows
+        let roundedIncrement = go(naiveIncrement)
         return roundedIncrement
     }
 
     private func nearestPowerOf10(_ value: Float) -> Float {
         return pow(10, round(log10(value) - log10(5.5) + 0.5))
+    }
+
+    private func nextPowerOf10(_ value: Float) -> Float {
+        return pow(10, ceil(log10(value) - log10(5.5) + 0.5))
+    }
+
+    private func nextPower(of power: Float, value: Float) -> Float {
+        return pow(power, ceil(log(value)/log(power) - log(power + 0.5)/log(power) + 0.5))
+    }
+
+    private func go(_ value: Float) -> Float {
+        switch value {
+        case 0.1...0.5: return 0.5
+        case 0.5...1: return 1
+        case 1...10: return go(value/10)*10
+        default: return value
+        }
     }
 
     private func scaleValueOnXAxis(_ value: Float) -> Float {
