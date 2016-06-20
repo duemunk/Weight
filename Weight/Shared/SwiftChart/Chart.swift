@@ -80,7 +80,7 @@ public class Chart: UIControl {
     /**
     Formatter for the labels on the y-axis.
     */
-    public var yLabelsFormatter = { (labelIndex: Int, labelValue: Float) -> String in
+    public var yLabelsFormatter = { (labelIndex: Int, labelValue: Float, yIncrement: Float?) -> String in
         String(Int(labelValue))
     }
 
@@ -666,7 +666,7 @@ public class Chart: UIControl {
 
             let label = UILabel(frame: CGRect(x: 0, y: y, width: 0, height: 0))
             label.font = labelFont
-            label.text = yLabelsFormatter(i, labels[i])
+            label.text = yLabelsFormatter(i, labels[i], yIncrement)
             label.textColor = labelColor
             label.sizeToFit()
 

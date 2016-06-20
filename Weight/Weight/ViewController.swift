@@ -95,6 +95,7 @@ class ViewController: UIViewController {
     private let dateLastWeightFormatter = DateFormatter(template: "jjmmMMMd") ?? DateFormatter(dateStyle: .mediumStyle, timeStyle: .shortStyle)
     private let dateQuickActionFormatter = DateFormatter(template: "jjmmMMMd") ?? DateFormatter(dateStyle: .mediumStyle, timeStyle: .shortStyle)
     private let dateChartXLabelFormatter = DateFormatter(template: "dMMM") ?? DateFormatter(dateStyle: .mediumStyle, timeStyle: .noStyle)
+    private let chartYLabelFormatter = NumberFormatter()
     var pickerWeights: [HKQuantity] {
         return HealthManager.instance.humanWeightOptions()
     }
@@ -246,6 +247,22 @@ class ViewController: UIViewController {
         chartView.xLabelsFormatter = { (index, value) in
             self.dateChartXLabelFormatter
                 .string(from: Date(timeIntervalSince1970: Double(value)))
+        }
+        chartView.yLabelsFormatter = { (index, value, yIncrement) in
+            let formatter = self.chartYLabelFormatter
+            let fractionDigits: Int = {
+                if let yIncrement = yIncrement {
+                    var fraction: Float = 0
+                    while round(yIncrement*pow(10, fraction)) != yIncrement*pow(10, fraction) {
+                        fraction += 1
+                    }
+                    return Int(fraction)
+                }
+                return 0
+            }()
+            formatter.maximumFractionDigits = fractionDigits
+            formatter.minimumFractionDigits = fractionDigits
+            return formatter.string(from: value) ?? "\(value)"
         }
     }
 
