@@ -486,18 +486,19 @@ public class Chart: UIControl {
         lineLayer.frame = self.bounds
         lineLayer.path = path
 
+        lineLayer.fillColor = UIColor.clear().cgColor
         if isAboveXAxis {
             lineLayer.strokeColor = series[seriesIndex].colors.above.cgColor
         } else {
             lineLayer.strokeColor = series[seriesIndex].colors.below.cgColor
         }
-        lineLayer.fillColor = nil
         lineLayer.lineWidth = lineWidth
         lineLayer.lineJoin = kCALineJoinBevel
 
         self.layer.addSublayer(lineLayer)
 
         layerStore.append(lineLayer)
+
 
         return lineLayer
     }
@@ -518,7 +519,7 @@ public class Chart: UIControl {
         let areaLayer = CAShapeLayer()
         areaLayer.frame = self.bounds
         areaLayer.path = area
-        areaLayer.strokeColor = nil
+        areaLayer.strokeColor = UIColor.clear().cgColor
         if isAboveXAxis {
             areaLayer.fillColor = series[seriesIndex].colors.above.withAlphaComponent(areaAlphaComponent).cgColor
         } else {
@@ -551,7 +552,7 @@ public class Chart: UIControl {
 
         let colors = series[seriesIndex].colors
         dotsLayer.fillColor = isAboveXAxis ? colors.above.cgColor : colors.below.cgColor
-        dotsLayer.strokeColor = nil
+        dotsLayer.strokeColor = UIColor.clear().cgColor
 
         self.layer.addSublayer(dotsLayer)
 
@@ -725,7 +726,7 @@ public class Chart: UIControl {
             shapeLayer.frame = self.bounds
             shapeLayer.path = path
             shapeLayer.strokeColor = highlightLineColor.cgColor
-            shapeLayer.fillColor = nil
+            shapeLayer.fillColor = UIColor.clear().cgColor
             shapeLayer.lineWidth = highlightLineWidth
 
             highlightShapeLayer = shapeLayer
