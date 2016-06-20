@@ -28,6 +28,10 @@ class HealthManager {
     enum ErrorAuth: ErrorProtocol {
         case denied
     }
+
+    struct WeightPoint {
+        let kg: Double
+    }
     
     let healthStore = HKHealthStore()
 
@@ -81,57 +85,8 @@ class HealthManager {
             .error { print($0) }
     }
 
-    func saveWeight(_ doubleValue: Double) -> Observable<Result<HKQuantitySample>> {
-        let quantity = HKQuantity(unit: massUnit, doubleValue: doubleValue)
-        return saveQuantity(quantity, type: weightType)
-    }
-
-    func saveWeight(_ quantity: HKQuantity, date: Date = Date()) -> Observable<Result<HKQuantitySample>> {
-        return saveQuantity(quantity, type: weightType, date: date)
-    }
-
-    private func castToSubType<T, U>(t: T) -> Result<U> {
-        guard let u = t as? U else {
-            print("Not of type \(U.self)")
-            return .error(Error.wrongConversion)
-        }
-        return .success(u)
-    }
-
-    private func castToSubTypeInArray<T, U>(t: [T]) -> Result<[U]> {
-        let casted = t
-            .flatMap { $0 as? U }
-        guard casted.count == t.count else {
-            return .error(Error.wrongConversion)
-        }
-        return .success(casted)
-
-    }
-
-    func getWeight(forceSource: Bool) -> Observable<Result<HKQuantitySample>> {
-        return healthStore.mostRecentSample(ofType: weightType)
-            .then(castToSubType)
-            .then { (source: HKQuantitySample) -> HKQuantitySample  in
-                guard let cached = WeightsLocalStore.instance.lastWeight else {
-                    return source
-                }
-                let useSource = forceSource || source.startDate > cached.startDate
-                if useSource {
-                    return source
-                }
-                return cached
-            }.next {
-                WeightsLocalStore.instance.lastWeight = $0
-            }
-    }
-
-    func getWeights() -> Observable<Result<[HKQuantitySample]>>{
-        return healthStore.samples(ofType: weightType)
-            .then(castToSubTypeInArray)
-    }
-    
-    private func saveQuantity(_ quantity: HKQuantity, type: HKQuantityType, date: Date = Date()) -> Observable<Result<HKQuantitySample>> {
-        let sample = HKQuantitySample(type: type, quantity: quantity, start: date, end: date)
+    func save(weight: Weight) -> Observable<Result<Weight>> {
+        let sample = weight.hkQuantitySample
         let observer = Observable<Result<Bool>>()
         healthStore.save(sample, withCompletion: completionToObservable(observer: observer))
         return observer
@@ -141,9 +96,56 @@ class HealthManager {
                     return .error(Error.noSuccessDespiteNoError)
                 }
                 print("Yay, stored \(sample) to HealthKit!")
-                WeightsLocalStore.instance.lastWeight = sample
-                return .success(sample)
+                WeightsLocalStore.instance.lastWeight = weight
+                return .success(sample.weight)
+        }
+    }
+
+    private func castToSubType<T, U>(t: T) -> Result<U> {
+        guard let u = t as? U else {
+            print("Not of type \(U.self)")
+            return .error(Error.wrongConversion)
+        }
+        return .success(u)
+    }
+    private func sampleToQuantitySample<T: HKSample, U: HKQuantitySample>(t: T) -> Result<U> {
+        return castToSubType(t: t)
+    }
+
+    private func castToSubTypeInArray<T, U>(t: [T]) -> Result<[U]> {
+        let casted = t
+            .flatMap { $0 as? U }
+        guard casted.count == t.count else {
+            return .error(Error.wrongConversion)
+        }
+        return .success(casted)
+    }
+    private func sampleToQuanitySampleInArray<T: HKSample, U: HKQuantitySample>(t: [T]) -> Result<[U]> {
+        return castToSubTypeInArray(t: t)
+    }
+
+    func getWeight(forceSource: Bool) -> Observable<Result<Weight>> {
+        return healthStore.mostRecentSample(ofType: weightType)
+            .then(sampleToQuantitySample)
+            .then { $0.weight }
+            .then { (source: Weight) -> Weight  in
+                guard let cached = WeightsLocalStore.instance.lastWeight else {
+                    return source
+                }
+                let useSource = forceSource || source.date > cached.date
+                if useSource {
+                    return source
+                }
+                return cached
+            }.next {
+                WeightsLocalStore.instance.lastWeight = $0
             }
+    }
+
+    func getWeights() -> Observable<Result<[Weight]>>{
+        return healthStore.samples(ofType: weightType)
+            .then(sampleToQuanitySampleInArray)
+            .then { $0.map { $0.weight } }
     }
     
     func checkHealthKitAuthorization() -> Observable<Result<Void>> {
@@ -175,7 +177,7 @@ class HealthManager {
         }
     }
 
-    func humanWeightOptions() -> [HKQuantity] {
+    func humanWeightOptions() -> [WeightPoint] {
         let division = humanWeightUnitDivision()
         let (min, max): (Int, Int) = {
             switch massUnit {
@@ -189,24 +191,28 @@ class HealthManager {
         for option in min*division...max*division {
             options.append(Double(option) / Double(division))
         }
-        return options.map { HKQuantity(unit: massUnit, doubleValue: $0) }
+        let kgUnit = HKUnit.gramUnit(with: .kilo)
+
+        return options
+            .map { HKQuantity(unit: massUnit, doubleValue: $0).doubleValue(for: kgUnit) }
+            .map { WeightPoint(kg: $0) }
     }
 }
 
 
-extension Collection where Iterator.Element == HKQuantitySample {
+extension Collection where Iterator.Element == Weight {
 
     func averages(_ unit: CalendarUnit) -> [Iterator.Element]? {
 
-        let sorted = self.sorted { $0.startDate < $1.endDate }
+        let sorted = self.sorted { $0.date < $1.date }
 
         guard let
             first = sorted.first,
-            lastDate = sorted.last?.startDate
+            lastDate = sorted.last?.date
             else {
             return nil
         }
-        let firstDate = first.startDate
+        let firstDate = first.date
         guard let firstReferenceDay = firstDate.beginningOf(unit) else {
             return nil
         }
@@ -219,21 +225,17 @@ extension Collection where Iterator.Element == HKQuantitySample {
             referenceDateInAverageUnit.append(nextReference)
         }
 
-        let massUnit = HealthManager.instance.massUnit
-        let quantityType = first.quantityType
-
         let referenceCount = referenceDateInAverageUnit.count
         let startEndDates = Array(zip(referenceDateInAverageUnit[0..<referenceCount - 1], referenceDateInAverageUnit[1..<referenceCount]))
-        let averages: [HKQuantitySample] = startEndDates
+        let averages: [Weight] = startEndDates
             .flatMap { (startDate, endDate) in
-                let inUnit = self.filter { startDate < $0.startDate && $0.startDate < endDate }
+                let inUnit = self.filter { startDate..<endDate ~= $0.date }
                 let count = inUnit.count
                 guard count > 0 else { return nil }
                 let averageValue = inUnit
-                    .reduce(0) { $0 + $1.quantity.doubleValue(for: massUnit) }
+                    .reduce(0) { $0 + $1.kg }
                     / Double(count)
-                let quantity = HKQuantity(unit: massUnit, doubleValue: averageValue)
-                return HKQuantitySample(type: quantityType, quantity: quantity, start: startDate, end: endDate)
+                return Weight(kg: averageValue, date: endDate)
             }
         return averages
     }

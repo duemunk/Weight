@@ -9,7 +9,6 @@
 import WatchKit
 import Foundation
 import ClockKit
-import HealthKit
 import Interstellar
 
 
@@ -25,8 +24,8 @@ class InterfaceController: WKInterfaceController {
     let weightFormatter = MassFormatter.weightMediumFormatter()
     private let dateLastWeightFormatter = DateFormatter(template: "jjmmMMMd") ?? DateFormatter(dateStyle: .mediumStyle, timeStyle: .shortStyle)
     
-    var selectedWeight: HKQuantity?
-    var pickerWeights: [HKQuantity] {
+    var selectedWeight: HealthManager.WeightPoint?
+    var pickerWeights: [HealthManager.WeightPoint] {
         return HealthManager.instance.humanWeightOptions()
     }
     
@@ -42,7 +41,7 @@ class InterfaceController: WKInterfaceController {
 
         WatchConnection.instance.newWeightObserver
             .subscribe { weight in
-                WeightsLocalStore.instance.lastWeight = weight.hkQuantitySample
+                WeightsLocalStore.instance.lastWeight = weight
                 self.updateWeightAssumingPicker(forceSource: false)
             }
 
@@ -92,10 +91,8 @@ class InterfaceController: WKInterfaceController {
         guard let tempWeight = weight else { return }
         
         let activityType = "dk.developmunk.Weight.updatingWeight"
-        let unit = HKUnit.gramUnit(with: .kilo)
-        let value = tempWeight.doubleValue(for: unit)
         let activityDictionary: [NSObject: AnyObject] = [
-            Keys.temporaryWeightKg : value,
+            Keys.temporaryWeightKg : tempWeight.kg,
             Keys.temporaryWeightDescription : "\(tempWeight)"]
         updateUserActivity(activityType, userInfo: activityDictionary, webpageURL: nil)
     }
@@ -108,7 +105,8 @@ class InterfaceController: WKInterfaceController {
         }
 //        NSProcessInfo.processInfo().performExpiringActivityWithReason("Make sure weight is stored, even though user went away from app") { expired in
 //          guard expired == false else { return }
-        HealthManager.instance.saveWeight(selectedWeight)
+        let weight = Weight(kg: selectedWeight.kg, date: Date())
+        HealthManager.instance.save(weight: weight)
             .then { _ in
                 WKInterfaceDevice.current().play(.success)
                 self.updatePicker() // Update to
@@ -140,18 +138,15 @@ private extension InterfaceController {
 
         // Get latest weight
         HealthManager.instance.getWeight(forceSource: forceSource)
-            .then { quantitySample in
+            .then { weight in
+                guard let (_, index) = self.pickerWeights.map({ $0.kg }).closestToElement(weight.kg) else {
+                    observable.update()
+                    return
+                }
                 Async.main {
                     // Setup picker
-                    self.dateLabel.setText(self.dateLastWeightFormatter.string(from: quantitySample.startDate))
+                    self.dateLabel.setText(self.dateLastWeightFormatter.string(from: weight.date))
                     // Weight
-                    let quantity = quantitySample.quantity
-                    let massUnit = HealthManager.instance.massUnit
-                    let doubleValue = quantity.doubleValue(for: massUnit)
-                    guard let (_, index) = self.pickerWeights.map({ $0.doubleValue(for: massUnit) }).closestToElement(doubleValue) else {
-                        observable.update()
-                        return
-                    }
                     self.picker.setSelectedItemIndex(index)
                     observable.update()
                 }
@@ -173,17 +168,17 @@ private extension InterfaceController {
             .flatMap { (_: Void) -> Observable<[WKPickerItem]> in
                 var pickerItems = [WKPickerItem]()
                 let massUnit = HealthManager.instance.massUnit
-                let massFormatterUnit = HealthManager.instance.massFormatterUnit
-                for weightQuantity in self.pickerWeights {
+                for weightPoint in self.pickerWeights {
                     let item = WKPickerItem()
-                    let weight = weightQuantity.doubleValue(for: massUnit)
-                    item.title = self.weightFormatter.string(fromValue: weight, unit: massFormatterUnit)
-                    let referenceWeightQuantitySample = WeightsLocalStore.instance.lastWeight
-                    if let referenceWeightQuantity = referenceWeightQuantitySample?.quantity {
-                        let referenceWeight = referenceWeightQuantity.doubleValue(for: massUnit)
-                        let diffWeight = weight - referenceWeight
-                        let diffString = self.weightFormatter.string(fromValue: abs(diffWeight), unit: massFormatterUnit)
-                        switch diffWeight {
+                    let weight = Weight(kg: weightPoint.kg, date: Date())
+                    let weightViewModel = WeightViewModel(weight: weight, massUnit: HealthManager.instance.massUnit)
+                    item.title = self.weightFormatter.string(fromValue: weightViewModel.userValue(), unit: weightViewModel.formatterUnit)
+                    if let referenceWeight = WeightsLocalStore.instance.lastWeight {
+                        let diffWeight = Weight(kg: weight.kg - referenceWeight.kg, date: Date())
+                        let diffWeightValue = diffWeight.hkQuantitySample.quantity.doubleValue(for: massUnit)
+                        let diffWeightViewModel = WeightViewModel(weight: diffWeight, massUnit: HealthManager.instance.massUnit)
+                        let diffString = self.weightFormatter.string(fromValue: abs(diffWeightViewModel.userValue()), unit: diffWeightViewModel.formatterUnit)
+                        switch diffWeightValue {
                             case 0: item.caption = "="
                             case let d where d > 0: item.caption = "+" + diffString
                             case let d where d < 0: item.caption = "-" + diffString

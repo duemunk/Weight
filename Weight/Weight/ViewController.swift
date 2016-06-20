@@ -100,7 +100,7 @@ class ViewController: UIViewController {
     private let dateQuickActionFormatter = DateFormatter(template: "jjmmMMMd") ?? DateFormatter(dateStyle: .mediumStyle, timeStyle: .shortStyle)
     private let dateChartXLabelFormatter = DateFormatter(template: "dMMM") ?? DateFormatter(dateStyle: .mediumStyle, timeStyle: .noStyle)
     private let chartYLabelFormatter = NumberFormatter()
-    var pickerWeights: [HKQuantity] {
+    var pickerWeights: [HealthManager.WeightPoint] {
         return HealthManager.instance.humanWeightOptions()
     }
     private let healthDataChange = NotificationCenter_(name: .HealthDataDidChange)
@@ -124,7 +124,7 @@ class ViewController: UIViewController {
         }
 
         WatchConnection.instance.newWeightObserver.subscribe { weight in
-            WeightsLocalStore.instance.lastWeight = weight.hkQuantitySample
+            WeightsLocalStore.instance.lastWeight = weight
             self.updateUIObservable.update(.default)
         }
 
@@ -140,11 +140,12 @@ class ViewController: UIViewController {
 
         saveButton.tap.subscribe { _ in
             let index = self.weightPickerView.selectedRow(inComponent: 0)
-            guard let quantity = self.weightForPickerRow(index) else {
+            guard let weightPoint = self.weightForPickerRow(index) else {
                 return
             }
-            HealthManager.instance.saveWeight(quantity)
-                .next { WatchConnection.instance.send(new: $0.weight) }
+            let weight = Weight(kg: weightPoint.kg, date: Date())
+            HealthManager.instance.save(weight: weight)
+                .next { WatchConnection.instance.send(new: $0) }
                 .error { print($0) }
         }
 
@@ -184,18 +185,16 @@ class ViewController: UIViewController {
 
     private func updateToWeight(request: WeightRequest) {
 
-        let quantitySampleBlock: (HKQuantitySample) -> () = { quantitySample in
+        let quantitySampleBlock: (Weight) -> () = { weight in
             Async.main {
                 assert(Thread.isMainThread())
-                let quantity = quantitySample.quantity
                 let massUnit = HealthManager.instance.massUnit
-                let doubleValue = quantity.doubleValue(for: massUnit)
-                guard let (_, index) = closest(self.pickerWeights.map { $0.doubleValue(for: massUnit) }, toValue: doubleValue) else {
+                guard let (_, index) = closest(self.pickerWeights.map { $0.kg }, toValue: weight.kg) else {
                     return
                 }
-                let massFormatterUnit = HealthManager.instance.massFormatterUnit
-                self.weightLabel.text = self.weightFormatter.string(fromValue: doubleValue, unit: massFormatterUnit)
-                self.weightDetailLabel.text = self.dateLastWeightFormatter.string(from: quantitySample.startDate)
+                let weightViewModel = WeightViewModel(weight: weight, massUnit: massUnit)
+                self.weightLabel.text = self.weightFormatter.string(fromValue: weightViewModel.userValue(), unit: weightViewModel.formatterUnit)
+                self.weightDetailLabel.text = self.dateLastWeightFormatter.string(from: weightViewModel.weight.date)
                 self.weightPickerView.reloadAllComponents()
                 self.weightPickerView.selectRow(index, inComponent: 0, animated: false)
             }
@@ -203,7 +202,7 @@ class ViewController: UIViewController {
 
         switch request {
         case .forceWeight(let weight):
-            quantitySampleBlock(weight.hkQuantitySample)
+            quantitySampleBlock(weight)
         case .source(let type):
             HealthManager.instance.getWeight(forceSource: .source == type)
                 .flatMap(Queue.main)
@@ -218,12 +217,12 @@ class ViewController: UIViewController {
         }
     }
     
-    func weightForPickerRow(_ index: Int) -> HKQuantity? {
+    func weightForPickerRow(_ index: Int) -> HealthManager.WeightPoint? {
         let index = weightPickerView.selectedRow(inComponent: 0)
-        guard let quantity = pickerWeights[safe: index] else {
+        guard let weight = pickerWeights[safe: index] else {
             return nil
         }
-        return quantity
+        return weight
     }
 
     // MARK: - Quick Actions
@@ -297,11 +296,11 @@ extension ViewController: UIPickerViewDataSource {
 extension ViewController: UIPickerViewDelegate {
     
     func pickerView(_ pickerView: UIPickerView, attributedTitleForRow row: Int, forComponent component: Int) -> AttributedString? {
-        let quantity = pickerWeights[safe: row]
-        let massUnit = HealthManager.instance.massUnit
-        let massFormatterUnit = HealthManager.instance.massFormatterUnit
-        let weight = quantity?.doubleValue(for: massUnit) ?? 0
-        let title = weightFormatter.string(fromValue: weight, unit: massFormatterUnit)
+        let weightPoint = pickerWeights[row]
+        let weight = Weight(kg: weightPoint.kg, date: Date())
+        let weightViewModel = WeightViewModel(weight: weight, massUnit: HealthManager.instance.massUnit)
+
+        let title = weightFormatter.string(fromValue: weightViewModel.userValue(), unit: weightViewModel.formatterUnit)
         let attributedTitle = AttributedString(string: title, attributes: [
             NSForegroundColorAttributeName : UIColor.black(),
             NSFontAttributeName : UIFont.boldSystemFont(ofSize: 27)
@@ -314,7 +313,7 @@ extension ViewController: UIPickerViewDelegate {
             return
         }
         let activityDictionary: [NSObject: AnyObject] = [
-            Keys.temporaryWeightKg : tempWeight,
+            Keys.temporaryWeightKg : tempWeight.kg,
             Keys.date : Date()
         ]
         if self.userActivity != nil {

@@ -8,15 +8,14 @@
 
 import UIKit
 import Interstellar
-import HealthKit
 
 
 enum QuickActionsHelper {
 
-    static func update(with quantitySamples: [HKQuantitySample], weightFormatter: MassFormatter, dateFormatter: DateFormatter) -> [UIApplicationShortcutItem] {
+    static func update(with quantitySamples: [Weight], weightFormatter: MassFormatter, dateFormatter: DateFormatter) -> [UIApplicationShortcutItem] {
         let massUnit = HealthManager.instance.massUnit
         let values = quantitySamples
-            .map { $0.quantity.doubleValue(for: massUnit) }
+            .map { $0.hkQuantitySample.quantity.doubleValue(for: massUnit) }
 
         let increment = 1 / Double(HealthManager.instance.humanWeightUnitDivision())
 
@@ -40,7 +39,7 @@ enum QuickActionsHelper {
         let bestValues = sortedValues[0..<min(3, sortedValues.count)]
         if let latestSample = quantitySamples.last {
             for value in bestValues {
-                let doubleValue = Double(value) * increment + latestSample.quantity.doubleValue(for: massUnit)
+                let doubleValue = Double(value) * increment + latestSample.hkQuantitySample.quantity.doubleValue(for: massUnit)
                 let shortcut: UIApplicationShortcutItem = {
                     if value == 0 {
                         return self.sameWeightShortcut(for: latestSample, weightFormatter: weightFormatter, dateFormatter: dateFormatter)
@@ -52,7 +51,7 @@ enum QuickActionsHelper {
                 shortcuts.append(shortcut)
             }
             if bestValues.count == 0 {
-                let latestDoubleValue = latestSample.quantity.doubleValue(for: massUnit)
+                let latestDoubleValue = latestSample.hkQuantitySample.quantity.doubleValue(for: massUnit)
                 shortcuts.append(self.upWeightShortcut(for: latestDoubleValue + increment, weightFormatter: weightFormatter))
                 shortcuts.append(self.sameWeightShortcut(for: latestSample, weightFormatter: weightFormatter, dateFormatter: dateFormatter))
                 shortcuts.append(self.downWeightShortcut(for: latestDoubleValue - increment, weightFormatter: weightFormatter))
@@ -67,15 +66,15 @@ enum QuickActionsHelper {
 
 private extension QuickActionsHelper {
 
-    static func sameWeightShortcut(for previousSample: HKQuantitySample, weightFormatter: MassFormatter, dateFormatter: DateFormatter) -> UIApplicationShortcutItem {
+    static func sameWeightShortcut(for previousSample: Weight, weightFormatter: MassFormatter, dateFormatter: DateFormatter) -> UIApplicationShortcutItem {
         let massUnit = HealthManager.instance.massUnit
         let formatter = HealthManager.instance.massFormatterUnit
-        let doubleValue = previousSample.quantity.doubleValue(for: massUnit)
+        let doubleValue = previousSample.hkQuantitySample.quantity.doubleValue(for: massUnit)
         let weightString = weightFormatter.string(fromValue: doubleValue, unit: formatter)
         return shortcut(for: .SameWeightAsLast,
                         imageName: "Same",
                         title: weightString,
-                        subtitle: "Last: " + dateFormatter.string(from: previousSample.startDate),
+                        subtitle: "Last: " + dateFormatter.string(from: previousSample.date),
                         value: doubleValue)
     }
 

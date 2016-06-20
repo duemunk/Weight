@@ -71,15 +71,14 @@ private extension TodayViewController {
 
     // MARK: Labels
     @discardableResult
-    func updateLabels(forceWeight: HKQuantitySample? = nil) -> Observable<Result<Void>> {
+    func updateLabels(forceWeight: Weight? = nil) -> Observable<Result<Void>> {
 
         let observer = Observable<Result<Void>>()
-        let quantitySampleBlock: (HKQuantitySample) -> () = { quantitySample in
+        let quantitySampleBlock: (Weight) -> () = { weight in
             Async.main {
-                let doubleValue = quantitySample.quantity.doubleValue(for: HealthManager.instance.massUnit)
-                let massFormatterUnit = HealthManager.instance.massFormatterUnit
-                self.weightLabel.text = self.weightFormatter.string(fromValue: doubleValue, unit: massFormatterUnit)
-                self.weightDetailLabel.text = self.dateLastWeightFormatter.string(from: quantitySample.startDate)
+                let weightViewModel = WeightViewModel(weight: weight, massUnit: HealthManager.instance.massUnit)
+                self.weightLabel.text = self.weightFormatter.string(fromValue: weightViewModel.userValue(), unit: weightViewModel.formatterUnit)
+                self.weightDetailLabel.text = self.dateLastWeightFormatter.string(from: weightViewModel.weight.date)
                 observer.update(.success())
             }
         }

@@ -7,7 +7,6 @@
 //
 
 import ClockKit
-import HealthKit
 
 class ComplicationController: NSObject {
     
@@ -48,10 +47,8 @@ extension ComplicationController: CLKComplicationDataSource {
         // Call the handler with the current timeline entry
         let now = Date()
         let lastWeight = WeightsLocalStore.instance.lastWeight
-        let weight = lastWeight?.quantity.doubleValue(for: HKUnit.gramUnit(with: .kilo))
-        let date = lastWeight?.startDate
         
-        guard let template = templateForComplication(complication, weight: weight, date: date ?? now) else {
+        guard let template = templateForComplication(complication, weight: lastWeight) else {
             return
         }
         let complicationTimelineEntry = CLKComplicationTimelineEntry(date: now, complicationTemplate: template)
@@ -93,37 +90,49 @@ extension ComplicationController: CLKComplicationDataSource {
     
     func getPlaceholderTemplate(for complication: CLKComplication, withHandler handler: (CLKComplicationTemplate?) -> Void) {
         // This method will be called once per supported complication, and the results will be cached
-        let template = templateForComplication(complication, weight: nil, date: Date())
+        let template = templateForComplication(complication, weight: nil)
         handler(template)
     }
 
 
     // For iOS Complications Gallery
     func getLocalizableSampleTemplate(for complication: CLKComplication, withHandler handler: (CLKComplicationTemplate?) -> Void) {
-        let template = templateForComplication(complication, weight: 68.4, date: Date())
+        let template = templateForComplication(complication, weight: Weight(kg: 68.4, date: Date()))
         handler(template)
     }
 }
 
 
 extension ComplicationController {
-    
-    func templateForComplication(_ complication: CLKComplication, weight weightInKiloGrams: Double?, emptyWeight: String = "##", date: Date) -> CLKComplicationTemplate? {
-        let userMassUnit = HealthManager.instance.massUnit
-        let userMassFormatterUnit = HealthManager.instance.massFormatterUnit
-        let userWeight: Double? = {
-            guard let weight = weightInKiloGrams else {
-                return nil
+
+
+
+    private func format(weightViewModel: WeightViewModel?, formatter: MassFormatter) -> String? {
+        return weightViewModel
+            .flatMap {
+                formatter.string(fromValue: $0.userValue(), unit: $0.formatterUnit)
             }
-            return HKQuantity(unit: HKUnit.gramUnit(with: .kilo), doubleValue: weight).doubleValue(for: userMassUnit)
-        }()
+    }
+
+    private func format(weightViewModel: WeightViewModel?, formatter: NumberFormatter) -> String? {
+        return weightViewModel
+            .flatMap {
+                formatter.string(from: $0.userValue())
+        }
+    }
+
+    func templateForComplication(_ complication: CLKComplication, weight: Weight?, emptyWeight: String = "##") -> CLKComplicationTemplate? {
+
+        let weightViewModel = weight
+            .flatMap { WeightViewModel(weight: $0, massUnit: HealthManager.instance.massUnit) }
+
         
-        let weightText = userWeight == nil ? "No weight" : weightMediumFormatter.string(fromValue: userWeight ?? 0, unit: userMassFormatterUnit)
-        let shortWeightText = userWeight == nil ? emptyWeight : weightShortFormatter.string(fromValue: userWeight ?? 0, unit: userMassFormatterUnit)
-        let weightNoUnitText = userWeight == nil ? emptyWeight : weightNoUnitFormatter.string(from: userWeight ?? 0) ?? emptyWeight
-        let weightNoUnitShortText = userWeight == nil ? emptyWeight : weightNoUnitShortFormatter.string(from: userWeight ?? 0) ?? emptyWeight
-        let weightNoUnitUltraShortText = userWeight == nil ? emptyWeight : weightNoUnitUltraShortFormatter.string(from: userWeight ?? 0) ?? emptyWeight
-        let weightUnitText = weightMediumFormatter.unitString(fromValue: userWeight ?? 0, unit: userMassFormatterUnit)
+        let weightText = format(weightViewModel: weightViewModel, formatter: weightMediumFormatter) ?? "No weight"
+        let shortWeightText = format(weightViewModel: weightViewModel, formatter: weightShortFormatter) ?? "##"
+        let weightNoUnitText = format(weightViewModel: weightViewModel, formatter: weightNoUnitFormatter) ?? "##"
+        let weightNoUnitShortText = format(weightViewModel: weightViewModel, formatter: weightNoUnitShortFormatter) ?? "##"
+        let weightNoUnitUltraShortText = format(weightViewModel: weightViewModel, formatter: weightNoUnitUltraShortFormatter) ?? "##"
+        let weightUnitText = weightMediumFormatter.unitString(fromValue: weightViewModel?.userValue() ?? 0, unit: HealthManager.instance.massFormatterUnit)
         let tintColor = UIColor(red: 79/255, green: 217/255, blue: 100/255, alpha: 0.8)
 //        let tintColor = UIColor(red: 222/255, green: 127/255, blue: 255/255, alpha: 1)
 //        let tintColor = UIColor(red: 237/255, green: 185/255, blue: 255/255, alpha: 1)

@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import HealthKit
 import Interstellar
 
 
@@ -24,10 +23,10 @@ extension Chart {
         case dateError
     }
 
-    func update(with quantitySamples: [HKQuantitySample], dotColor: UIColor, lineColor: UIColor, average: CalendarUnit = .week, range: Range) {
-        Observable<[HKQuantitySample]>(quantitySamples)
+    func update(with quantitySamples: [Weight], dotColor: UIColor, lineColor: UIColor, average: CalendarUnit = .week, range: Range) {
+        Observable<[Weight]>(quantitySamples)
             .flatMap(Queue.background)
-            .flatMap { (samples: [HKQuantitySample]) -> Observable<Result<(individualSeries: ChartSeries, runningAverageSeries: ChartSeries?, startDate: Date)>> in
+            .flatMap { (samples: [Weight]) -> Observable<Result<(individualSeries: ChartSeries, runningAverageSeries: ChartSeries?, startDate: Date)>> in
                 guard let first = samples.first else {
                     return Observable(.error(Error.noContent))
                 }
@@ -37,17 +36,17 @@ extension Chart {
 
                 let startDate: Date = {
                     if range.softStart {
-                        let softStartDate = first.startDate
+                        let softStartDate = first.date
                         return hardStartDate < softStartDate ? softStartDate : hardStartDate
                     } else {
                         return hardStartDate
                     }
                 }()
 
-                let rangedSamples = quantitySamples.filter { $0.startDate >= startDate }
+                let rangedSamples = quantitySamples.filter { $0.date >= startDate }
 
                 let massUnit = HealthManager.instance.massUnit
-                let values: Array<(x: Double, y: Double)> = rangedSamples.map { ($0.startDate.timeIntervalSince1970, $0.quantity.doubleValue(for: massUnit)) }
+                let values: Array<(x: Double, y: Double)> = rangedSamples.map { ($0.date.timeIntervalSince1970, $0.hkQuantitySample.quantity.doubleValue(for: massUnit)) }
 
                 let individualSeries = ChartSeries(data: values)
                 individualSeries.color = dotColor
@@ -56,7 +55,11 @@ extension Chart {
 
                 let valuesWeekly: Array<(x: Double, y: Double)>? = rangedSamples
                     .averages(average)?
-                    .map { ($0.endDate.timeIntervalSince1970, $0.quantity.doubleValue(for: massUnit)) }
+                    .map { (
+                        $0.date.timeIntervalSince1970,
+                        WeightViewModel(weight: $0, massUnit: massUnit).userValue()
+                        )
+                    }
                 let runningAverageSeries: ChartSeries? = valuesWeekly != nil ? ChartSeries(data: valuesWeekly!) : nil
                 runningAverageSeries?.color = lineColor
                 runningAverageSeries?.line = true

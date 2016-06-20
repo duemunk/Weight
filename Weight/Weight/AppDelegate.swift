@@ -36,7 +36,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 completionHandler(false)
                 return
             }
-            HealthManager.instance.saveWeight(doubleValue)
+            let weight = Weight(kg: doubleValue, date: Date())
+            HealthManager.instance.save(weight: weight)
                 .then { _ in
                     completionHandler(true)
                 }
