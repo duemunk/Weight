@@ -393,7 +393,7 @@ public class Chart: UIControl {
         let incrementApproxHeight: Float = 40
         let roomForRows = axesRange / incrementApproxHeight
         let naiveIncrement = valueRange / roomForRows
-        let roundedIncrement = go(naiveIncrement)
+        let roundedIncrement = validGridIncrement(naiveIncrement)
         return roundedIncrement
     }
 
@@ -409,11 +409,13 @@ public class Chart: UIControl {
         return pow(power, ceil(log(value)/log(power) - log(power + 0.5)/log(power) + 0.5))
     }
 
-    private func go(_ value: Float) -> Float {
+    private func validGridIncrement(_ value: Float) -> Float {
         switch value {
-        case 0.1...0.5: return 0.5
-        case 0.5...1: return 1
-        case 1...10: return go(value/10)*10
+        case 10...25: return 25
+        case 25...50: return 50
+        case 50...100: return 100
+        case 100...FLT_MAX: return validGridIncrement(value/10)*10 // Recursive
+        case -FLT_MAX...10: return validGridIncrement(value*10)/10 // Recursive
         default: return value
         }
     }
