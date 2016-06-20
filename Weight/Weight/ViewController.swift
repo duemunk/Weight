@@ -256,22 +256,7 @@ class ViewController: UIViewController {
             self.dateChartXLabelFormatter
                 .string(from: Date(timeIntervalSince1970: Double(value)))
         }
-        chartView.yLabelsFormatter = { (index, value, yIncrement) in
-            let formatter = self.chartYLabelFormatter
-            let fractionDigits: Int = {
-                if let yIncrement = yIncrement {
-                    var fraction: Float = 0
-                    while round(yIncrement*pow(10, fraction)) != yIncrement*pow(10, fraction) {
-                        fraction += 1
-                    }
-                    return Int(fraction)
-                }
-                return 0
-            }()
-            formatter.maximumFractionDigits = fractionDigits
-            formatter.minimumFractionDigits = fractionDigits
-            return formatter.string(from: value) ?? "\(value)"
-        }
+        chartView.yLabelsFormatter = chartView.weightLabelsFormatter(numberFormatter: chartYLabelFormatter)
     }
 
     func updateChart(_ average: CalendarUnit = .week, range: Chart.Range) {

@@ -25,6 +25,7 @@ class TodayViewController: UIViewController, NCWidgetProviding {
     private let dateChartFormatter = DateFormatter(template: "MMMd") ?? DateFormatter(dateStyle: .shortStyle)
     // jj for 12/24 hour, mm for minute, MMM for abbreviated word month i.e. "Jun", d for date
     private let dateLastWeightFormatter = DateFormatter(template: "jjmmMMMd") ?? DateFormatter(dateStyle: .mediumStyle)
+    private let chartYLabelFormatter = NumberFormatter()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -59,6 +60,7 @@ private extension TodayViewController {
         chartView.xLabelsFormatter = { (index, value) in
             self.dateChartFormatter.string(from: Date(timeIntervalSince1970: Double(value)))
         }
+        chartView.yLabelsFormatter = chartView.weightLabelsFormatter(numberFormatter: chartYLabelFormatter)
     }
 
     @discardableResult

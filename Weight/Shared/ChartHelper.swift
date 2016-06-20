@@ -23,6 +23,25 @@ extension Chart {
         case dateError
     }
 
+    func weightLabelsFormatter(numberFormatter: NumberFormatter) -> (labelIndex: Int, labelValue: Float, yIncrement: Float?) -> String {
+        return { (index, value, yIncrement) in
+            let formatter = numberFormatter
+            let fractionDigits: Int = {
+                if let yIncrement = yIncrement {
+                    var fraction: Float = 0
+                    while round(yIncrement*pow(10, fraction)) != yIncrement*pow(10, fraction) {
+                        fraction += 1
+                    }
+                    return Int(fraction)
+                }
+                return 0
+            }()
+            formatter.maximumFractionDigits = fractionDigits
+            formatter.minimumFractionDigits = fractionDigits
+            return formatter.string(from: value) ?? "\(value)"
+        }
+    }
+
     func update(with quantitySamples: [Weight], dotColor: UIColor, lineColor: UIColor, average: CalendarUnit = .week, range: Range) {
         Observable<[Weight]>(quantitySamples)
             .flatMap(Queue.background)
