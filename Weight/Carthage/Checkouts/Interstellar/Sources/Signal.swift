@@ -37,12 +37,12 @@
         text.update(.Success("World"))
 
 */
-import Foundation
 
 public final class Signal<T> {
     
     private var value: Result<T>?
     private var callbacks: [(Result<T>) -> Void] = []
+    private let mutex = Mutex()
     
     /// Automatically infer the type of the signal from the argument.
     public convenience init(_ value: T){
@@ -51,7 +51,7 @@ public final class Signal<T> {
     }
     
     public init() {
-        
+
     }
     
     /**
@@ -99,6 +99,26 @@ public final class Signal<T> {
     }
     
     /**
+        Transform the signal into another signal using a function, return the
+        value of the inner signal
+    */
+    public func flatMap<U>(_ f: ((T) -> Signal<U>)) -> Signal<U> {
+        let signal = Signal<U>()
+        subscribe { result in
+            switch(result) {
+            case let .success(value):
+                let innerSignal = f(value)
+                innerSignal.subscribe { innerResult in
+                    signal.update(innerResult)
+                }
+            case let .error(error):
+                signal.update(.error(error))
+            }
+        }
+        return signal
+    }
+    
+    /**
         Call a function with the result as an argument. Use this if the function should be
         executed no matter if the signal is a success or not.
         This method can also be used to convert an .Error into a .Success which might be handy
@@ -122,7 +142,9 @@ public final class Signal<T> {
         if let value = value {
             f(value)
         }
-        callbacks.append(f)
+        mutex.lock {
+            callbacks.append(f)
+        }
         return self
     }
     
@@ -160,7 +182,7 @@ public final class Signal<T> {
         This method is chainable.
     */
     @discardableResult
-    public func error(_ g: (ErrorProtocol) -> Void) -> Signal<T> {
+    public func error(_ g: (Error) -> Void) -> Signal<T> {
         subscribe { result in
             switch(result) {
             case .success(_): return
@@ -191,7 +213,7 @@ public final class Signal<T> {
                 signal.update(.success((a,b)))
             }
         }
-        let errorHandler = { (error: ErrorProtocol) in
+        let errorHandler = { (error: Error) in
             signal.update(.error(error))
         }
         self.error(errorHandler)
@@ -204,13 +226,10 @@ public final class Signal<T> {
         about the new value.
     */
     public func update(_ result: Result<T>) {
-        #if os(Linux)
-        #else
-        objc_sync_enter(self)
-        defer { objc_sync_exit(self) }
-        #endif
-        self.value = result
-        self.callbacks.forEach{$0(result)}
+        mutex.lock {
+            value = result
+            callbacks.forEach{$0(result)}
+        }
     }
     
     /**
@@ -225,7 +244,7 @@ public final class Signal<T> {
      Update the content of the signal. This will notify all subscribers of this signal
      about the new value.
      */
-    public func update(_ error: ErrorProtocol) {
+    public func update(_ error: Error) {
         update(.error(error))
     }
     

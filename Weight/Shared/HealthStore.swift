@@ -30,8 +30,8 @@ extension HKHealthStore {
             }
     }
 
-    func samples(ofType sampleType: HKSampleType, predicate: Predicate? = nil) -> Observable<Result<[HKSample]>> {
-        let timeSortDescriptor = SortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: true)
+    func samples(ofType sampleType: HKSampleType, predicate: NSPredicate? = nil) -> Observable<Result<[HKSample]>> {
+        let timeSortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: true)
         let observer = Observable<Result<(HKSampleQuery, [HKSample]?)>>()
         let query = HKSampleQuery(sampleType: sampleType, predicate: predicate, limit: HKObjectQueryNoLimit, sortDescriptors: [timeSortDescriptor], resultsHandler: completionToObservable(observer: observer))
         execute(query)
@@ -44,9 +44,9 @@ extension HKHealthStore {
             }
     }
 
-    func mostRecentSample(ofType sampleType: HKSampleType, predicate: Predicate? = nil) -> Observable<Result<HKSample>> {
+    func mostRecentSample(ofType sampleType: HKSampleType, predicate: NSPredicate? = nil) -> Observable<Result<HKSample>> {
         // Since we are interested in retrieving the user's latest sample, we sort the samples in descending order, and set the limit to 1. We are not filtering the data, and so the predicate is set to nil.
-        let timeSortDescriptor = SortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: false)
+        let timeSortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: false)
         let observer = Observable<Result<(HKSampleQuery, [HKSample]?)>>()
         let query = HKSampleQuery(sampleType: sampleType, predicate: predicate, limit: 1, sortDescriptors: [timeSortDescriptor], resultsHandler: completionToObservable(observer: observer))
         execute(query)

@@ -76,7 +76,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         let userInfo = userActivity.userInfo
         print("Received a payload via handoff: \(userInfo)")
-        NotificationCenter.default().post(name: .UserActivity, object: userActivity, userInfo: userActivity.userInfo)
+        NotificationCenter.default.post(name: .UserActivity, object: userActivity, userInfo: userActivity.userInfo)
         
         return true
     }

@@ -22,7 +22,7 @@ class InterfaceController: WKInterfaceController {
 //    var loader: Loader?
 
     let weightFormatter = MassFormatter.weightMediumFormatter()
-    private let dateLastWeightFormatter = DateFormatter(template: "jjmmMMMd") ?? DateFormatter(dateStyle: .mediumStyle, timeStyle: .shortStyle)
+    private let dateLastWeightFormatter = DateFormatter(template: "jjmmMMMd") ?? DateFormatter(dateStyle: .medium, timeStyle: .short)
     
     var selectedWeight: HealthManager.WeightPoint?
     var pickerWeights: [HealthManager.WeightPoint] {
@@ -47,13 +47,13 @@ class InterfaceController: WKInterfaceController {
 
 //        setTitle("Weight")
 
-        NotificationCenter.default().addObserver(forName: .HealthDataDidChange, object: nil, queue: nil) { [weak self] notification in
+        NotificationCenter.default.addObserver(forName: .HealthDataDidChange, object: nil, queue: nil) { [weak self] notification in
             Async.main {
                 self?.updateWeightAssumingPicker(forceSource: true)
             }
         }
 
-        NotificationCenter.default().addObserver(forName: .HealthPreferencesDidChange, object: nil, queue: nil) { [weak self] notification in
+        NotificationCenter.default.addObserver(forName: .HealthPreferencesDidChange, object: nil, queue: nil) { [weak self] notification in
             Async.main {
                 self?.updatePicker()
                     .subscribe { _ in
@@ -163,7 +163,7 @@ private extension InterfaceController {
 
     @discardableResult
     func updatePicker() -> Observable<Void> {
-        return Observable<Void>((), options: [.Once])
+        return Observable<Void>((), options: [.once])
             .flatMap(Queue.background)
             .flatMap { (_: Void) -> Observable<[WKPickerItem]> in
                 var pickerItems = [WKPickerItem]()

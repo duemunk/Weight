@@ -21,7 +21,7 @@ class Loader {
     
     convenience init(controller: WKInterfaceController, interfaceImages: [WKInterfaceImage]) {
         let size = controller.contentFrame.size
-        self.init(controller: controller, interfaceImages: interfaceImages, tintColor: .white(), size: size, duration: 1)
+        self.init(controller: controller, interfaceImages: interfaceImages, tintColor: .white, size: size, duration: 1)
     }
     
     init(controller: WKInterfaceController, interfaceImages: [WKInterfaceImage], tintColor: UIColor, size: CGSize, duration: TimeInterval) {

@@ -8,7 +8,7 @@
 
 import Foundation
 
-enum AsyncError: ErrorProtocol {
+enum AsyncError: Error {
     case noResults
     case noSuccessDespiteNoError
 }

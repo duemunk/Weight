@@ -17,7 +17,7 @@ extension DateFormatter {
 //        return formatter
 //    }
 
-    convenience init(dateStyle: DateFormatter.Style, timeStyle: DateFormatter.Style = .noStyle){
+    convenience init(dateStyle: DateFormatter.Style, timeStyle: DateFormatter.Style = .none){
         self.init()
         self.dateStyle = dateStyle
         self.timeStyle = timeStyle

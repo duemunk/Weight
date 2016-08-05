@@ -12,71 +12,6 @@ import HealthKit
 import Interstellar
 
 
-public extension Observable {
-    /**
-     Creates a new signal that mirrors the original signal but is delayed by x seconds. If no queue is specified, the new signal will call it's observers and transforms on the main queue.
-     */
-    public func delay(_ seconds: TimeInterval, queue: DispatchQueue = .main) -> Observable<T> {
-        let signal = Observable<T>()
-        subscribe { result in
-            queue.after(when: DispatchTime.now() + seconds) {
-                signal.update(result)
-            }
-        }
-        return signal
-    }
-}
-
-
-private var ObserverableUpdateCalledHandle: UInt8 = 0
-extension Observable {
-    internal var lastCalled: Date? {
-        get {
-            if let handle = objc_getAssociatedObject(self, &ObserverableUpdateCalledHandle) as? Date {
-                return handle
-            } else {
-                return nil
-            }
-        }
-        set {
-            objc_setAssociatedObject(self, &ObserverableUpdateCalledHandle, newValue, .OBJC_ASSOCIATION_COPY_NONATOMIC)
-        }
-    }
-
-    /**
-     Creates a new signal that is only firing once per specified time interval. The last
-     call to update will always be delivered (although it might be delayed up to the
-     specified amount of seconds).
-     */
-    public func debounce(_ seconds: TimeInterval) -> Observable<T> {
-        let observer = Observable<T>()
-
-        subscribe { value in
-            let currentTime = Date()
-            func updateIfNeeded(_ observer: Observable<T>) -> (T) -> Void {
-                return { value in
-                    let timeSinceLastCall = observer.lastCalled?.timeIntervalSinceNow
-                    if timeSinceLastCall == nil || timeSinceLastCall <= -seconds {
-                        // no update before or update outside of debounce window
-                        observer.lastCalled = Date()
-                        observer.update(value)
-                    } else {
-                        // skip result if there was a newer result
-                        if currentTime.compare(observer.lastCalled!) == .orderedDescending {
-                            let s = Observable<T>()
-                            s.delay(seconds - timeSinceLastCall!).subscribe(updateIfNeeded(observer))
-                            s.update(value)
-                        }
-                    }
-                }
-            }
-            updateIfNeeded(observer)(value)
-        }
-
-        return observer
-    }
-}
-
 enum QuickActionType: String {
     case UpWeight, SameWeightAsLast, DownWeight, CustomWeight
 }
@@ -96,9 +31,9 @@ class ViewController: UIViewController {
     
     let weightFormatter = MassFormatter.weightMediumFormatter()
 
-    private let dateLastWeightFormatter = DateFormatter(template: "jjmmMMMd") ?? DateFormatter(dateStyle: .mediumStyle, timeStyle: .shortStyle)
-    private let dateQuickActionFormatter = DateFormatter(template: "jjmmMMMd") ?? DateFormatter(dateStyle: .mediumStyle, timeStyle: .shortStyle)
-    private let dateChartXLabelFormatter = DateFormatter(template: "dMMM") ?? DateFormatter(dateStyle: .mediumStyle, timeStyle: .noStyle)
+    private let dateLastWeightFormatter = DateFormatter(template: "jjmmMMMd") ?? DateFormatter(dateStyle: .medium, timeStyle: .short)
+    private let dateQuickActionFormatter = DateFormatter(template: "jjmmMMMd") ?? DateFormatter(dateStyle: .medium, timeStyle: .short)
+    private let dateChartXLabelFormatter = DateFormatter(template: "dMMM") ?? DateFormatter(dateStyle: .medium, timeStyle: .none)
     private let chartYLabelFormatter = NumberFormatter()
     var pickerWeights: [HealthManager.WeightPoint] {
         return HealthManager.instance.humanWeightOptions()
@@ -107,6 +42,10 @@ class ViewController: UIViewController {
     private let healthPreferencesChange = NotificationCenter_(name: .HealthPreferencesDidChange)
     private let userActivityChange = NotificationCenter_(name: .UserActivity)
     private let updateUIObservable = Observable<UpdateType>()
+
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .default
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -129,10 +68,9 @@ class ViewController: UIViewController {
         }
 
         userActivityChange.observer.map { notification in
-            guard let
-                userActivity = notification.object as? NSUserActivity,
-                userInfo = userActivity.userInfo as? [String: AnyObject],
-                temporaryWeight = Weight.temporaryNewWeight(from: userInfo) else {
+            guard let userActivity = notification.object as? NSUserActivity,
+                let userInfo = userActivity.userInfo as? [String: AnyObject],
+                let temporaryWeight = Weight.temporaryNewWeight(from: userInfo) else {
                 return
             }
             self.updateToWeight(request: .forceWeight(weight: temporaryWeight))
@@ -154,12 +92,8 @@ class ViewController: UIViewController {
         setupChart()
     }
     
-    override func preferredStatusBarStyle() -> UIStatusBarStyle {
-        return .default
-    }
-    
     deinit {
-        NotificationCenter.default().removeObserver(self)
+        NotificationCenter.default.removeObserver(self)
     }
     
     func setupWeightObserver() {
@@ -187,7 +121,7 @@ class ViewController: UIViewController {
 
         let quantitySampleBlock: (Weight) -> () = { weight in
             Async.main {
-                assert(Thread.isMainThread())
+                assert(Thread.isMainThread)
                 let massUnit = HealthManager.instance.massUnit
                 guard let (_, index) = closest(self.pickerWeights.map { $0.kg }, toValue: weight.kg) else {
                     return
@@ -209,7 +143,7 @@ class ViewController: UIViewController {
                 .next(quantitySampleBlock)
                 .error {
                     print($0)
-                    assert(Thread.isMainThread())
+                    assert(Thread.isMainThread)
                     self.weightLabel.text = self.weightFormatter.string(fromValue: 0, unit: HealthManager.instance.massFormatterUnit)
                     self.weightDetailLabel.text = "No existing historic data"
                     self.weightPickerView.selectRow(0, inComponent: 0, animated: true)
@@ -235,8 +169,8 @@ class ViewController: UIViewController {
             .flatMap(Queue.main)
             .next { shortcuts in
                 Async.main {
-                    assert(Thread.isMainThread())
-                    UIApplication.shared().shortcutItems = shortcuts
+                    assert(Thread.isMainThread)
+                    UIApplication.shared.shortcutItems = shortcuts
                 }
             }
     }
@@ -245,8 +179,8 @@ class ViewController: UIViewController {
     // MARK: - Chart
     func setupChart() {
         chartView.isUserInteractionEnabled = false
-        chartView.gridColor = .lightGray()
-        chartView.labelColor = .lightGray()
+        chartView.gridColor = .lightGray
+        chartView.labelColor = .lightGray
         chartView.lineWidth = 2
         chartView.gridLineWidth = 1
         chartView.axesLineWidth = 1
@@ -262,7 +196,7 @@ class ViewController: UIViewController {
     func updateChart(_ average: CalendarUnit = .week, range: Chart.Range) {
         HealthManager.instance.getWeights()
             .then {
-                self.chartView.update(with: $0, dotColor: .black(), lineColor: UIColor.black().withAlphaComponent(0.3), average: .week, range: range)
+                self.chartView.update(with: $0, dotColor: .black, lineColor: UIColor.black.withAlphaComponent(0.3), average: .week, range: range)
             }
     }
 }
@@ -280,14 +214,14 @@ extension ViewController: UIPickerViewDataSource {
 
 extension ViewController: UIPickerViewDelegate {
     
-    func pickerView(_ pickerView: UIPickerView, attributedTitleForRow row: Int, forComponent component: Int) -> AttributedString? {
+    func pickerView(_ pickerView: UIPickerView, attributedTitleForRow row: Int, forComponent component: Int) -> NSAttributedString? {
         let weightPoint = pickerWeights[row]
         let weight = Weight(kg: weightPoint.kg, date: Date())
         let weightViewModel = WeightViewModel(weight: weight, massUnit: HealthManager.instance.massUnit)
 
         let title = weightFormatter.string(fromValue: weightViewModel.userValue(), unit: weightViewModel.formatterUnit)
-        let attributedTitle = AttributedString(string: title, attributes: [
-            NSForegroundColorAttributeName : UIColor.black(),
+        let attributedTitle = NSAttributedString(string: title, attributes: [
+            NSForegroundColorAttributeName : UIColor.black,
             NSFontAttributeName : UIFont.boldSystemFont(ofSize: 27)
             ])
         return attributedTitle

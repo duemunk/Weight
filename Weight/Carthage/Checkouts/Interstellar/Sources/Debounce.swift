@@ -22,23 +22,9 @@
 
 import Foundation
 
-private var SignalUpdateCalledHandle: UInt8 = 0
 public extension Signal {
     #if os(Linux)
     #else
-    internal var lastCalled: Date? {
-        get {
-            if let handle = objc_getAssociatedObject(self, &SignalUpdateCalledHandle) as? Date {
-                return handle
-            } else {
-                return nil
-            }
-        }
-        set {
-            objc_setAssociatedObject(self, &SignalUpdateCalledHandle, newValue, .OBJC_ASSOCIATION_COPY_NONATOMIC)
-        }
-    }
-    
     /**
         Creates a new signal that is only firing once per specified time interval. The last 
         call to update will always be delivered (although it might be delayed up to the
@@ -46,19 +32,20 @@ public extension Signal {
     */
     public func debounce(_ seconds: TimeInterval) -> Signal<T> {
         let signal = Signal<T>()
+        var lastCalled: Date?
         
         subscribe { result in
             let currentTime = Date()
             func updateIfNeeded(_ signal: Signal<T>) -> (Result<T>) -> Void {
                 return { result in
-                    let timeSinceLastCall = signal.lastCalled?.timeIntervalSinceNow
+                    let timeSinceLastCall = lastCalled?.timeIntervalSinceNow
                     if timeSinceLastCall == nil || timeSinceLastCall <= -seconds {
                         // no update before or update outside of debounce window
-                        signal.lastCalled = Date()
+                        lastCalled = Date()
                         signal.update(result)
                     } else {
                         // skip result if there was a newer result
-                        if currentTime.compare(signal.lastCalled!) == .orderedDescending {
+                        if currentTime.compare(lastCalled!) == .orderedDescending {
                             let s = Signal<T>()
                             s.delay(seconds - timeSinceLastCall!).subscribe(updateIfNeeded(signal))
                             s.update(result)
@@ -70,6 +57,45 @@ public extension Signal {
         }
         
         return signal
+    }
+    #endif
+}
+
+public extension Observable {
+    #if os(Linux)
+    #else
+    /**
+     Creates a new signal that is only firing once per specified time interval. The last
+     call to update will always be delivered (although it might be delayed up to the
+     specified amount of seconds).
+     */
+    public func debounce(_ seconds: TimeInterval) -> Observable<T> {
+        let observable = Observable<T>()
+        var lastCalled: Date?
+        
+        subscribe { value in
+            let currentTime = Date()
+            func updateIfNeeded(_ observable: Observable<T>) -> (T) -> Void {
+                return { value in
+                    let timeSinceLastCall = lastCalled?.timeIntervalSinceNow
+                    if timeSinceLastCall == nil || timeSinceLastCall <= -seconds {
+                        // no update before or update outside of debounce window
+                        lastCalled = Date()
+                        observable.update(value)
+                    } else {
+                        // skip result if there was a newer result
+                        if currentTime.compare(lastCalled!) == .orderedDescending {
+                            let s = Observable<T>()
+                            s.delay(seconds - timeSinceLastCall!).subscribe(updateIfNeeded(observable))
+                            s.update(value)
+                        }
+                    }
+                }
+            }
+            updateIfNeeded(observable)(value)
+        }
+        
+        return observable
     }
     #endif
 }

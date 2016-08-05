@@ -18,7 +18,7 @@ extension Chart {
         let softStart: Bool
     }
 
-    enum Error: ErrorProtocol {
+    enum ChartError: Error {
         case noContent
         case dateError
     }
@@ -47,10 +47,10 @@ extension Chart {
             .flatMap(Queue.background)
             .flatMap { (samples: [Weight]) -> Observable<Result<(individualSeries: ChartSeries, runningAverageSeries: ChartSeries?, startDate: Date)>> in
                 guard let first = samples.first else {
-                    return Observable(.error(Error.noContent))
+                    return Observable(.error(ChartError.noContent))
                 }
                 guard let hardStartDate = Date().add(range.unit, count: -range.count) else {
-                    return Observable(.error(Error.dateError))
+                    return Observable(.error(ChartError.dateError))
                 }
 
                 let startDate: Date = {
@@ -88,7 +88,7 @@ extension Chart {
             .flatMap(Queue.main)
             .next { (individualSeries: ChartSeries, runningAverageSeries: ChartSeries?, startDate: Date) in
                 Async.main {
-                    assert(Thread.isMainThread())
+                    assert(Thread.isMainThread)
                     self.removeSeries()
                     self.addSeries(individualSeries)
                     if let runningAverageSeries = runningAverageSeries {

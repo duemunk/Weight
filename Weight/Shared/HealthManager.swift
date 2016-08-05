@@ -18,14 +18,14 @@ extension Notification.Name {
 class HealthManager {
     static let instance = HealthManager()
     
-    enum Error: ErrorProtocol {
+    enum HealthError: Error {
         case noResults
         case noSuccessDespiteNoError
         case wrongInput
         case wrongConversion
     }
 
-    enum ErrorAuth: ErrorProtocol {
+    enum ErrorAuth: Error {
         case denied
     }
 
@@ -40,7 +40,7 @@ class HealthManager {
         didSet {
             guard massUnit != oldValue else { return }
             massFormatterUnit = HKUnit.massFormatterUnit(from: massUnit)
-            NotificationCenter.default().post(name: .HealthPreferencesDidChange, object: nil)
+            NotificationCenter.default.post(name: .HealthPreferencesDidChange, object: nil)
         }
     }
     private(set) var massFormatterUnit = HKUnit.massFormatterUnit(from: .gramUnit(with: .kilo))
@@ -53,7 +53,7 @@ class HealthManager {
         }
         
         // Observe and propagate user changes from other apps
-        NotificationCenter.default().addObserver(forName: .HKUserPreferencesDidChange, object: nil, queue: nil) { [weak self] notification in
+        NotificationCenter.default.addObserver(forName: .HKUserPreferencesDidChange, object: nil, queue: nil) { [weak self] notification in
             self?.updatePreferredUnits()
         }
         
@@ -65,7 +65,7 @@ class HealthManager {
             .error { print($0) }
             .flatMap(Queue.main)
             .next {
-                NotificationCenter.default().post(name: .HealthDataDidChange, object: nil)
+                NotificationCenter.default.post(name: .HealthDataDidChange, object: nil)
             }
 
 
@@ -93,7 +93,7 @@ class HealthManager {
             .then {
                 guard $0 else {
                     print("No success, but no error")
-                    return .error(Error.noSuccessDespiteNoError)
+                    return .error(HealthError.noSuccessDespiteNoError)
                 }
                 print("Yay, stored \(sample) to HealthKit!")
                 WeightsLocalStore.instance.lastWeight = weight
@@ -104,7 +104,7 @@ class HealthManager {
     private func castToSubType<T, U>(t: T) -> Result<U> {
         guard let u = t as? U else {
             print("Not of type \(U.self)")
-            return .error(Error.wrongConversion)
+            return .error(HealthError.wrongConversion)
         }
         return .success(u)
     }
@@ -116,7 +116,7 @@ class HealthManager {
         let casted = t
             .flatMap { $0 as? U }
         guard casted.count == t.count else {
-            return .error(Error.wrongConversion)
+            return .error(HealthError.wrongConversion)
         }
         return .success(casted)
     }
@@ -206,10 +206,8 @@ extension Collection where Iterator.Element == Weight {
 
         let sorted = self.sorted { $0.date < $1.date }
 
-        guard let
-            first = sorted.first,
-            lastDate = sorted.last?.date
-            else {
+        guard let first = sorted.first,
+            let lastDate = sorted.last?.date else {
             return nil
         }
         let firstDate = first.date
@@ -218,7 +216,7 @@ extension Collection where Iterator.Element == Weight {
         }
         var referenceDateInAverageUnit = [Date]()
         referenceDateInAverageUnit.append(firstReferenceDay)
-        while let previousReference = referenceDateInAverageUnit.last where previousReference < lastDate {
+        while let previousReference = referenceDateInAverageUnit.last, previousReference < lastDate {
             guard let nextReference = previousReference.add(unit) else {
                 break
             }
@@ -253,9 +251,9 @@ enum CalendarUnit {
 extension Date {
 
     func beginningOfDay() -> Date? {
-        let calendar = Calendar.current()
-        let unitFlags: Calendar.Unit = [.year, .month, .day, .hour, .minute, .second]
-        var components = calendar.components(unitFlags, from: self)
+        let calendar = Calendar.current
+        let unitFlags: Set<Calendar.Component> = [.year, .month, .day, .hour, .minute, .second]
+        var components = calendar.dateComponents(unitFlags, from: self)
         components.hour = 0
         components.minute = 0
         components.second = 0
@@ -263,9 +261,9 @@ extension Date {
     }
 
     func endOfDay() -> Date? {
-        let calendar = Calendar.current()
-        let unitFlags: Calendar.Unit = [.year, .month, .day, .hour, .minute, .second]
-        var components = calendar.components(unitFlags, from: self)
+        let calendar = Calendar.current
+        let unitFlags: Set<Calendar.Component> = [.year, .month, .day, .hour, .minute, .second]
+        var components = calendar.dateComponents(unitFlags, from: self)
         components.hour = 23
         components.minute = 59
         components.second = 59
@@ -273,9 +271,9 @@ extension Date {
     }
 
     func beginningOf(_ unit: CalendarUnit) -> Date? {
-        let calendar = Calendar.current()
-        let unitFlags: Calendar.Unit = [.year, .month, .weekday, .day, .hour, .minute, .second]
-        var components = calendar.components(unitFlags, from: self)
+        let calendar = Calendar.current
+        let unitFlags: Set<Calendar.Component> = [.year, .month, .weekday, .day, .hour, .minute, .second]
+        var components = calendar.dateComponents(unitFlags, from: self)
         switch unit {
         case .year:
             components.month = 1
@@ -313,7 +311,7 @@ extension Date {
         case .day:
             components.day = count
         }
-        let calendar = Calendar.current()
-        return calendar.date(byAdding: components, to: self, options: .matchFirst)
+        let calendar = Calendar.current
+        return calendar.date(byAdding: components, to: self, wrappingComponents: true)
     }
 }

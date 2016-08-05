@@ -10,8 +10,8 @@ import ClockKit
 
 class ComplicationController: NSObject {
     
-    let dateFormatter = DateFormatter(dateStyle: .mediumStyle)
-    let timeFormatter = DateFormatter(dateStyle: .noStyle, timeStyle: .shortStyle)
+    let dateFormatter = DateFormatter(dateStyle: .medium)
+    let timeFormatter = DateFormatter(dateStyle: .none, timeStyle: .short)
     let weightShortFormatter = MassFormatter.weightShortFormatter()
     let weightMediumFormatter = MassFormatter.weightMediumFormatter()
     let weightLongFormatter = MassFormatter.weightLongFormatter()

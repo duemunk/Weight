@@ -98,13 +98,13 @@ public class Chart: UIControl {
     Font used for the labels.
     */
     @IBInspectable
-    public var labelColor: UIColor = UIColor.black()
+    public var labelColor: UIColor = UIColor.black
 
     /**
     Color for the axes.
     */
     @IBInspectable
-    public var axesColor: UIColor = UIColor.gray().withAlphaComponent(0.3)
+    public var axesColor: UIColor = UIColor.gray.withAlphaComponent(0.3)
 
     public var axesLineWidth: CGFloat = 1
 
@@ -112,7 +112,7 @@ public class Chart: UIControl {
     Color for the grid.
     */
     @IBInspectable
-    public var gridColor: UIColor = UIColor.gray().withAlphaComponent(0.3)
+    public var gridColor: UIColor = UIColor.gray.withAlphaComponent(0.3)
 
     public var gridLineWidth: CGFloat = 1
 
@@ -161,7 +161,7 @@ public class Chart: UIControl {
     /**
     Color for the highlight line.
     */
-    public var highlightLineColor = UIColor.gray()
+    public var highlightLineColor = UIColor.gray
 
     /**
     Width for the highlight line.
@@ -207,7 +207,7 @@ public class Chart: UIControl {
     }
 
     private func commonInit() {
-        backgroundColor = .clear()
+        backgroundColor = .clear
         contentMode = .redraw
     }
 
@@ -486,7 +486,7 @@ public class Chart: UIControl {
         lineLayer.frame = self.bounds
         lineLayer.path = path
 
-        lineLayer.fillColor = UIColor.clear().cgColor
+        lineLayer.fillColor = UIColor.clear.cgColor
         if isAboveXAxis {
             lineLayer.strokeColor = series[seriesIndex].colors.above.cgColor
         } else {
@@ -519,7 +519,7 @@ public class Chart: UIControl {
         let areaLayer = CAShapeLayer()
         areaLayer.frame = self.bounds
         areaLayer.path = area
-        areaLayer.strokeColor = UIColor.clear().cgColor
+        areaLayer.strokeColor = UIColor.clear.cgColor
         if isAboveXAxis {
             areaLayer.fillColor = series[seriesIndex].colors.above.withAlphaComponent(areaAlphaComponent).cgColor
         } else {
@@ -552,7 +552,7 @@ public class Chart: UIControl {
 
         let colors = series[seriesIndex].colors
         dotsLayer.fillColor = isAboveXAxis ? colors.above.cgColor : colors.below.cgColor
-        dotsLayer.strokeColor = UIColor.clear().cgColor
+        dotsLayer.strokeColor = UIColor.clear.cgColor
 
         self.layer.addSublayer(dotsLayer)
 
@@ -726,7 +726,7 @@ public class Chart: UIControl {
             shapeLayer.frame = self.bounds
             shapeLayer.path = path
             shapeLayer.strokeColor = highlightLineColor.cgColor
-            shapeLayer.fillColor = UIColor.clear().cgColor
+            shapeLayer.fillColor = UIColor.clear.cgColor
             shapeLayer.lineWidth = highlightLineWidth
 
             highlightShapeLayer = shapeLayer

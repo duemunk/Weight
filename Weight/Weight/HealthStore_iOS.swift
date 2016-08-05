@@ -13,7 +13,7 @@ import Interstellar
 
 extension HKHealthStore {
     
-    func observe(ofType sampleType: HKSampleType, predicate: Predicate? = nil) -> Observable<Result<HKObserverQueryCompletionHandler>> {
+    func observe(ofType sampleType: HKSampleType, predicate: NSPredicate? = nil) -> Observable<Result<HKObserverQueryCompletionHandler>> {
         let observer = Observable<Result<(HKObserverQuery, HKObserverQueryCompletionHandler)>>()
         let observerQuery = HKObserverQuery(sampleType: sampleType, predicate: predicate, updateHandler: completionToObservable(observer: observer))
         execute(observerQuery)

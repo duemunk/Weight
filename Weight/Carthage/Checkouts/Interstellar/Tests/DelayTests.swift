@@ -12,39 +12,39 @@ import Interstellar
 
 class DelayTests: XCTestCase {
     func testShouldDispatchToMainQueue() {
-        let expectation = self.expectation(withDescription: "delay called")
+        let expectation = self.expectation(description: "delay called")
         Signal("test").delay(0.1).subscribe { _ in
-            XCTAssertTrue(Thread.isMainThread())
+            XCTAssertTrue(Thread.isMainThread)
             expectation.fulfill()
         }
-        waitForExpectations(withTimeout: 0.2, handler: nil)
+        waitForExpectations(timeout: 0.2, handler: nil)
     }
     
     func testDispatchToSelectedQueue() {
-        let queue = DispatchQueue.global(attributes: .qosDefault)
-        let expectation = self.expectation(withDescription: "delay called")
+        let queue = DispatchQueue.global(qos: .default)
+        let expectation = self.expectation(description: "delay called")
         let s = Signal<String>()
         s.delay(0.1, queue: queue)
             .subscribe { _ in
-            XCTAssertFalse(Thread.isMainThread())
+            XCTAssertFalse(Thread.isMainThread)
             expectation.fulfill()
         }
         s.update("hello")
-        waitForExpectations(withTimeout: 0.2, handler: nil)
+        waitForExpectations(timeout: 0.2, handler: nil)
     }
     
     func testDispatchAfterGivenTime() {
         // wait 0.2 seconds and check if action from 0.1 seconds already happened
         var value: String? = nil
-        let expectation = self.expectation(withDescription: "delay called")
+        let expectation = self.expectation(description: "delay called")
         Signal("test").delay(0.2).subscribe { _ in
             XCTAssertEqual(value, "value")
             expectation.fulfill()
         }
-        let delayTime = DispatchTime.now() + Double(Int64(0.1 * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC)
-        DispatchQueue.main.after(when: delayTime) {
+        let delayTime = DispatchTime.now() + 0.1
+        DispatchQueue.main.asyncAfter(deadline: delayTime) {
             value = "value"
         }
-        waitForExpectations(withTimeout: 0.2, handler: nil)
+        waitForExpectations(timeout: 0.2, handler: nil)
     }
 }

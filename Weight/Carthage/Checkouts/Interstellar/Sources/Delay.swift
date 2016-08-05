@@ -31,11 +31,29 @@ public extension Signal {
     public func delay(_ seconds: TimeInterval, queue: DispatchQueue = .main) -> Signal<T> {
         let signal = Signal<T>()
         subscribe { result in
-            queue.after(when: seconds.dispatchTime) {
+            queue.asyncAfter(deadline: seconds.dispatchTime) {
                 signal.update(result)
             }
         }
-        return signal;
+        return signal
+    }
+    #endif
+}
+
+public extension Observable {
+    #if os(Linux)
+    #else
+    /**
+     Creates a new signal that mirrors the original observable but is delayed by x seconds. If no queue is specified, the new observable will call it's observers and transforms on the main queue.
+     */
+    public func delay(_ seconds: TimeInterval, queue: DispatchQueue = .main) -> Observable<T> {
+        let observable = Observable<T>()
+        subscribe { result in
+            queue.asyncAfter(deadline: seconds.dispatchTime) {
+                observable.update(result)
+            }
+        }
+        return observable
     }
     #endif
 }

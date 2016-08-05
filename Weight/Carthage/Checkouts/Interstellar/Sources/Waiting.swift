@@ -25,7 +25,7 @@ import Foundation
 /**
  This error is thrown if the signal doesn't complete within the specified timeout in a wait function.
  */
-public struct TimeoutError: ErrorProtocol {
+public struct TimeoutError: Error {
     internal init() {}
 }
 
@@ -55,7 +55,7 @@ public extension Signal {
             group.leave()
         }
         let timestamp = timeout.map{ $0.dispatchTime } ?? .distantFuture
-        if group.wait(timeout: timestamp) == .TimedOut {
+        if group.wait(timeout: timestamp) == .timedOut {
             throw TimeoutError()
         }
         switch result! {
@@ -82,7 +82,7 @@ public extension Observable {
             group.leave()
         }
         let timestamp = timeout.map{ $0.dispatchTime } ?? .distantFuture
-        if group.wait(timeout: timestamp) == .TimedOut {
+        if group.wait(timeout: timestamp) == .timedOut {
             throw TimeoutError()
         }
         return value

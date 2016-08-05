@@ -24,23 +24,23 @@ class ObservableTests: XCTestCase {
         XCTAssertEqual(greeting.peek(), "Hello World")
     }
     
-    func testFlatMappingSignal() {
+    func testFlatMappingObservable() {
         let greeting = Observable("World").flatMap(greetLater)
         XCTAssertEqual(greeting.peek(), "Hello World")
     }
     
     func testSubscription() {
         let observable = Observable<String>()
-        let expectation = self.expectation(withDescription: "subscription not completed")
+        let expectation = self.expectation(description: "subscription not completed")
         observable.subscribe { a in
             expectation.fulfill()
         }
         observable.update("Hello")
-        waitForExpectations(withTimeout: 0.2, handler: nil)
+        waitForExpectations(timeout: 0.2, handler: nil)
     }
     
     func testOnceSubscription() {
-        let observable = Observable<String>(options:[.Once])
+        let observable = Observable<String>(options:[.once])
         var count = 0
         observable.subscribe { a in
             count += 1
@@ -51,7 +51,7 @@ class ObservableTests: XCTestCase {
     }
     
     func testOnceSubscriptionAfterCompletion() {
-        let observable = Observable<String>("Hello", options:[.Once])
+        let observable = Observable<String>("Hello", options:[.once])
         var count = 0
         observable.subscribe { a in
             count += 1
@@ -61,7 +61,7 @@ class ObservableTests: XCTestCase {
     }
     
     func testLiveSubscriptions() {
-        let observable = Observable<String>("Hello", options:[.NoInitialValue])
+        let observable = Observable<String>("Hello", options:[.noInitialValue])
         XCTAssertNil(observable.peek())
         observable.update("Hello")
         XCTAssertNil(observable.peek())
@@ -74,7 +74,7 @@ class ObservableTests: XCTestCase {
             count += 1
         }
         observable.update("Hello")
-        observable.unsubscribe(token)
+        token.unsubscribe()
         observable.update("Hello")
         XCTAssertEqual(count, 1)
     }

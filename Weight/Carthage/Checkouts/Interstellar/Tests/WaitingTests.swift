@@ -12,7 +12,7 @@ import Interstellar
 
 class WaitingTests: XCTestCase {
     func asyncOperation<T>(_ delay: Double, _ t: T, completion: (Result<T>)->Void) {
-        let queue = DispatchQueue.global(attributes: .qosDefault)
+        let queue = DispatchQueue.global(qos: .default)
         Signal(t).delay(delay, queue: queue).subscribe(completion)
     }
     
@@ -23,6 +23,7 @@ class WaitingTests: XCTestCase {
     
     func testWaitingForSuccess() {
         let greeting = try! Signal("hello")
+            // FIX:
 //            .flatMap(self.asyncOperation(0.2))
             .wait()
         XCTAssertEqual(greeting, "hello")
@@ -30,6 +31,7 @@ class WaitingTests: XCTestCase {
     
     func testWithinTimeoutForSuccess() {
         let greeting = try! Signal("hello")
+            // FIX:
 //            .flatMap(self.asyncOperation(0.2))
             .wait(0.3)
         XCTAssertEqual(greeting, "hello")
@@ -37,6 +39,7 @@ class WaitingTests: XCTestCase {
     
     func testWithinTimeoutForFail() {
         let greeting = try? Signal("hello")
+            // FIX:
 //            .flatMap(self.asyncOperation(0.2))
             .wait(0.1)
         XCTAssertEqual(greeting, nil)
@@ -45,6 +48,7 @@ class WaitingTests: XCTestCase {
     func testWaitingForFail() {
         do {
             try Signal("hello")
+                // FIX:
 //                .flatMap(self.asyncOperation(0.2))
                 .flatMap(fail)
                 .wait()
