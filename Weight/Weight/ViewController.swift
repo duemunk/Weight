@@ -8,8 +8,6 @@
 
 import UIKit
 import HealthKit
-//import Cartography
-import Interstellar
 
 
 enum QuickActionType: String {

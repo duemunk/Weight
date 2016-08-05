@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import Interstellar
 
 
 extension Observable where T: ResultType  {

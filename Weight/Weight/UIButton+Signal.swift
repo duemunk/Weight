@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import Interstellar
 
 
 var ButtonSignalHandle: UInt8 = 0

@@ -8,7 +8,6 @@
 
 import Foundation
 import HealthKit
-import Interstellar
 
 extension Notification.Name {
     static let HealthPreferencesDidChange = "HealthPreferencesDidChangeNotification" as NSNotification.Name

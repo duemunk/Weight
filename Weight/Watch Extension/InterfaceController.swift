@@ -9,7 +9,6 @@
 import WatchKit
 import Foundation
 import ClockKit
-import Interstellar
 
 
 class InterfaceController: WKInterfaceController {

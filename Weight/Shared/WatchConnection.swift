@@ -8,7 +8,6 @@
 
 import Foundation
 import WatchConnectivity
-import Interstellar
 
 class WatchConnection: NSObject {
     static let instance = WatchConnection()

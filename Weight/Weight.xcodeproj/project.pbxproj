@@ -18,7 +18,6 @@
 		4E44D5AC1B5BEE7C0014B9C8 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4E44D5AA1B5BEE7C0014B9C8 /* LaunchScreen.storyboard */; };
 		4E44D5B71B5BEE7D0014B9C8 /* WeightTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E44D5B61B5BEE7D0014B9C8 /* WeightTests.swift */; };
 		4E44D5C21B5BEE7D0014B9C8 /* WeightUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E44D5C11B5BEE7D0014B9C8 /* WeightUITests.swift */; };
-		4E44D5D71B5C354A0014B9C8 /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4E44D5D61B5C354A0014B9C8 /* HealthKit.framework */; };
 		4E55CA121C76535200EB5D88 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4E55CA111C76535200EB5D88 /* Assets.xcassets */; };
 		4E7769471B5E57340081017D /* Interface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4E7769451B5E57340081017D /* Interface.storyboard */; };
 		4E7769491B5E57340081017D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4E7769481B5E57340081017D /* Assets.xcassets */; };
@@ -28,7 +27,6 @@
 		4E7769591B5E57340081017D /* ComplicationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E7769581B5E57340081017D /* ComplicationController.swift */; };
 		4E77695B1B5E57340081017D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4E77695A1B5E57340081017D /* Assets.xcassets */; };
 		4E77695F1B5E57340081017D /* Watch.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 4E7769431B5E57340081017D /* Watch.app */; };
-		4E77696A1B5E5F8C0081017D /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4E7769691B5E5F8C0081017D /* HealthKit.framework */; };
 		4E77696E1B5E5FF00081017D /* HealthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E77696D1B5E5FF00081017D /* HealthManager.swift */; };
 		4E77696F1B5E5FF00081017D /* HealthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E77696D1B5E5FF00081017D /* HealthManager.swift */; };
 		4E7769711B5E61250081017D /* HealthStore_iOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E7769701B5E61250081017D /* HealthStore_iOS.swift */; };
@@ -65,11 +63,39 @@
 		4EE529D01B682CE50045C1C3 /* Array.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EE529CF1B682CE50045C1C3 /* Array.swift */; };
 		4EE529D11B682CE50045C1C3 /* Array.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EE529CF1B682CE50045C1C3 /* Array.swift */; };
 		4EE634341CCE8C64007A602B /* UIButton+Signal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EE634331CCE8C64007A602B /* UIButton+Signal.swift */; };
-		4EE634831CD0CD80007A602B /* Interstellar.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4EE634821CD0CD80007A602B /* Interstellar.framework */; };
-		4EE634851CD0CE5A007A602B /* Interstellar.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4EE634841CD0CE5A007A602B /* Interstellar.framework */; };
 		4EEE52E11B602B21009B1D15 /* GlobalHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EEE52E01B602B21009B1D15 /* GlobalHelpers.swift */; };
 		4EEE52E21B602B21009B1D15 /* GlobalHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EEE52E01B602B21009B1D15 /* GlobalHelpers.swift */; };
 		4EF597041B9EE8E9003C4DAF /* Loader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EF597031B9EE8E9003C4DAF /* Loader.swift */; };
+		4EFA21251D553A9D00C4973E /* Debounce.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EFA211B1D553A9D00C4973E /* Debounce.swift */; };
+		4EFA21261D553A9D00C4973E /* Debounce.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EFA211B1D553A9D00C4973E /* Debounce.swift */; };
+		4EFA21271D553A9D00C4973E /* Debounce.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EFA211B1D553A9D00C4973E /* Debounce.swift */; };
+		4EFA21281D553A9D00C4973E /* Delay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EFA211C1D553A9D00C4973E /* Delay.swift */; };
+		4EFA21291D553A9D00C4973E /* Delay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EFA211C1D553A9D00C4973E /* Delay.swift */; };
+		4EFA212A1D553A9D00C4973E /* Delay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EFA211C1D553A9D00C4973E /* Delay.swift */; };
+		4EFA212B1D553A9D00C4973E /* Mutex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EFA211D1D553A9D00C4973E /* Mutex.swift */; };
+		4EFA212C1D553A9D00C4973E /* Mutex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EFA211D1D553A9D00C4973E /* Mutex.swift */; };
+		4EFA212D1D553A9D00C4973E /* Mutex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EFA211D1D553A9D00C4973E /* Mutex.swift */; };
+		4EFA212E1D553A9D00C4973E /* Observable+Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EFA211E1D553A9D00C4973E /* Observable+Result.swift */; };
+		4EFA212F1D553A9D00C4973E /* Observable+Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EFA211E1D553A9D00C4973E /* Observable+Result.swift */; };
+		4EFA21301D553A9D00C4973E /* Observable+Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EFA211E1D553A9D00C4973E /* Observable+Result.swift */; };
+		4EFA21311D553A9D00C4973E /* Observable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EFA211F1D553A9D00C4973E /* Observable.swift */; };
+		4EFA21321D553A9D00C4973E /* Observable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EFA211F1D553A9D00C4973E /* Observable.swift */; };
+		4EFA21331D553A9D00C4973E /* Observable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EFA211F1D553A9D00C4973E /* Observable.swift */; };
+		4EFA21341D553A9D00C4973E /* Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EFA21201D553A9D00C4973E /* Result.swift */; };
+		4EFA21351D553A9D00C4973E /* Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EFA21201D553A9D00C4973E /* Result.swift */; };
+		4EFA21361D553A9D00C4973E /* Result.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EFA21201D553A9D00C4973E /* Result.swift */; };
+		4EFA21371D553A9D00C4973E /* ResultType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EFA21211D553A9D00C4973E /* ResultType.swift */; };
+		4EFA21381D553A9D00C4973E /* ResultType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EFA21211D553A9D00C4973E /* ResultType.swift */; };
+		4EFA21391D553A9D00C4973E /* ResultType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EFA21211D553A9D00C4973E /* ResultType.swift */; };
+		4EFA213A1D553A9D00C4973E /* Signal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EFA21221D553A9D00C4973E /* Signal.swift */; };
+		4EFA213B1D553A9D00C4973E /* Signal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EFA21221D553A9D00C4973E /* Signal.swift */; };
+		4EFA213C1D553A9D00C4973E /* Signal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EFA21221D553A9D00C4973E /* Signal.swift */; };
+		4EFA213D1D553A9D00C4973E /* Threading.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EFA21231D553A9D00C4973E /* Threading.swift */; };
+		4EFA213E1D553A9D00C4973E /* Threading.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EFA21231D553A9D00C4973E /* Threading.swift */; };
+		4EFA213F1D553A9D00C4973E /* Threading.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EFA21231D553A9D00C4973E /* Threading.swift */; };
+		4EFA21401D553A9D00C4973E /* Waiting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EFA21241D553A9D00C4973E /* Waiting.swift */; };
+		4EFA21411D553A9D00C4973E /* Waiting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EFA21241D553A9D00C4973E /* Waiting.swift */; };
+		4EFA21421D553A9D00C4973E /* Waiting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EFA21241D553A9D00C4973E /* Waiting.swift */; };
 		4EFFEDE71D13337800EC0E27 /* InterstellarHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EFFEDE61D13337800EC0E27 /* InterstellarHelpers.swift */; };
 		4EFFEDE91D133DB100EC0E27 /* InterstellarHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EFFEDE61D13337800EC0E27 /* InterstellarHelpers.swift */; };
 		4EFFEDF11D14D62500EC0E27 /* NotificationCenter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4EFFEDF01D14D62500EC0E27 /* NotificationCenter.framework */; };
@@ -86,7 +112,6 @@
 		4EFFEE081D14D72500EC0E27 /* Async.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EE529CC1B681F5B0045C1C3 /* Async.swift */; };
 		4EFFEE091D14D72500EC0E27 /* Array.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EE529CF1B682CE50045C1C3 /* Array.swift */; };
 		4EFFEE0A1D14D72500EC0E27 /* InterstellarHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EFFEDE61D13337800EC0E27 /* InterstellarHelpers.swift */; };
-		4EFFEE0C1D14D82500EC0E27 /* Interstellar.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4EFFEE0B1D14D82500EC0E27 /* Interstellar.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -179,7 +204,6 @@
 		4E44D5BD1B5BEE7D0014B9C8 /* WeightUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WeightUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		4E44D5C11B5BEE7D0014B9C8 /* WeightUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeightUITests.swift; sourceTree = "<group>"; };
 		4E44D5C31B5BEE7D0014B9C8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		4E44D5D61B5C354A0014B9C8 /* HealthKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKit.framework; path = System/Library/Frameworks/HealthKit.framework; sourceTree = SDKROOT; };
 		4E44D5D81B5C354A0014B9C8 /* Weight.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Weight.entitlements; sourceTree = "<group>"; };
 		4E55CA111C76535200EB5D88 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		4E7769431B5E57340081017D /* Watch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Watch.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -193,7 +217,6 @@
 		4E77695A1B5E57340081017D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		4E77695C1B5E57340081017D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4E7769681B5E5F8C0081017D /* Watch Extension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "Watch Extension.entitlements"; sourceTree = "<group>"; };
-		4E7769691B5E5F8C0081017D /* HealthKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKit.framework; path = Platforms/WatchOS.platform/Developer/SDKs/WatchOS2.0.sdk/System/Library/Frameworks/HealthKit.framework; sourceTree = DEVELOPER_DIR; };
 		4E77696D1B5E5FF00081017D /* HealthManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HealthManager.swift; sourceTree = "<group>"; };
 		4E7769701B5E61250081017D /* HealthStore_iOS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HealthStore_iOS.swift; sourceTree = "<group>"; };
 		4E7769721B5E6E070081017D /* ErrorHandling.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ErrorHandling.swift; sourceTree = "<group>"; };
@@ -210,22 +233,27 @@
 		4EDEAB221D16D2750021A99D /* Chart.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Chart.swift; sourceTree = "<group>"; };
 		4EDEAB231D16D2750021A99D /* ChartColors.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChartColors.swift; sourceTree = "<group>"; };
 		4EDEAB241D16D2750021A99D /* ChartSeries.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChartSeries.swift; sourceTree = "<group>"; };
-		4EE529C31B681DFC0045C1C3 /* Realm.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Realm.framework; path = ../Frameworks/Realm.framework; sourceTree = "<group>"; };
-		4EE529C61B681E080045C1C3 /* Realm.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Realm.framework; path = ../Frameworks/Realm.framework; sourceTree = "<group>"; };
 		4EE529CC1B681F5B0045C1C3 /* Async.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Async.swift; sourceTree = "<group>"; };
 		4EE529CF1B682CE50045C1C3 /* Array.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Array.swift; sourceTree = "<group>"; };
 		4EE634331CCE8C64007A602B /* UIButton+Signal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIButton+Signal.swift"; sourceTree = "<group>"; };
-		4EE634821CD0CD80007A602B /* Interstellar.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Interstellar.framework; path = ../Carthage/Build/iOS/Interstellar.framework; sourceTree = "<group>"; };
-		4EE634841CD0CE5A007A602B /* Interstellar.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Interstellar.framework; path = ../Carthage/Build/watchOS/Interstellar.framework; sourceTree = "<group>"; };
 		4EEE52E01B602B21009B1D15 /* GlobalHelpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GlobalHelpers.swift; sourceTree = "<group>"; };
 		4EF597031B9EE8E9003C4DAF /* Loader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Loader.swift; sourceTree = "<group>"; };
+		4EFA211B1D553A9D00C4973E /* Debounce.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Debounce.swift; sourceTree = "<group>"; };
+		4EFA211C1D553A9D00C4973E /* Delay.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Delay.swift; sourceTree = "<group>"; };
+		4EFA211D1D553A9D00C4973E /* Mutex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Mutex.swift; sourceTree = "<group>"; };
+		4EFA211E1D553A9D00C4973E /* Observable+Result.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Observable+Result.swift"; sourceTree = "<group>"; };
+		4EFA211F1D553A9D00C4973E /* Observable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Observable.swift; sourceTree = "<group>"; };
+		4EFA21201D553A9D00C4973E /* Result.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Result.swift; sourceTree = "<group>"; };
+		4EFA21211D553A9D00C4973E /* ResultType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ResultType.swift; sourceTree = "<group>"; };
+		4EFA21221D553A9D00C4973E /* Signal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Signal.swift; sourceTree = "<group>"; };
+		4EFA21231D553A9D00C4973E /* Threading.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Threading.swift; sourceTree = "<group>"; };
+		4EFA21241D553A9D00C4973E /* Waiting.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Waiting.swift; sourceTree = "<group>"; };
 		4EFFEDE61D13337800EC0E27 /* InterstellarHelpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InterstellarHelpers.swift; sourceTree = "<group>"; };
 		4EFFEDEE1D14D62500EC0E27 /* Weight Widget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Weight Widget.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		4EFFEDF01D14D62500EC0E27 /* NotificationCenter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = NotificationCenter.framework; path = System/Library/Frameworks/NotificationCenter.framework; sourceTree = SDKROOT; };
 		4EFFEDF31D14D62500EC0E27 /* TodayViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayViewController.swift; sourceTree = "<group>"; };
 		4EFFEDF61D14D62500EC0E27 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
 		4EFFEDF81D14D62500EC0E27 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		4EFFEE0B1D14D82500EC0E27 /* Interstellar.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Interstellar.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -233,8 +261,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4E44D5D71B5C354A0014B9C8 /* HealthKit.framework in Frameworks */,
-				4EE634831CD0CD80007A602B /* Interstellar.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -256,8 +282,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4E77696A1B5E5F8C0081017D /* HealthKit.framework in Frameworks */,
-				4EE634851CD0CE5A007A602B /* Interstellar.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -266,7 +290,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				4EFFEDF11D14D62500EC0E27 /* NotificationCenter.framework in Frameworks */,
-				4EFFEE0C1D14D82500EC0E27 /* Interstellar.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -304,7 +327,6 @@
 		4E44D5A01B5BEE7C0014B9C8 /* Weight */ = {
 			isa = PBXGroup;
 			children = (
-				4EE529CA1B681E220045C1C3 /* Frameworks */,
 				4E44D5D81B5C354A0014B9C8 /* Weight.entitlements */,
 				4E35E70F1D17554A00A61C2B /* Weight.ckcomplication */,
 				4E44D5A11B5BEE7C0014B9C8 /* AppDelegate.swift */,
@@ -360,7 +382,6 @@
 		4E7769531B5E57340081017D /* Watch Extension */ = {
 			isa = PBXGroup;
 			children = (
-				4EE529CB1B681E2C0045C1C3 /* Frameworks */,
 				4E7769681B5E5F8C0081017D /* Watch Extension.entitlements */,
 				4E7769541B5E57340081017D /* InterfaceController.swift */,
 				4EF597031B9EE8E9003C4DAF /* Loader.swift */,
@@ -375,6 +396,7 @@
 		4E77696C1B5E5FC70081017D /* Shared */ = {
 			isa = PBXGroup;
 			children = (
+				4EFA211A1D553A9D00C4973E /* Source */,
 				4E77697B1B5E72B20081017D /* Health */,
 				4E7769761B5E70400081017D /* NotificationCenter.swift */,
 				4E81F1C91D18266A009BE1D4 /* Keys.swift */,
@@ -414,25 +436,23 @@
 			path = SwiftChart;
 			sourceTree = "<group>";
 		};
-		4EE529CA1B681E220045C1C3 /* Frameworks */ = {
+		4EFA211A1D553A9D00C4973E /* Source */ = {
 			isa = PBXGroup;
 			children = (
-				4EE634821CD0CD80007A602B /* Interstellar.framework */,
-				4EE529C31B681DFC0045C1C3 /* Realm.framework */,
-				4E44D5D61B5C354A0014B9C8 /* HealthKit.framework */,
+				4EFA211B1D553A9D00C4973E /* Debounce.swift */,
+				4EFA211C1D553A9D00C4973E /* Delay.swift */,
+				4EFA211D1D553A9D00C4973E /* Mutex.swift */,
+				4EFA211E1D553A9D00C4973E /* Observable+Result.swift */,
+				4EFA211F1D553A9D00C4973E /* Observable.swift */,
+				4EFA21201D553A9D00C4973E /* Result.swift */,
+				4EFA21211D553A9D00C4973E /* ResultType.swift */,
+				4EFA21221D553A9D00C4973E /* Signal.swift */,
+				4EFA21231D553A9D00C4973E /* Threading.swift */,
+				4EFA21241D553A9D00C4973E /* Waiting.swift */,
 			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		4EE529CB1B681E2C0045C1C3 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				4EE634841CD0CE5A007A602B /* Interstellar.framework */,
-				4EE529C61B681E080045C1C3 /* Realm.framework */,
-				4E7769691B5E5F8C0081017D /* HealthKit.framework */,
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
+			name = Source;
+			path = Carthage/Checkouts/Interstellar/Source;
+			sourceTree = SOURCE_ROOT;
 		};
 		4EFFEDEF1D14D62500EC0E27 /* Frameworks */ = {
 			isa = PBXGroup;
@@ -445,20 +465,11 @@
 		4EFFEDF21D14D62500EC0E27 /* Weight Widget */ = {
 			isa = PBXGroup;
 			children = (
-				4EFFEE0D1D14D82A00EC0E27 /* Frameworks */,
 				4EFFEDF31D14D62500EC0E27 /* TodayViewController.swift */,
 				4EFFEDF51D14D62500EC0E27 /* MainInterface.storyboard */,
 				4EFFEDF81D14D62500EC0E27 /* Info.plist */,
 			);
 			path = "Weight Widget";
-			sourceTree = "<group>";
-		};
-		4EFFEE0D1D14D82A00EC0E27 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				4EFFEE0B1D14D82500EC0E27 /* Interstellar.framework */,
-			);
-			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -773,7 +784,9 @@
 				4E81F1D41D1846C1009BE1D4 /* WatchConnection.swift in Sources */,
 				4E212C531B6C10F1007E19D3 /* WeightFormatters.swift in Sources */,
 				4EFFEDE71D13337800EC0E27 /* InterstellarHelpers.swift in Sources */,
+				4EFA213A1D553A9D00C4973E /* Signal.swift in Sources */,
 				4E7769711B5E61250081017D /* HealthStore_iOS.swift in Sources */,
+				4EFA21341D553A9D00C4973E /* Result.swift in Sources */,
 				4E212C561B6C11D5007E19D3 /* NSDateFormatter.swift in Sources */,
 				4E81F1D01D184187009BE1D4 /* Weight.swift in Sources */,
 				4EEE52E11B602B21009B1D15 /* GlobalHelpers.swift in Sources */,
@@ -785,13 +798,21 @@
 				4EE529D01B682CE50045C1C3 /* Array.swift in Sources */,
 				4EDEAB271D16D2750021A99D /* Chart.swift in Sources */,
 				4E81F1CA1D18266A009BE1D4 /* Keys.swift in Sources */,
+				4EFA212B1D553A9D00C4973E /* Mutex.swift in Sources */,
 				4E7769791B5E70400081017D /* NotificationCenter.swift in Sources */,
+				4EFA21401D553A9D00C4973E /* Waiting.swift in Sources */,
 				4E7769771B5E70400081017D /* HealthStore.swift in Sources */,
+				4EFA21251D553A9D00C4973E /* Debounce.swift in Sources */,
+				4EFA212E1D553A9D00C4973E /* Observable+Result.swift in Sources */,
 				4EE529CD1B681F5B0045C1C3 /* Async.swift in Sources */,
+				4EFA213D1D553A9D00C4973E /* Threading.swift in Sources */,
 				4E81F1D71D189327009BE1D4 /* WeightViewModel.swift in Sources */,
+				4EFA21311D553A9D00C4973E /* Observable.swift in Sources */,
 				4EA8A20E1B678F3E00E1EF05 /* WeightsLocalStore.swift in Sources */,
+				4EFA21371D553A9D00C4973E /* ResultType.swift in Sources */,
 				4EDEAB1C1D16C4FE0021A99D /* QuickActions.swift in Sources */,
 				4EE634341CCE8C64007A602B /* UIButton+Signal.swift in Sources */,
+				4EFA21281D553A9D00C4973E /* Delay.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -816,22 +837,32 @@
 			buildActionMask = 2147483647;
 			files = (
 				4E77696F1B5E5FF00081017D /* HealthManager.swift in Sources */,
+				4EFA212F1D553A9D00C4973E /* Observable+Result.swift in Sources */,
 				4E81F1CB1D18266A009BE1D4 /* Keys.swift in Sources */,
 				4E212C541B6C10F1007E19D3 /* WeightFormatters.swift in Sources */,
+				4EFA21411D553A9D00C4973E /* Waiting.swift in Sources */,
+				4EFA213B1D553A9D00C4973E /* Signal.swift in Sources */,
 				4E7769571B5E57340081017D /* ExtensionDelegate.swift in Sources */,
 				4E212C571B6C11D5007E19D3 /* NSDateFormatter.swift in Sources */,
+				4EFA21351D553A9D00C4973E /* Result.swift in Sources */,
 				4EEE52E21B602B21009B1D15 /* GlobalHelpers.swift in Sources */,
 				4E81F1D11D184187009BE1D4 /* Weight.swift in Sources */,
 				4E7769551B5E57340081017D /* InterfaceController.swift in Sources */,
 				4E77697A1B5E70400081017D /* NotificationCenter.swift in Sources */,
+				4EFA213E1D553A9D00C4973E /* Threading.swift in Sources */,
 				4E7769741B5E6E070081017D /* ErrorHandling.swift in Sources */,
+				4EFA21381D553A9D00C4973E /* ResultType.swift in Sources */,
 				4EE529D11B682CE50045C1C3 /* Array.swift in Sources */,
 				4E7769591B5E57340081017D /* ComplicationController.swift in Sources */,
 				4E81F1D51D1846C1009BE1D4 /* WatchConnection.swift in Sources */,
 				4E7769781B5E70400081017D /* HealthStore.swift in Sources */,
+				4EFA21261D553A9D00C4973E /* Debounce.swift in Sources */,
+				4EFA21321D553A9D00C4973E /* Observable.swift in Sources */,
 				4EFFEDE91D133DB100EC0E27 /* InterstellarHelpers.swift in Sources */,
 				4EE529CE1B681F630045C1C3 /* Async.swift in Sources */,
+				4EFA212C1D553A9D00C4973E /* Mutex.swift in Sources */,
 				4EF597041B9EE8E9003C4DAF /* Loader.swift in Sources */,
+				4EFA21291D553A9D00C4973E /* Delay.swift in Sources */,
 				4EA8A20F1B678F4400E1EF05 /* WeightsLocalStore.swift in Sources */,
 				4E81F1D81D189327009BE1D4 /* WeightViewModel.swift in Sources */,
 			);
@@ -847,18 +878,28 @@
 				4EFFEDF41D14D62500EC0E27 /* TodayViewController.swift in Sources */,
 				4EFFEE051D14D72500EC0E27 /* NSDateFormatter.swift in Sources */,
 				4EFFEE021D14D72500EC0E27 /* WeightsLocalStore.swift in Sources */,
+				4EFA21361D553A9D00C4973E /* Result.swift in Sources */,
 				4EFFEE011D14D72500EC0E27 /* HealthManager.swift in Sources */,
 				4EFFEE091D14D72500EC0E27 /* Array.swift in Sources */,
 				4EFFEE061D14D72500EC0E27 /* ErrorHandling.swift in Sources */,
+				4EFA21391D553A9D00C4973E /* ResultType.swift in Sources */,
+				4EFA21421D553A9D00C4973E /* Waiting.swift in Sources */,
+				4EFA212A1D553A9D00C4973E /* Delay.swift in Sources */,
 				4EDEAB281D16D2750021A99D /* Chart.swift in Sources */,
+				4EFA212D1D553A9D00C4973E /* Mutex.swift in Sources */,
 				4EDEAB2C1D16D2750021A99D /* ChartSeries.swift in Sources */,
 				4EFFEE0A1D14D72500EC0E27 /* InterstellarHelpers.swift in Sources */,
 				4E81F1D21D184187009BE1D4 /* Weight.swift in Sources */,
 				4EDEAB261D16D2750021A99D /* ChartHelper.swift in Sources */,
+				4EFA21271D553A9D00C4973E /* Debounce.swift in Sources */,
+				4EFA213C1D553A9D00C4973E /* Signal.swift in Sources */,
+				4EFA21301D553A9D00C4973E /* Observable+Result.swift in Sources */,
 				4EFFEE031D14D72500EC0E27 /* WeightFormatters.swift in Sources */,
+				4EFA213F1D553A9D00C4973E /* Threading.swift in Sources */,
 				4EFFEE081D14D72500EC0E27 /* Async.swift in Sources */,
 				4EFFEE001D14D72500EC0E27 /* HealthStore.swift in Sources */,
 				4EDEAB2A1D16D2750021A99D /* ChartColors.swift in Sources */,
+				4EFA21331D553A9D00C4973E /* Observable.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1021,7 +1062,6 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)",
 					"$(PROJECT_DIR)/Frameworks",
-					"$(PROJECT_DIR)/Carthage/Build/iOS",
 				);
 				INFOPLIST_FILE = Weight/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -1044,7 +1084,6 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)",
 					"$(PROJECT_DIR)/Frameworks",
-					"$(PROJECT_DIR)/Carthage/Build/iOS",
 				);
 				INFOPLIST_FILE = Weight/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -1169,7 +1208,6 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Frameworks",
-					"$(PROJECT_DIR)/Carthage/Build/watchOS",
 				);
 				INFOPLIST_FILE = "Watch Extension/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
@@ -1194,7 +1232,6 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Frameworks",
-					"$(PROJECT_DIR)/Carthage/Build/watchOS",
 				);
 				INFOPLIST_FILE = "Watch Extension/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";

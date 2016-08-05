@@ -9,7 +9,6 @@
 import UIKit
 import NotificationCenter
 import HealthKit
-import Interstellar
 
 
 class TodayViewController: UIViewController, NCWidgetProviding {
