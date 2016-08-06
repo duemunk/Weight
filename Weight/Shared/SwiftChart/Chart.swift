@@ -342,20 +342,20 @@ public class Chart: UIControl {
         // Check in datasets
 
         for series in self.series {
-            let xValues =  series.data.map({ (point: ChartPoint) -> Float in
+            let xValues = series.data.map({ (point: ChartPoint) -> Float in
                 return point.x })
-            let yValues =  series.data.map({ (point: ChartPoint) -> Float in
+            let yValues = series.data.map({ (point: ChartPoint) -> Float in
                 return point.y })
 
-            let newMinX = xValues.min()!
-            let newMinY = yValues.min()!
-            let newMaxX = xValues.max()!
-            let newMaxY = yValues.max()!
+            guard let newMinX = xValues.min(),
+                let newMinY = yValues.min(),
+                let newMaxX = xValues.max(),
+                let newMaxY = yValues.max() else { continue }
 
-            if min.x == nil || newMinX < min.x! { min.x = newMinX }
-            if min.y == nil || newMinY < min.y! { min.y = newMinY }
-            if max.x == nil || newMaxX > max.x! { max.x = newMaxX }
-            if max.y == nil || newMaxY > max.y! { max.y = newMaxY }
+            if min.x == nil || newMinX < min.x { min.x = newMinX }
+            if min.y == nil || newMinY < min.y { min.y = newMinY }
+            if max.x == nil || newMaxX > max.x { max.x = newMaxX }
+            if max.y == nil || newMaxY > max.y { max.y = newMaxY }
         }
 
         // Check in labels
