@@ -311,6 +311,6 @@ extension Date {
             components.day = count
         }
         let calendar = Calendar.current
-        return calendar.date(byAdding: components, to: self, wrappingComponents: true)
+        return calendar.date(byAdding: components, to: self, wrappingComponents: false)
     }
 }
