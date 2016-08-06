@@ -106,7 +106,7 @@ class ViewController: UIViewController {
     private func updateUI(type: UpdateType) {
         self.updateToWeight(request: .source(type: type))
         self.updateQuickActions()
-        self.updateChart(.week, range: Chart.Range(unit: .month, count: 6, softStart: true))
+        self.updateChart(average: .month, range: Chart.Range(unit: .year, count: 10, softStart: true))
     }
 
     // MARK: - Weight
@@ -191,10 +191,10 @@ class ViewController: UIViewController {
         chartView.yLabelsFormatter = chartView.weightLabelsFormatter(numberFormatter: chartYLabelFormatter)
     }
 
-    func updateChart(_ average: CalendarUnit = .week, range: Chart.Range) {
+    func updateChart(average: CalendarUnit = .week, range: Chart.Range) {
         HealthManager.instance.getWeights()
             .then {
-                self.chartView.update(with: $0, dotColor: .black, lineColor: UIColor.black.withAlphaComponent(0.3), average: .week, range: range)
+                self.chartView.update(with: $0, dotColor: .black, lineColor: UIColor.black.withAlphaComponent(0.3), average: average, range: range)
             }
     }
 }

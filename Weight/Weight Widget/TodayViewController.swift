@@ -39,7 +39,7 @@ class TodayViewController: UIViewController, NCWidgetProviding {
     
     func widgetPerformUpdate(completionHandler: ((NCUpdateResult) -> Void)) {
         // Perform any setup necessary in order to update the view.
-        updateChart(.week, range: Chart.Range(unit: .month, count: 6, softStart: true))
+        updateChart(average: .week, range: Chart.Range(unit: .week, count: 6, softStart: true))
             .next{ completionHandler(.newData) }
         updateLabels()
     }
@@ -63,10 +63,10 @@ private extension TodayViewController {
     }
 
     @discardableResult
-    func updateChart(_ average: CalendarUnit = .week, range: Chart.Range) -> Observable<Result<Void>> {
+    func updateChart(average: CalendarUnit = .week, range: Chart.Range) -> Observable<Result<Void>> {
         return HealthManager.instance.getWeights()
             .then {
-                self.chartView.update(with: $0, dotColor: .black, lineColor: UIColor.black.withAlphaComponent(0.3), average: .week, range: range)
+                self.chartView.update(with: $0, dotColor: .black, lineColor: UIColor.black.withAlphaComponent(0.3), average: average, range: range)
             }
     }
 
