@@ -119,7 +119,6 @@ class ViewController: UIViewController {
 
         let quantitySampleBlock: (Weight) -> () = { weight in
             Async.main {
-                assert(Thread.isMainThread)
                 let massUnit = HealthManager.instance.massUnit
                 guard let (_, index) = closest(self.pickerWeights.map { $0.kg }, toValue: weight.kg) else {
                     return
@@ -141,7 +140,6 @@ class ViewController: UIViewController {
                 .next(quantitySampleBlock)
                 .error {
                     print($0)
-                    assert(Thread.isMainThread)
                     self.weightLabel.text = self.weightFormatter.string(fromValue: 0, unit: HealthManager.instance.massFormatterUnit)
                     self.weightDetailLabel.text = "No existing historic data"
                     self.weightPickerView.selectRow(0, inComponent: 0, animated: true)
@@ -167,7 +165,6 @@ class ViewController: UIViewController {
             .flatMap(Queue.main)
             .next { shortcuts in
                 Async.main {
-                    assert(Thread.isMainThread)
                     UIApplication.shared.shortcutItems = shortcuts
                 }
             }

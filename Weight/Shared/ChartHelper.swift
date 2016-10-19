@@ -87,7 +87,6 @@ extension Chart {
             .flatMap(Queue.main)
             .next { (individualSeries: ChartSeries, runningAverageSeries: ChartSeries?, startDate: Date) in
                 Async.main {
-                    assert(Thread.isMainThread)
                     self.removeSeries()
                     self.addSeries(individualSeries)
                     if let runningAverageSeries = runningAverageSeries {
