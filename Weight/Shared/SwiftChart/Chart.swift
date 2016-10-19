@@ -178,8 +178,8 @@ public class Chart: UIControl {
     private var highlightShapeLayer: CAShapeLayer!
     private var layerStore: Array<CAShapeLayer> = []
 
-    private var drawingHeight: CGFloat = 0
-    private var drawingWidth: CGFloat = 0
+    private var drawingHeight: CGFloat!
+    private var drawingWidth: CGFloat!
 
     // Minimum and maximum values represented in the chart
     private var min: ChartPoint!
@@ -739,7 +739,7 @@ public class Chart: UIControl {
         let left = point.location(in: self).x
         let x = valueFromPointAtX(left)
 
-        if left < 0 || left > drawingWidth {
+        if left < 0 || left > drawingWidth! {
             // Remove highlight line at the end of the touch event
             if let shapeLayer = highlightShapeLayer {
                 shapeLayer.path = nil
