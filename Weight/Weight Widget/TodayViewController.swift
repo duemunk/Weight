@@ -39,7 +39,7 @@ class TodayViewController: UIViewController, NCWidgetProviding {
     
     func widgetPerformUpdate(completionHandler: @escaping ((NCUpdateResult) -> Void)) {
         // Perform any setup necessary in order to update the view.
-        updateChart(average: .week, range: Chart.Range(unit: .week, count: 6, softStart: true))
+        updateChart(average: .week, range: Chart.Range(unit: .month, count: 2, softStart: true))
             .next{ completionHandler(.newData) }
         updateLabels()
     }
