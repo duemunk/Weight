@@ -162,7 +162,7 @@ private extension InterfaceController {
 
     @discardableResult
     func updatePicker() -> Observable<Void> {
-        return Observable<Void>((), options: [.once])
+        return Observable<Void>((), options: [.Once])
             .flatMap(Queue.background)
             .flatMap { (_: Void) -> Observable<[WKPickerItem]> in
                 var pickerItems = [WKPickerItem]()

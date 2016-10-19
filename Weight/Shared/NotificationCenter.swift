@@ -35,7 +35,7 @@ import UIKit
 //}
 
 class NotificationCenter_: NSObject {
-    var observer: Observable<Notification> = Observable<Notification>(options: .noInitialValue)
+    var observer: Observable<Notification> = Observable<Notification>(options: .NoInitialValue)
     private var notificationObserver: NSObjectProtocol!
 
     init(name: NSNotification.Name) {

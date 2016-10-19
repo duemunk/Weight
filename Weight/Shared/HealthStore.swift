@@ -20,8 +20,8 @@ extension HKHealthStore {
         let observer = Observable<Result<Bool>>()
         requestAuthorization(toShare: shareTypes, read: readTypes, completion: completionToObservable(observer: observer))
         return observer
-            .then {
-                guard $0 else {
+            .then { (success: Bool) -> Result<Void> in
+                guard success else {
                     print("Couldn't get authorization request")
                     return .error(AsyncError.noSuccessDespiteNoError)
                 }
@@ -35,8 +35,8 @@ extension HKHealthStore {
         let query = HKSampleQuery(sampleType: sampleType, predicate: predicate, limit: HKObjectQueryNoLimit, sortDescriptors: [timeSortDescriptor], resultsHandler: completionToObservable(observer: observer))
         execute(query)
         return observer
-            .then {
-                guard let samples = $0.1 else {
+            .then { (query: HKSampleQuery, samples: [HKSample]?) -> Result<[HKSample]> in
+                guard let samples = samples else {
                     return .error(AsyncError.noResults)
                 }
                 return .success(samples)
@@ -50,8 +50,8 @@ extension HKHealthStore {
         let query = HKSampleQuery(sampleType: sampleType, predicate: predicate, limit: 1, sortDescriptors: [timeSortDescriptor], resultsHandler: completionToObservable(observer: observer))
         execute(query)
         return observer
-            .then {
-                guard let sample = $0.1?.first else {
+            .then { (query: HKSampleQuery, samples: [HKSample]?) -> Result<HKSample> in
+                guard let sample = samples?.first else {
                     return .error(AsyncError.noResults)
                 }
                 return .success(sample)
@@ -68,8 +68,8 @@ extension HKHealthStore {
     func preferredUnit(forQuantityType type: HKQuantityType) -> Observable<Result<HKUnit>> {
         let types: Set<HKQuantityType> = [type]
         return preferredUnits(forQuantityTypes: types)
-            .then {
-                guard let unit = $0[type] else {
+            .then { (value: [HKQuantityType : HKUnit]) -> Result<HKUnit> in
+                guard let unit = value[type] else {
                     print("Couldn't parse preferred units")
                     return .error(AsyncError.noResults)
                 }

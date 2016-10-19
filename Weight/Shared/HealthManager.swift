@@ -89,8 +89,8 @@ class HealthManager {
         let observer = Observable<Result<Bool>>()
         healthStore.save(sample, withCompletion: completionToObservable(observer: observer))
         return observer
-            .then {
-                guard $0 else {
+            .then { (success: Bool) -> Result<Weight> in
+                guard success else {
                     print("No success, but no error")
                     return .error(HealthError.noSuccessDespiteNoError)
                 }
