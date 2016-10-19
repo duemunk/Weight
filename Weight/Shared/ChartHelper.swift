@@ -22,7 +22,7 @@ extension Chart {
         case dateError
     }
 
-    func weightLabelsFormatter(numberFormatter: NumberFormatter) -> (labelIndex: Int, labelValue: Float, yIncrement: Float?) -> String {
+    func weightLabelsFormatter(numberFormatter: NumberFormatter) -> (Int, Float, Float?) -> String { // TODO: (labelIndex: Int, labelValue: Float, yIncrement: Float?)
         return { (index, value, yIncrement) in
             let formatter = numberFormatter
             let fractionDigits: Int = {
@@ -37,7 +37,7 @@ extension Chart {
             }()
             formatter.maximumFractionDigits = fractionDigits
             formatter.minimumFractionDigits = fractionDigits
-            return formatter.string(from: value) ?? "\(value)"
+            return formatter.string(from: value as NSNumber) ?? "\(value)"
         }
     }
 

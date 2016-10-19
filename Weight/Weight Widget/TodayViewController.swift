@@ -20,11 +20,11 @@ class TodayViewController: UIViewController, NCWidgetProviding {
     @IBOutlet weak var weightDetailLabelVisualEffectView: UIVisualEffectView!
     @IBOutlet weak var chartVisualEffectView: UIVisualEffectView!
 
-    private let weightFormatter = MassFormatter.weightMediumFormatter()
-    private let dateChartFormatter = DateFormatter(template: "MMMd") ?? DateFormatter(dateStyle: .short)
+    fileprivate let weightFormatter = MassFormatter.weightMediumFormatter()
+    fileprivate let dateChartFormatter = DateFormatter(template: "MMMd") ?? DateFormatter(dateStyle: .short)
     // jj for 12/24 hour, mm for minute, MMM for abbreviated word month i.e. "Jun", d for date
-    private let dateLastWeightFormatter = DateFormatter(template: "jjmmMMMd") ?? DateFormatter(dateStyle: .medium)
-    private let chartYLabelFormatter = NumberFormatter()
+    fileprivate let dateLastWeightFormatter = DateFormatter(template: "jjmmMMMd") ?? DateFormatter(dateStyle: .medium)
+    fileprivate let chartYLabelFormatter = NumberFormatter()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -37,7 +37,7 @@ class TodayViewController: UIViewController, NCWidgetProviding {
     }
 
     
-    func widgetPerformUpdate(completionHandler: ((NCUpdateResult) -> Void)) {
+    func widgetPerformUpdate(completionHandler: @escaping ((NCUpdateResult) -> Void)) {
         // Perform any setup necessary in order to update the view.
         updateChart(average: .week, range: Chart.Range(unit: .week, count: 6, softStart: true))
             .next{ completionHandler(.newData) }
@@ -52,7 +52,7 @@ private extension TodayViewController {
     func setupChart() {
         chartView.isUserInteractionEnabled = false
         chartView.gridColor = UIColor.gray.withAlphaComponent(0.1)
-        chartView.labelFont = UIFont.preferredFont(forTextStyle: UIFontTextStyleCaption1)
+        chartView.labelFont = UIFont.preferredFont(forTextStyle: .caption1)
         chartView.lineWidth = 1.5
         chartView.dotSize = 3
         chartView.yLabelsOnRightSide = false

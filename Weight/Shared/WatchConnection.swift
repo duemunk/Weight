@@ -13,7 +13,7 @@ class WatchConnection: NSObject {
     static let instance = WatchConnection()
     let newWeightObserver = Observable<Weight>()
 
-    private let session = WCSession.default()
+    fileprivate let session = WCSession.default()
 
     override init() {
         super.init()
@@ -53,9 +53,9 @@ extension WatchConnection: WCSessionDelegate {
         print(activationState)
     }
 
-    func session(_ session: WCSession, didReceiveUserInfo userInfo: [String : AnyObject] = [:]) {
-        if let Weight = Weight.newWeight(from: userInfo) {
-            newWeightObserver.update(Weight)
+    func session(_ session: WCSession, didReceiveUserInfo userInfo: [String : Any] = [:]) {
+        if let weight = Weight.newWeight(from: userInfo) {
+            newWeightObserver.update(weight)
         }
     }
 }

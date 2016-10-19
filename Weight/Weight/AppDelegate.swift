@@ -9,7 +9,7 @@
 import UIKit
 
 extension Notification.Name {
-    static let UserActivity = "userActivityNotification" as Notification.Name
+    static let UserActivity = Notification.Name("userActivityNotification")
 }
 
 @UIApplicationMain
@@ -18,12 +18,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
 
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey : Any]? = nil) -> Bool {
         // Override point for customization after application launch.
         return true
     }
 
-    func application(_ application: UIApplication, performActionFor shortcutItem: UIApplicationShortcutItem, completionHandler: (Bool) -> Void) {
+    func application(_ application: UIApplication, performActionFor shortcutItem: UIApplicationShortcutItem, completionHandler: @escaping (Bool) -> Void) {
         print("Short cut")
         switch shortcutItem.type {
         case QuickActionType.CustomWeight.rawValue:
@@ -71,9 +71,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
-    
-    func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: ([AnyObject]?) -> Void) -> Bool {
-        
+
+    func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([Any]?) -> Void) -> Bool {
         let userInfo = userActivity.userInfo
         print("Received a payload via handoff: \(userInfo)")
         NotificationCenter.default.post(name: .UserActivity, object: userActivity, userInfo: userActivity.userInfo)

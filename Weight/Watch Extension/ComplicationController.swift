@@ -24,7 +24,7 @@ extension ComplicationController: CLKComplicationDataSource {
     
     // MARK: - Timeline Configuration
     
-    func getSupportedTimeTravelDirections(for complication: CLKComplication, withHandler handler: (CLKComplicationTimeTravelDirections) -> Void) {
+    func getSupportedTimeTravelDirections(for complication: CLKComplication, withHandler handler: @escaping (CLKComplicationTimeTravelDirections) -> Void) {
         handler(CLKComplicationTimeTravelDirections())
     }
     
@@ -37,13 +37,13 @@ extension ComplicationController: CLKComplicationDataSource {
         handler(date)
     }
     
-    func getPrivacyBehavior(for complication: CLKComplication, withHandler handler: (CLKComplicationPrivacyBehavior) -> Void) {
+    func getPrivacyBehavior(for complication: CLKComplication, withHandler handler: @escaping (CLKComplicationPrivacyBehavior) -> Void) {
         handler(.hideOnLockScreen)
     }
     
     // MARK: - Timeline Population
     
-    func getCurrentTimelineEntry(for complication: CLKComplication, withHandler handler: ((CLKComplicationTimelineEntry?) -> Void)) {
+    func getCurrentTimelineEntry(for complication: CLKComplication, withHandler handler: @escaping ((CLKComplicationTimelineEntry?) -> Void)) {
         // Call the handler with the current timeline entry
         let now = Date()
         let lastWeight = WeightsLocalStore.instance.lastWeight
@@ -88,7 +88,7 @@ extension ComplicationController: CLKComplicationDataSource {
     
     // MARK: - Placeholder Templates
     
-    func getPlaceholderTemplate(for complication: CLKComplication, withHandler handler: (CLKComplicationTemplate?) -> Void) {
+    func getPlaceholderTemplate(for complication: CLKComplication, withHandler handler: @escaping (CLKComplicationTemplate?) -> Void) {
         // This method will be called once per supported complication, and the results will be cached
         let template = templateForComplication(complication, weight: nil)
         handler(template)
@@ -96,7 +96,7 @@ extension ComplicationController: CLKComplicationDataSource {
 
 
     // For iOS Complications Gallery
-    func getLocalizableSampleTemplate(for complication: CLKComplication, withHandler handler: (CLKComplicationTemplate?) -> Void) {
+    func getLocalizableSampleTemplate(for complication: CLKComplication, withHandler handler: @escaping (CLKComplicationTemplate?) -> Void) {
         let template = templateForComplication(complication, weight: Weight(kg: 68.4, date: Date()))
         handler(template)
     }
@@ -117,7 +117,7 @@ extension ComplicationController {
     private func format(weightViewModel: WeightViewModel?, formatter: NumberFormatter) -> String? {
         return weightViewModel
             .flatMap {
-                formatter.string(from: $0.userValue())
+                formatter.string(from: $0.userValue() as NSNumber)
         }
     }
 

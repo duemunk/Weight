@@ -28,7 +28,7 @@ extension Observable where T: ResultType  {
 //    }
 }
 
-public func completionToObservable<T>(observer: Observable<Result<T>>) -> ((t: T, e: Error?) -> Swift.Void) {
+public func completionToObservable<T>(observer: Observable<Result<T>>) -> ((T, Error?) -> Swift.Void) {
     return { (t: T, error: Error?) in
         if let error = error {
             observer.update(.error(error))
@@ -38,7 +38,7 @@ public func completionToObservable<T>(observer: Observable<Result<T>>) -> ((t: T
     }
 }
 
-public func completionToObservable<T, U>(observer: Observable<Result<(T, U)>>) -> ((t: T, u: U, e: Error?) -> Swift.Void) {
+public func completionToObservable<T, U>(observer: Observable<Result<(T, U)>>) -> ((T, U, Error?) -> Swift.Void) {
     return { (t: T, u: U, error: Error?) in
         if let error = error {
             observer.update(.error(error))
@@ -48,7 +48,7 @@ public func completionToObservable<T, U>(observer: Observable<Result<(T, U)>>) -
     }
 }
 
-public func completionToObservable<T, U ,V>(observer: Observable<Result<(T, U, V)>>) -> ((t: T, u: U, v: V, e: Error?) -> Swift.Void) {
+public func completionToObservable<T, U ,V>(observer: Observable<Result<(T, U, V)>>) -> ((T, U, V, Error?) -> Swift.Void) {
     return { (t: T, u: U, v: V, error: Error?) in
         if let error = error {
             observer.update(.error(error))

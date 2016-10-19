@@ -21,14 +21,14 @@ class InterfaceController: WKInterfaceController {
 //    var loader: Loader?
 
     let weightFormatter = MassFormatter.weightMediumFormatter()
-    private let dateLastWeightFormatter = DateFormatter(template: "jjmmMMMd") ?? DateFormatter(dateStyle: .medium, timeStyle: .short)
+    fileprivate let dateLastWeightFormatter = DateFormatter(template: "jjmmMMMd") ?? DateFormatter(dateStyle: .medium, timeStyle: .short)
     
     var selectedWeight: HealthManager.WeightPoint?
     var pickerWeights: [HealthManager.WeightPoint] {
         return HealthManager.instance.humanWeightOptions()
     }
     
-    override func awake(withContext context: AnyObject?) {
+    override func awake(withContext context: Any?) {
         print("awakeWithContext \(context)")
         super.awake(withContext: context)
 
@@ -46,13 +46,13 @@ class InterfaceController: WKInterfaceController {
 
 //        setTitle("Weight")
 
-        NotificationCenter.default.addObserver(forName: .HealthDataDidChange, object: nil, queue: nil) { [weak self] notification in
+        NotificationCenter.default.addObserver(forName: .healthDataDidChange, object: nil, queue: nil) { [weak self] notification in
             Async.main {
                 self?.updateWeightAssumingPicker(forceSource: true)
             }
         }
 
-        NotificationCenter.default.addObserver(forName: .HealthPreferencesDidChange, object: nil, queue: nil) { [weak self] notification in
+        NotificationCenter.default.addObserver(forName: .healthPreferencesDidChange, object: nil, queue: nil) { [weak self] notification in
             Async.main {
                 self?.updatePicker()
                     .subscribe { _ in
@@ -90,7 +90,7 @@ class InterfaceController: WKInterfaceController {
         guard let tempWeight = weight else { return }
         
         let activityType = "dk.developmunk.Weight.updatingWeight"
-        let activityDictionary: [NSObject: AnyObject] = [
+        let activityDictionary: [String: Any] = [
             Keys.temporaryWeightKg : tempWeight.kg,
             Keys.temporaryWeightDescription : "\(tempWeight)"]
         updateUserActivity(activityType, userInfo: activityDictionary, webpageURL: nil)

@@ -10,8 +10,8 @@ import Foundation
 import HealthKit
 
 extension Notification.Name {
-    static let HealthPreferencesDidChange = "HealthPreferencesDidChangeNotification" as NSNotification.Name
-    static let HealthDataDidChange = "HealthDataDidChangeNotification" as NSNotification.Name
+    static let healthPreferencesDidChange = Notification.Name("HealthPreferencesDidChangeNotification")
+    static let healthDataDidChange = Notification.Name("HealthDataDidChangeNotification")
 }
 
 class HealthManager {
@@ -39,7 +39,7 @@ class HealthManager {
         didSet {
             guard massUnit != oldValue else { return }
             massFormatterUnit = HKUnit.massFormatterUnit(from: massUnit)
-            NotificationCenter.default.post(name: .HealthPreferencesDidChange, object: nil)
+            NotificationCenter.default.post(name: .healthPreferencesDidChange, object: nil)
         }
     }
     private(set) var massFormatterUnit = HKUnit.massFormatterUnit(from: .gramUnit(with: .kilo))
@@ -64,7 +64,7 @@ class HealthManager {
             .error { print($0) }
             .flatMap(Queue.main)
             .next {
-                NotificationCenter.default.post(name: .HealthDataDidChange, object: nil)
+                NotificationCenter.default.post(name: .healthDataDidChange, object: nil)
             }
 
 

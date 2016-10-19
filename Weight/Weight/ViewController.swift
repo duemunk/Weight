@@ -36,8 +36,8 @@ class ViewController: UIViewController {
     var pickerWeights: [HealthManager.WeightPoint] {
         return HealthManager.instance.humanWeightOptions()
     }
-    private let healthDataChange = NotificationCenter_(name: .HealthDataDidChange)
-    private let healthPreferencesChange = NotificationCenter_(name: .HealthPreferencesDidChange)
+    private let healthDataChange = NotificationCenter_(name: .healthDataDidChange)
+    private let healthPreferencesChange = NotificationCenter_(name: .healthPreferencesDidChange)
     private let userActivityChange = NotificationCenter_(name: .UserActivity)
     private let updateUIObservable = Observable<UpdateType>()
 
@@ -229,7 +229,7 @@ extension ViewController: UIPickerViewDelegate {
         guard let tempWeight = weightForPickerRow(row) else {
             return
         }
-        let activityDictionary: [NSObject: AnyObject] = [
+        let activityDictionary: [String : Any] = [
             Keys.temporaryWeightKg : tempWeight.kg,
             Keys.date : Date()
         ]

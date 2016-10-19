@@ -24,14 +24,14 @@ extension Weight {
         return HKQuantitySample(type: type, quantity: quantity, start: date, end: date)
     }
 
-    var newWeightUserInfo: [String : AnyObject] {
+    var newWeightUserInfo: [String : Any] {
         return [
             Keys.newWeightKg : kg,
             Keys.date : date
         ]
     }
 
-    static func newWeight(from userInfo: [String : AnyObject]) -> Weight? {
+    static func newWeight(from userInfo: [String : Any]) -> Weight? {
         guard
             let weight = userInfo[Keys.newWeightKg] as? Double,
             let date = userInfo[Keys.date] as? Date
@@ -41,14 +41,14 @@ extension Weight {
         return Weight(kg: weight, date: date)
     }
 
-    var temporaryWeightUserInfo: [String : AnyObject] {
+    var temporaryWeightUserInfo: [String : Any] {
         return [
             Keys.temporaryWeightKg : kg,
             Keys.date : date
         ]
     }
 
-    static func temporaryNewWeight(from userInfo: [String : AnyObject]) -> Weight? {
+    static func temporaryNewWeight(from userInfo: [String : Any]) -> Weight? {
         guard
             let weight = userInfo[Keys.temporaryWeightKg] as? Double,
             let date = userInfo[Keys.date] as? Date
