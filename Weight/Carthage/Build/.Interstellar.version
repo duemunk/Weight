@@ -1,0 +1,27 @@
+{
+  "iOS" : [
+    {
+      "hash" : "9dd36c9066a37854a6355dabd8756c47ffd63e5b68d4778572bd32684139f306",
+      "name" : "Interstellar"
+    }
+  ],
+  "commitish" : "2.0.0",
+  "watchOS" : [
+    {
+      "hash" : "3b2c4a36b39c59480d97198cd9ccda8579d903ae8c1cc235a201ab89f942ca1c",
+      "name" : "Interstellar"
+    }
+  ],
+  "tvOS" : [
+    {
+      "hash" : "5cdc015b72abd02753cb9c045d735acde5ee1e9c651e8f3843cd8ad8d87401d7",
+      "name" : "Interstellar"
+    }
+  ],
+  "Mac" : [
+    {
+      "hash" : "32992ae8d79717d63b0ed6806ddb346802eba51b1d5b9a5098b7d1442d2c55f1",
+      "name" : "Interstellar"
+    }
+  ]
+}
