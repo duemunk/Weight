@@ -23,7 +23,7 @@ extension UIButton {
         return observer
     }
 
-    public func didTapButton(_ sender: AnyObject) {
-        tap.update()
+    @objc func didTapButton(_ sender: AnyObject) {
+        tap.update(())
     }
 }

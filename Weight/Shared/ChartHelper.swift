@@ -85,7 +85,7 @@ extension Chart {
                 return Observable(.success((individualSeries: individualSeries, runningAverageSeries: runningAverageSeries, startDate: startDate)))
             }
             .flatMap(Queue.main)
-            .next { (individualSeries: ChartSeries, runningAverageSeries: ChartSeries?, startDate: Date) in
+            .next { (__val:(ChartSeries, ChartSeries?, Date)) in let (individualSeries,runningAverageSeries,startDate) = __val; 
                 Async.main {
                     self.removeSeries()
                     self.addSeries(individualSeries)

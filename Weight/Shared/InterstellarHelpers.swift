@@ -44,7 +44,7 @@ public func completionToObservable<T, U>(observer: Observable<Result<(T, U)>>) -
             observer.update(.error(error))
             return
         }
-        observer.update(.success(t, u))
+        observer.update(.success((t, u)))
     }
 }
 
@@ -54,6 +54,6 @@ public func completionToObservable<T, U ,V>(observer: Observable<Result<(T, U, V
             observer.update(.error(error))
             return
         }
-        observer.update(.success(t, u, v))
+        observer.update(.success((t, u, v)))
     }
 }

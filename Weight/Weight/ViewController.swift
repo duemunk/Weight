@@ -216,8 +216,8 @@ extension ViewController: UIPickerViewDelegate {
 
         let title = weightFormatter.string(fromValue: weightViewModel.userValue(), unit: weightViewModel.formatterUnit)
         let attributedTitle = NSAttributedString(string: title, attributes: [
-            NSForegroundColorAttributeName : UIColor.black,
-            NSFontAttributeName : UIFont.boldSystemFont(ofSize: 27)
+            NSAttributedStringKey.foregroundColor : UIColor.black,
+            NSAttributedStringKey.font : UIFont.boldSystemFont(ofSize: 27)
             ])
         return attributedTitle
     }

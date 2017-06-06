@@ -25,7 +25,7 @@ extension HKHealthStore {
                     print("Couldn't get authorization request")
                     return .error(AsyncError.noSuccessDespiteNoError)
                 }
-                return .success()
+                return .success(())
             }
     }
 
@@ -35,8 +35,8 @@ extension HKHealthStore {
         let query = HKSampleQuery(sampleType: sampleType, predicate: predicate, limit: HKObjectQueryNoLimit, sortDescriptors: [timeSortDescriptor], resultsHandler: completionToObservable(observer: observer))
         execute(query)
         return observer
-            .then { (query: HKSampleQuery, samples: [HKSample]?) -> Result<[HKSample]> in
-                guard let samples = samples else {
+            .then { (__val:(HKSampleQuery, [HKSample]?)) -> Result<[HKSample]> in
+                guard let samples = __val.1 else {
                     return .error(AsyncError.noResults)
                 }
                 return .success(samples)
@@ -50,8 +50,8 @@ extension HKHealthStore {
         let query = HKSampleQuery(sampleType: sampleType, predicate: predicate, limit: 1, sortDescriptors: [timeSortDescriptor], resultsHandler: completionToObservable(observer: observer))
         execute(query)
         return observer
-            .then { (query: HKSampleQuery, samples: [HKSample]?) -> Result<HKSample> in
-                guard let sample = samples?.first else {
+            .then { (__val:(HKSampleQuery, [HKSample]?)) -> Result<HKSample> in
+                guard let sample = __val.1?.first else {
                     return .error(AsyncError.noResults)
                 }
                 return .success(sample)

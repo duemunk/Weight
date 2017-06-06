@@ -613,7 +613,7 @@ public class Chart: UIControl {
         let scaled = labels.map { scaleValueOnXAxis($0) }
         let padding: CGFloat = 5
 
-        scaled.enumerated().forEach { (i, value) in
+        scaled.enumerated().forEach { let (i, value) = $0;
             let x = CGFloat(value)
 
             // Add vertical grid for each label, except axes on the left and right
@@ -674,7 +674,7 @@ public class Chart: UIControl {
 
         let scaled = labels.map { scaleValueOnYAxis($0) }
 
-        scaled.enumerated().forEach { (i, value) in
+        scaled.enumerated().forEach { let (i, value) = $0;
 
             let y = CGFloat(value)
 
@@ -800,7 +800,7 @@ public class Chart: UIControl {
     private class func findClosestInValues(_ values: Array<Float>, forValue value: Float) -> (lowestValue: Float?, highestValue: Float?, lowestIndex: Int?, highestIndex: Int?) {
         var lowestValue: Float?, highestValue: Float?, lowestIndex: Int?, highestIndex: Int?
 
-        values.enumerated().forEach { (i, currentValue) in
+        values.enumerated().forEach { let (i, currentValue) = $0;
 
             if currentValue <= value && (lowestValue == nil || lowestValue! < currentValue) {
                 lowestValue = currentValue
@@ -824,7 +824,7 @@ public class Chart: UIControl {
         var segments: Array<ChartLineSegment> = []
         var segment: ChartLineSegment = []
 
-        line.enumerated().forEach { (i, point) in
+        line.enumerated().forEach { let (i, point) = $0;
 
             segment.append(point)
             if i < line.count - 1 {

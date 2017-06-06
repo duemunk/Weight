@@ -58,12 +58,12 @@ class HealthManager {
         
         // Setup access
         checkHealthKitAuthorization()
-            .then {
+            .then { (_:Void) -> Void in
                 self.updatePreferredUnits()
             }
             .error { print($0) }
             .flatMap(Queue.main)
-            .next {
+            .next { (_: Void) -> Void in
                 NotificationCenter.default.post(name: .healthDataDidChange, object: nil)
             }
 
@@ -157,7 +157,7 @@ class HealthManager {
                 print("HealthKit access undetermined")
                 break
             case .sharingAuthorized:
-                return Observable(.success())
+                return Observable(.success(()))
         }
 
         let observer = Observable<Result<Void>>()
@@ -225,7 +225,7 @@ extension Collection where Iterator.Element == Weight {
         let referenceCount = referenceDateInAverageUnit.count
         let startEndDates = Array(zip(referenceDateInAverageUnit[0..<referenceCount - 1], referenceDateInAverageUnit[1..<referenceCount]))
         let averages: [Weight] = startEndDates
-            .flatMap { (startDate, endDate) in
+            .flatMap { let (startDate, endDate) = $0;
                 let inUnit = self.filter { startDate..<endDate ~= $0.date }
                 let count = inUnit.count
                 guard count > 0 else { return nil }
@@ -286,7 +286,8 @@ extension Date {
             components.minute = 0
             components.second = 0
         case .week:
-            components.day? -= components.weekday.flatMap { $0 - 1 } ?? 0
+            let shift = components.weekday.flatMap { $0 - 1 } ?? 0
+            components.day? -= shift
             components.hour = 0
             components.minute = 0
             components.second = 0

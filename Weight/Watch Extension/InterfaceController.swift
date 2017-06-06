@@ -127,7 +127,7 @@ private extension InterfaceController {
 
     func updateWeightAssumingPicker(forceSource: Bool) {
         updateLabelsAndPickerPosition(forceSource: forceSource)
-            .subscribe {
+            .subscribe { () -> Void in
                 self.updateComplications()
             }
     }
@@ -139,7 +139,7 @@ private extension InterfaceController {
         HealthManager.instance.getWeight(forceSource: forceSource)
             .then { weight in
                 guard let (_, index) = self.pickerWeights.map({ $0.kg }).closestToElement(weight.kg) else {
-                    observable.update()
+                    observable.update(())
                     return
                 }
                 Async.main {
@@ -147,14 +147,14 @@ private extension InterfaceController {
                     self.dateLabel.setText(self.dateLastWeightFormatter.string(from: weight.date))
                     // Weight
                     self.picker.setSelectedItemIndex(index)
-                    observable.update()
+                    observable.update(())
                 }
             }
             .error {
                 print($0)
                 Async.main {
                     self.dateLabel.setText("Add your weight")
-                    observable.update()
+                    observable.update(())
                 }
             }
         return observable

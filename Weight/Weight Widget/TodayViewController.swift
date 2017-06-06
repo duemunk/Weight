@@ -40,7 +40,9 @@ class TodayViewController: UIViewController, NCWidgetProviding {
     func widgetPerformUpdate(completionHandler: @escaping ((NCUpdateResult) -> Void)) {
         // Perform any setup necessary in order to update the view.
         updateChart(average: .week, range: Chart.Range(unit: .month, count: 2, softStart: true))
-            .next{ completionHandler(.newData) }
+            .next { () -> Void in
+                completionHandler(.newData)
+            }
         updateLabels()
     }
 }
@@ -80,13 +82,13 @@ private extension TodayViewController {
                 let weightViewModel = WeightViewModel(weight: weight, massUnit: HealthManager.instance.massUnit)
                 self.weightLabel.text = self.weightFormatter.string(fromValue: weightViewModel.userValue(), unit: weightViewModel.formatterUnit)
                 self.weightDetailLabel.text = self.dateLastWeightFormatter.string(from: weightViewModel.weight.date)
-                observer.update(.success())
+                observer.update(.success(()))
             }
         }
 
         if let forceWeight = forceWeight {
             quantitySampleBlock(forceWeight)
-            return Observable(.success())
+            return Observable(.success(()))
         }
 
         HealthManager.instance.getWeight(forceSource: false)
@@ -96,7 +98,7 @@ private extension TodayViewController {
                 Async.main {
                     self.weightLabel.text = self.weightFormatter.string(fromValue: 0, unit: HealthManager.instance.massFormatterUnit)
                     self.weightDetailLabel.text = "No existing historic data"
-                    observer.update(.success())
+                    observer.update(.success(()))
                 }
         }
         return observer

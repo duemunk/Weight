@@ -13,7 +13,7 @@ class WatchConnection: NSObject {
     static let instance = WatchConnection()
     let newWeightObserver = Observable<Weight>()
 
-    fileprivate let session = WCSession.default()
+    fileprivate let session = WCSession.default
 
     override init() {
         super.init()
