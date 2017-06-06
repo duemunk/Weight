@@ -61,7 +61,7 @@ class Animation {
         let center = CGPoint(x: size.width/2, y: size.height/2)
         let radius = min(size.width/2, size.height/2) / 2
         let circlePath = UIBezierPath()
-        circlePath.addArc(withCenter: center, radius: radius, startAngle: 0, endAngle: CGFloat(2 * M_PI), clockwise: true)
+        circlePath.addArc(withCenter: center, radius: radius, startAngle: 0, endAngle: 2 * .pi, clockwise: true)
         circlePath.lineWidth = 2
         tintColor.setFill()
         circlePath.fill()

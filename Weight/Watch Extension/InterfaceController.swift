@@ -29,7 +29,7 @@ class InterfaceController: WKInterfaceController {
     }
     
     override func awake(withContext context: Any?) {
-        print("awakeWithContext \(context)")
+        print("awakeWithContext \(String(describing: context))")
         super.awake(withContext: context)
 
         // Configure interface objects here.
@@ -83,7 +83,7 @@ class InterfaceController: WKInterfaceController {
     @IBAction func pickerDidChange(_ index: Int) {
         let weight = pickerWeights[safe: index]
         selectedWeight = weight
-        print("Selected weight: \(weight)")
+        print("Selected weight: \(String(describing: weight))")
         // Click
 //        WKInterfaceDevice.currentDevice().playHaptic(.Click)
         // User activity

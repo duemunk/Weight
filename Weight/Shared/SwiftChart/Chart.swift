@@ -412,8 +412,8 @@ public class Chart: UIControl {
         case 10...25: return 25
         case 25...50: return 50
         case 50...100: return 100
-        case 100...FLT_MAX: return validGridIncrement(value/10)*10 // Recursive
-        case -FLT_MAX...10: return validGridIncrement(value*10)/10 // Recursive
+        case 100...Float.greatestFiniteMagnitude: return validGridIncrement(value/10)*10 // Recursive
+        case -Float.greatestFiniteMagnitude...10: return validGridIncrement(value*10)/10 // Recursive
         default: return value
         }
     }

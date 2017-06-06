@@ -74,7 +74,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([Any]?) -> Void) -> Bool {
         let userInfo = userActivity.userInfo
-        print("Received a payload via handoff: \(userInfo)")
+        print("Received a payload via handoff: \(String(describing: userInfo))")
         NotificationCenter.default.post(name: .UserActivity, object: userActivity, userInfo: userActivity.userInfo)
         
         return true
@@ -82,7 +82,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func application(_ application: UIApplication, didUpdate userActivity: NSUserActivity) {
         let userInfo = userActivity.userInfo
-        print("Updated user activity: \(userActivity) : \(userInfo)")
+        print("Updated user activity: \(userActivity) : \(String(describing: userInfo))")
     }
 }
 
